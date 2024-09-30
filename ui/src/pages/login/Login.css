@@ -1,0 +1,206 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #f0f2f5;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 350px;
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Xóa phần .logo-container, .logo, và .logo-placeholder */
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 14px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.remember-me input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.remember-me label {
+  font-size: 14px;
+  color: #666;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+
+.login-button:hover {
+  background-color: #166fe5; /* Màu xanh đậm hơn khi hover */
+}
+
+.forget-password-link {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  color: #1877f2;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+
+.forget-password-link:hover {
+  color: #166fe5; /* Màu xanh đậm hơn khi hover */
+  text-decoration: underline;
+}
+
+.google-login, .facebook-login {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+
+.google-login:hover, .facebook-login:hover {
+  transform: scale(1.05); /* Phóng to nút một chút khi hover */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ khi hover */
+}
+
+.google-login svg, .facebook-login svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển đổi cho icon */
+}
+
+.google-login:hover svg, .facebook-login:hover svg {
+  transform: scale(1.1); /* Phóng to icon một chút khi hover */
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.signup-link a {
+  color: #1877f2;
+  text-decoration: none;
+  transition: color 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+
+.signup-link a:hover {
+  color: #166fe5; /* Màu xanh đậm hơn khi hover */
+  text-decoration: underline;
+}
+
+.divider {
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+.social-login-text {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.google-login, .facebook-login {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #333;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-login {
+  color: #db4437;
+}
+
+.facebook-login {
+  color: #1877f2;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.signup-link a {
+  color: #1877f2;
+  text-decoration: none;
+}
+
+.login-image {
+  width: 100%;
+  max-width: 200px; /* Điều chỉnh kích thước theo nhu cầu */
+  height: auto;
+  margin-bottom: 20px;
+  border: none; /* Xóa viền ảnh */
+}
