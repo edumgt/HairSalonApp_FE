@@ -25,14 +25,16 @@
   /* Thanh header bao gồm các nút và input */
   .headerButton {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     margin: 10px;
+    gap: 20px;
   }
   
-  .button2,
-  .input,
-  .button {
+  .filter,
+  .search,
+  .add{
+    height: 20px;
     display: flex;
     align-items: center;
     padding: 8px;
@@ -41,16 +43,26 @@
     border-radius: 6px;
     cursor: pointer;
   }
-  .input{
+  .filter{
+    width: 20px;
+    height: 20px;
+  }
+  .search{
     width: 30%;
   }
-  .button {
+  .searchInput{
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+  }
+  .add{
     background-color: #2264e5;
     color: #fff;
     border: none;
   }
   
-  .button1 {
+  .addButton {
     font-size: 14px;
     font-weight: 500;
   }

@@ -54,16 +54,20 @@ const Salon = () => {
 
     <div className={styles.tableGroup}>
           <div className={styles.headerButton}>
-            <div className={styles.button2}>
+            <div className={styles.filter}>
               <img className={styles.filterIcon} alt="" src={filterIcon} />
             </div>
-            <div className={styles.input}>
-              <img className={styles.filterIcon} alt="" src={searchIcon}  />
-              <div className={styles.search}>Search</div>
+            <div className={styles.search}>
+                <img className={styles.filterIcon} alt="" src={searchIcon} />
+                <input 
+                    className={styles.searchInput} 
+                    type="text" 
+                    placeholder="Search"
+                />
             </div>
-            <div className={styles.button}>
+            <div className={styles.add}>
               <img className={styles.arrowIcon} alt="" src={addIcon}  />
-              <div className={styles.button1}>Add salon</div>
+              <div className={styles.addButton}>Add salon</div>
             </div>
           </div>
 
