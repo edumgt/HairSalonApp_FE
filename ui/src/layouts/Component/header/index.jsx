@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./index.scss";
 
 function Header() {
@@ -17,8 +17,26 @@ function Header() {
         />
 
         <ul className="header__navigation">
-          <li>Trang chủ</li>
-          <li>Về 30shine</li>
+          <li>
+            <NavLink
+              to="/home"
+              style={({ isActive }) => ({
+                textDecoration: isActive ? "underline" : "none",
+              })}
+            >
+              Trang chủ
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/about"
+              style={({ isActive }) => ({
+                textDecoration: isActive ? "underline" : "none",
+              })}
+            >
+              Về 30Shine
+            </NavLink>
+          </li>
           <li>Học cắt tóc</li>
           <li>Nhượng quyền</li>
           <li>Đối tác</li>
