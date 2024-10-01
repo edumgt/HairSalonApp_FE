@@ -1,6 +1,6 @@
 import styles from './profile.module.css';
-// import arrowIcon from '../../assets/arrow.svg'
-// import avatar from '../../assets/profileIcon.svg'
+import arrowIcon from '../../../assets/admin/arrow.svg'
+import avatar from '../../../assets/admin/profile.svg'
 const Profile = () => {
   	return (
     		<div className={styles.main}>
