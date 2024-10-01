@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './layouts/admin/layout'; 
-import Profile from './pages/Admin/profile/profile'
-import Salon from './pages/Admin/salon/salon'; 
+import Profile from './pages/admin/profile/profile';
+import Salon from './pages/admin/salon/salon';
 // import Staff from './Pages/Staff/Staff';
 // import Wage from './Pages/Wage/Wage';
 // import Booking from './Pages/Booking/Booking';
