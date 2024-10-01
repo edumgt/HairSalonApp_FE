@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './SignUp.css';
+ // Đảm bảo đường dẫn này chính xác
 
 function SignUp() {
   const [profileName, setProfileName] = useState('');
@@ -42,29 +43,30 @@ function SignUp() {
   };
 
   // Tạo các option cho tháng, ngày, năm
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
   return (
     <div className="signup-container">
+      
       <h2>Đăng ký miễn phí</h2>
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="profileName">Profile name</label>
+          <label htmlFor="profileName">Tên hồ sơ</label>
           <input
             id="profileName"
             type="text"
             className="signup-input"
-            placeholder="Enter your profile name"
+            placeholder="Nhập tên hồ sơ của bạn"
             value={profileName}
             onChange={(e) => setProfileName(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="phoneNumber">Phone number</label>
+          <label htmlFor="phoneNumber">Số điện thoại</label>
           <input
             id="phoneNumber"
             type="tel"
@@ -91,7 +93,7 @@ function SignUp() {
               className="toggle-password"
               onClick={() => togglePasswordVisibility('password')}
             >
-              {showPassword ? 'Hide' : 'Show'}
+              {showPassword ? 'Ẩn' : 'Hiện'}
             </button>
           </div>
           <small>Sử dụng 8 ký tự trở lên kết hợp chữ cái, số và ký tự đặc biệt</small>
@@ -113,27 +115,27 @@ function SignUp() {
               className="toggle-password"
               onClick={() => togglePasswordVisibility('confirmPassword')}
             >
-              {showConfirmPassword ? 'Hide' : 'Show'}
+              {showConfirmPassword ? 'Ẩn' : 'Hiện'}
             </button>
           </div>
         </div>
         <div className="form-group">
-          <label>What's your date of birth? (optional)</label>
+          <label>Ngày sinh (không bắt buộc)</label>
           <div className="date-inputs">
             <select value={month} onChange={(e) => setMonth(e.target.value)}>
-              <option value="">Month</option>
+              <option value="">Tháng</option>
               {months.map((m, index) => (
                 <option key={m} value={index + 1}>{m}</option>
               ))}
             </select>
             <select value={date} onChange={(e) => setDate(e.target.value)}>
-              <option value="">Date</option>
+              <option value="">Ngày</option>
               {days.map(d => (
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
             <select value={year} onChange={(e) => setYear(e.target.value)}>
-              <option value="">Year</option>
+              <option value="">Năm</option>
               {years.map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
@@ -148,9 +150,9 @@ function SignUp() {
             onChange={(e) => setAcceptTerms(e.target.checked)}
             required
           />
-          <label htmlFor="terms">I accept the terms and privacy policy</label>
+          <label htmlFor="terms">Tôi đồng ý với các điều khoản và chính sách bảo mật</label>
         </div>
-        <button type="submit" className="signup-button">Sign up</button>
+        <button type="submit" className="signup-button">Đăng ký</button>
       </form>
       <div className="divider"></div>
       <p className="social-signup-text">Hoặc đăng ký bằng:</p>
@@ -171,7 +173,7 @@ function SignUp() {
           </svg>
         </button>
       </div>
-      <p className="login-link">Đã có tài khoản? <Link to="/">Đăng nhập</Link></p>
+      <p className="login-link">Đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>
     </div>
   );
 }

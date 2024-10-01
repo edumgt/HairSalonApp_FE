@@ -1,0 +1,38 @@
+{
+  "name": "hairsalonapp_fe",
+  "version": "1.0.0",
+  "description": "Hair Salon Booking App Front-end",
+  "scripts": {
+    "start": "cd ui && react-app-rewired start",
+    "build": "cd ui && react-app-rewired build",
+    "test": "cd ui && react-app-rewired test",
+    "eject": "cd ui && react-scripts eject"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "react-scripts": "^5.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "homepage": ".",
+  "config-overrides-path": "ui/config-overrides.js",
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "react-app-rewired": "^2.2.1"
+  }
+}

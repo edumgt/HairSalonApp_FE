@@ -17,6 +17,7 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 40vh; /* Thêm margin-top để đẩy form xuống dưới */
 }
 
 /* Xóa phần .logo-container, .logo, và .logo-placeholder */

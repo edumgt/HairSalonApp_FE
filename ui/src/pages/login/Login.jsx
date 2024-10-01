@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Login.css';
-import loginImage from './Screenshot 2024-09-25 191222.png';
-
+// Đảm bảo đường dẫn này chính xác
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +13,7 @@ function Login() {
 
   return (
     <div className="login-container">
-      <img src={loginImage} alt="Login" className="login-image" />
+     
       <h2>Đăng nhập</h2>
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -45,7 +44,7 @@ function Login() {
         </div>
         <button type="submit" className="login-button">Đăng nhập</button>
       </form>
-      <Link to="/forget-password" className="forget-password-link">Quên mật khẩu?</Link>
+      <Link to="/forgot-password" className="forget-password-link">Quên mật khẩu?</Link>
       <div className="divider"></div>
       <p className="social-login-text">Hoặc đăng nhập bằng:</p>
       <div className="social-login">
