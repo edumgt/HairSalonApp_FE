@@ -2,7 +2,7 @@
     display: flex;
     height: 100vh; /* Full height */
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: sans-serif;
   }
   .main-content {
     flex: 1; /* Chiếm toàn bộ không gian còn lại */
