@@ -45,8 +45,8 @@
     flex-shrink: 0;
 }
 .itemGroup {
-    position: absolute;
-    top: calc(50% - 15px);
+    /* position: absolute; */
+    /* top: calc(50% - 15px); */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -57,11 +57,14 @@
 .item {
     display: flex;
     align-items: center;
-    align-self: stretch;
-    position: relative;
     width: 100%;
     height: 60px;
     cursor: pointer;
+    /* align-self: stretch;
+    position: relative; */
+}
+.item:hover{
+    background-color: #0f3071;
 }
 .active{
     background-color: #1c4cad;
@@ -71,11 +74,12 @@
     position: absolute;
     top: 120px;
     left: 0px;
-    width: 300px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    z-index: unset;
 }
 .menuIcon {
     width: 30px;
@@ -106,11 +110,14 @@
     width: 250px;
     position: relative;
     text-align: left;
-    z-index: 1000;
+    /* z-index: 1000; */
     font-size: 12px;
-    font-family: Inter;
+    /* font-family: Inter; */
     color: #fff;
     background-color: #15397f;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+}
+.toggle{
+    width: 60px;
 }
 

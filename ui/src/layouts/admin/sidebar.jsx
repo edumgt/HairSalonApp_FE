@@ -34,11 +34,16 @@ const Sidebar = () => {
         navigate(path);
         }, {navigate});
 
+        const [isVisible, setIsVisible] = useState(true)
+        const toggleSidebar = () => {
+            setIsVisible(!isVisible);
+        };
+
   	return (
-    		<div className={styles.nav}>
+    		<div className={`${styles.nav} ${isVisible ? '' : styles.toggle}`}>
       			{/* <div className={styles.bg} />  */}
 				  <div className={styles.brand}>
-        				<img className={styles.menuIcon} alt="" src={menuIcon} />
+        				<img className={styles.menuIcon} alt="" src={menuIcon} onClick={toggleSidebar}/>
         				<i className={styles.brandsName}>Brand’s name</i>
       			</div>
       			<div className={styles.navs}>
