@@ -1,0 +1,27 @@
+.app-container {
+    display: flex;
+    height: 100vh; /* Full height */
+    overflow: hidden;
+  }
+  .main-content {
+    flex: 1; /* Chiếm toàn bộ không gian còn lại */
+    background-color: #fff;
+    padding: 20px;
+  }
+  .sidebar{
+    position: fixed;
+    
+  }
+  .main {
+    width: 100%;
+    max-height: 100%;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 14px;
+    color: #666;
+    background-color: #F1F1F1;
+    font-family: Inter;
+    padding: 20px;
+}
