@@ -87,6 +87,7 @@
     height: 60px;
     overflow: hidden;
     flex-shrink: 0;
+    cursor: pointer;
 }
 .brandsName {
     position: relative;
@@ -116,8 +117,10 @@
     color: #fff;
     background-color: #15397f;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+    /* transform: translateX(100%); */
 }
 .toggle{
     width: 60px;
+    /* transform: translateX(-20%); */
 }
 

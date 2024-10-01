@@ -21,14 +21,14 @@
     gap: 8px;
 }
 .mainContent {
-    position: absolute;
+    position: relative;
     top: 40px;
-    left: 400px;
+    left: 25%;
     width: 820px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 76px;
     font-size: 25px;
     color: #000;
