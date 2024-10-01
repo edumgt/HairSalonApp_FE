@@ -1,15 +1,15 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import styles from './Sidebar.module.css';
+import styles from './sidebar.module.css';
 
-import menuIcon from '../assets/Menu icon.svg'
-import dashboardIcon from '../assets/chart.svg'
-import profileIcon from '../assets/profile.svg'
-import salonIcon from '../assets/store.svg'
-import staffIcon from '../assets/staff.svg'
-import wageIcon from '../assets/coins.svg'
-import bookingIcon from '../assets/booking.svg'
-import logoutIcon from '../assets/Fill.svg'
+// import menuIcon from '../assets/Menu icon.svg'
+// import dashboardIcon from '../assets/chart.svg'
+// import profileIcon from '../assets/profile.svg'
+// import salonIcon from '../assets/store.svg'
+// import staffIcon from '../assets/staff.svg'
+// import wageIcon from '../assets/coins.svg'
+// import bookingIcon from '../assets/booking.svg'
+// import logoutIcon from '../assets/Fill.svg'
 
 const Sidebar = () => {
 		const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
