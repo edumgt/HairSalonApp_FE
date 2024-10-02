@@ -2,6 +2,7 @@ import "./index.scss";
 import { Button, Col, Form, Input, Row, Rate, Modal, message } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Nếu bạn sử dụng React Router
+import HairServices from "../../layouts/Component/hairservice";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,7 +76,6 @@ function Home() {
 
             <div className="booking-feedback-container">
               <div className="feedback-section">
-                <div className="feedback-background" />
                 <div className="feedback-content">
                   <p className="feedback-title">
                     MỜI BẠN ĐÁNH GIÁ CHẤT LƯỢNG PHỤC VỤ
@@ -88,7 +88,7 @@ function Home() {
                     <Rate onChange={handleRateChange} />
                   </Form.Item>
                   {/* Nút để gửi đánh giá */}
-                  <Button type="primary" onClick={handleSubmitRating}>
+                  <Button type="primary" onClick={handleSubmitRating} className="submit-rating-btn">
                     Gửi đánh giá
                   </Button>
                 </div>
@@ -98,9 +98,6 @@ function Home() {
                 <div className="booking-background" />
                 <div className="booking-title">
                   <b>ĐẶT LỊCH GIỮ CHỖ CHỈ 30 GIÂY</b>
-                </div>
-                <div className="booking-solgan-text">
-                  <b>Cắt xong trả tiền hủy lịch không sao</b>
                 </div>
                 <br />
                 {/* Form có validate */}
@@ -196,6 +193,7 @@ function Home() {
           </div>
         </Col>
       </Row>
+      <HairServices />
     </div>
   );
 }
