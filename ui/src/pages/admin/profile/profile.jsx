@@ -1,15 +1,11 @@
 import styles from './profile.module.css';
-import arrowIcon from '../../../assets/admin/arrow.svg'
 import avatar from '../../../assets/admin/profileIcon.svg'
+import NavLink from '../../../layouts/admin/navLink'
 
 const Profile = () => {
   	return (
     		<div className={styles.main}>
-      			<div className={styles.adminPortalParent}>
-        				<div className={styles.adminPortal}>Admin Portal</div>
-        				<img className={styles.arrow} alt="" src={arrowIcon} />
-        				<div className={styles.adminPortal}>Profile</div>
-      			</div>
+      			<NavLink currentPage="Profile" />
       			<div className={styles.mainContent}>
         				<img className={styles.profileAvatar} alt="" src={avatar} />
         				<div className={styles.profileParent}>
