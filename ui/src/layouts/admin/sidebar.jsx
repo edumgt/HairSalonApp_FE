@@ -32,7 +32,7 @@ const Sidebar = () => {
         const handleItem = useCallback((path, item) => {
         setActiveItem(item);
         navigate(path);
-        }, {navigate});
+        }, [navigate]);
 
         const [isVisible, setIsVisible] = useState(true)
         const toggleSidebar = () => {

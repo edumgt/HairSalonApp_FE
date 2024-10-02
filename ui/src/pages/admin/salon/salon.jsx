@@ -28,8 +28,8 @@ const ListItem = ({ number, city, address, status, iconSrc }) => {
       </td>
       <td>
         <div className={styles.editGroup}>
-          <div>Edit</div>
-          <img src={editIcon} alt="" />
+          <div className={styles.edit}>Edit</div>
+          <img className={styles.edit} src={editIcon} alt="" />
         </div>
       </td>
     </tr>

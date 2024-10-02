@@ -63,7 +63,7 @@
   }
   
   .addButton {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
   }
   
@@ -104,6 +104,10 @@
     padding: 12px 10px;
     text-align: left;
   }
+
+  tr:hover{
+    background-color: #eeeeeeaa;
+  }
   
   .columnHeader {
     font-weight: bold;
@@ -112,6 +116,7 @@
   .headerName {
     display: inline-block;
     margin-right: 8px;
+    font-size: 12px;
   }
   
   .filterIcon {
@@ -123,6 +128,7 @@
   /* Dòng của ListItem */
   .row {
     border-bottom: 1px solid #ddd;
+    font-size: 13px;
   }
   
   .number,
@@ -158,5 +164,8 @@
   .editGroup{
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+  }
+  .edit{
+    padding: 5px;
   }
