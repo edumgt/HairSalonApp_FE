@@ -5,7 +5,10 @@ import Layout from "../src/layouts/Component/layout";
 import Home from "../src/pages/Home";
 import Login from '../src/pages/login';
 import About from '../src/pages/About';
+import ScrollToTopButton from '../src/layouts/Component/scrollButton';
 
+
+// ... phần còn lại của code ...
 // ScrollToTop component
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -23,6 +26,7 @@ function LayoutWithScrollToTop() {
     <>
       <ScrollToTop />
       <Layout />
+      <ScrollToTopButton />
     </>
   );
 }
