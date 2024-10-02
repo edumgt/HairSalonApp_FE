@@ -1,0 +1,162 @@
+/* Bố cục tổng thể */
+  
+.adminPortal {
+    position: relative;
+    font-weight: 300;
+    line-height: 0%;
+}
+.arrow {
+    width: 16px;
+    position: relative;
+    height: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.adminPortalParent {
+    position: absolute;
+    top: 40px;
+    left: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+  /* Thanh header bao gồm các nút và input */
+  .headerButton {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px;
+    gap: 20px;
+  }
+  
+  .filter,
+  .search,
+  .add{
+    height: 20px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .filter{
+    width: 20px;
+    height: 20px;
+  }
+  .search{
+    width: 30%;
+  }
+  .searchInput{
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+  }
+  .add{
+    background-color: #2264e5;
+    color: #fff;
+    border: none;
+  }
+  
+  .addButton {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .filterIcon,
+  .arrowIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+  }
+  
+  .tableGroup{
+    width: 97%;
+    overflow-x: auto;
+    position: relative;
+    top: 70px;
+    left: 40px; 
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+  }
+  /* Table Styles */
+  .tableWrapper{
+    flex-direction: column;    
+    
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .columnHeaderParent {
+    background-color: #f4f7fc;
+  }
+  
+  th,
+  td {
+    padding: 12px 10px;
+    text-align: left;
+  }
+  
+  .columnHeader {
+    font-weight: bold;
+  }
+  
+  .headerName {
+    display: inline-block;
+    margin-right: 8px;
+  }
+  
+  .filterIcon {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+  
+  /* Dòng của ListItem */
+  .row {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .number,
+  .city,
+  .address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .statusWrapper {
+    display: inline-block;
+  }
+  
+  .tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .status {
+    font-size: 12px;
+    color: #14804a;
+  }
+  
+  .salonImg {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+  }
+  .editGroup{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
