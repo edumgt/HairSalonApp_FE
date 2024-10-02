@@ -5,6 +5,7 @@ import addIcon from '../../../assets/admin/add.svg'
 import filterIcon from '../../../assets/admin/filter.svg'
 import editIcon from '../../../assets/admin/pencil-fiiled.svg'
 import searchIcon from '../../../assets/admin/Search.svg'
+import NavLink from '../../../layouts/admin/navLink'
 
 const HeaderColumn = ({ title, sortable }) => {
   return (
@@ -47,12 +48,8 @@ const Salon = () => {
 
   return (
     <div className={styles.main}>
-
-      <div className={styles.adminPortalParent}>
-        				<div className={styles.adminPortal}>Admin Portal</div>
-        				<img className={styles.arrow} alt="" src={arrowIcon} />
-        				<div className={styles.adminPortal}>Salon</div>
-      </div>
+      
+      <NavLink currentPage="Salon" />
 
     <div className={styles.tableGroup}>
           <div className={styles.headerButton}>
@@ -82,7 +79,7 @@ const Salon = () => {
                   <HeaderColumn title="Street" />
                   <HeaderColumn title="Status" sortable />
                   <HeaderColumn title="Image" />
-                  <HeaderColumn title="Actions" />
+                  <HeaderColumn title="" />
                 </tr>
               </thead>
               <tbody>
