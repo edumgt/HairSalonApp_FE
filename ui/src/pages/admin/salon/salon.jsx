@@ -1,5 +1,4 @@
 import styles from './salon.module.css';
-import arrowIcon from '../../../assets/admin/arrow.svg'
 import sortIcon from '../../../assets/admin/column-sorting.svg'
 import addIcon from '../../../assets/admin/add.svg'
 import filterIcon from '../../../assets/admin/filter.svg'
@@ -48,7 +47,7 @@ const Salon = () => {
 
   return (
     <div className={styles.main}>
-      
+
       <NavLink currentPage="Salon" />
 
     <div className={styles.tableGroup}>
