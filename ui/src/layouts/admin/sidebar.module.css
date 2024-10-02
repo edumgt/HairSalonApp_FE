@@ -1,12 +1,3 @@
-/* .bg {
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-    background-color: #15397f;
-    width: 100%;
-    height: 100%;
-} */
 .logoutIcon {
     width: 20px;
     height: 25px;
@@ -108,7 +99,7 @@
     font-size: 16px;
 }
 .nav {
-    width: 250px;
+    width: 200px;
     position: relative;
     text-align: left;
     /* z-index: 1000; */
