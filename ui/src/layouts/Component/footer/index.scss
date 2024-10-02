@@ -35,3 +35,17 @@
   .footer-list li a:hover {
     color: #f0cc33;
   }
+
+  .external-link {
+    color: #0066cc;
+    text-decoration: none;
+  }
+  
+  .external-link:hover {
+    text-decoration: underline;
+  }
+  
+  .external-link::after {
+    content: '↗';
+    margin-left: 5px;
+  }

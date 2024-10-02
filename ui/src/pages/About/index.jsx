@@ -37,17 +37,17 @@ function About() {
       </section>
 
       <section className="about-section">
-        <h2 className="about-section-title">Tầm nhìn 2030</h2>
+        <h2 className="about-section-title">Tầm nhìn 2030:</h2>
         <p className="about-text">30Shine đạt quy mô 1000 salon tại Việt Nam, trở thành thương hiệu lớn Đông Nam Á, mang tính biểu tượng trong ngành tóc thế giới và niêm yết thành công trên thị trường chứng khoán.</p>
       </section>
 
       <section className="about-section">
-        <h2 className="about-section-title">Sứ mệnh</h2>
+        <h2 className="about-section-title">Sứ mệnh:</h2>
         <p className="about-text">30Shine không ngừng quan tâm và lan tỏa niềm tin tới mọi người để cùng đổi mới và có cuộc sống ý nghĩa hơn.</p>
       </section>
 
       <section className="about-section">
-        <h2 className="about-section-title">Các cột mốc</h2>
+        <h2 className="about-section-title">Các cột mốc:</h2>
         <ul className="about-list">
           <li className="about-list-item"><strong>Tháng 5/2015:</strong> Mở salon đầu tiên tại Hà Nội, khởi nghiệp với rất nhiều hoài bão, ước mơ lớn.</li>
           <li className="about-list-item"><strong>Tháng 6/2016:</strong> Mở salon đầu tiên tại thị trương Hồ Chí Minh và lập kỷ lục về lượt khách ngay trong tháng đầu khai trương.</li>

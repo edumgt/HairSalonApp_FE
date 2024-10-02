@@ -37,7 +37,18 @@ function Header() {
               Về 30Shine
             </NavLink>
           </li>
-          <li>Học cắt tóc</li>
+          <li>
+            <NavLink
+              to="https://daynghe.30shine.com/"
+              style={({ isActive }) => ({
+                textDecoration: isActive ? "underline" : "none",
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Học cắt tóc
+            </NavLink>
+          </li>
           <li>Nhượng quyền</li>
           <li>Đối tác</li>
         </ul>
