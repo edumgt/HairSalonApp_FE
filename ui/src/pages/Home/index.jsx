@@ -3,6 +3,7 @@ import { Button, Col, Form, Input, Row, Rate, Modal, message } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Nếu bạn sử dụng React Router
 import HairServices from "../../layouts/Component/hairservice";
+import SpaServices from "../../layouts/Component/spaservice";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -194,6 +195,7 @@ function Home() {
         </Col>
       </Row>
       <HairServices />
+      <SpaServices />
     </div>
   );
 }
