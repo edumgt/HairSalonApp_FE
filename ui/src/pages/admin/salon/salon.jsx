@@ -20,8 +20,10 @@ const ListItem = ({ number, city, address, status, iconSrc }) => {
       <td className={styles.number}>{number}</td>
       <td className={styles.city}>{city}</td>
       <td className={styles.address}>{address}</td>
-      <td className={styles.statusWrapper}>
-          <div className={styles.status}>{status}</div>
+      <td>
+        <div className={styles.statusWrapper}>
+          <div className={`${status === 'Open' ? styles.openStatus : styles.closeStatus}`}>{status}</div>
+        </div>
       </td>
       <td>
         <img className={styles.salonImg} alt="" src={iconSrc} />
@@ -65,9 +67,9 @@ const Salon = () => {
                     placeholder="Search"
                 />
             </div>
-            <div className={styles.add}>
+            <div className={styles.addButton}>
               <img className={styles.arrowIcon} alt="" src={addIcon}  />
-              <div className={styles.addButton}>Add salon</div>
+              <div className={styles.add}>Add salon</div>
             </div>
           </div>
 

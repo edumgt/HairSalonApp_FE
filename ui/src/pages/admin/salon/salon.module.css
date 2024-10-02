@@ -33,12 +33,11 @@
   
   .filter,
   .search,
-  .add{
+  .addButton{
     height: 20px;
     display: flex;
     align-items: center;
     padding: 8px;
-    background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 6px;
     cursor: pointer;
@@ -56,15 +55,17 @@
     font-size: 14px;
     width: 100%;
   }
-  .add{
+  .addButton{
     background-color: #2264e5;
-    color: #fff;
     border: none;
   }
-  
-  .addButton {
+  .addButton:hover{
+    background-color: #004add;
+  }
+  .add {
     font-size: 12px;
     font-weight: 500;
+    color: #fff;
   }
   
   .filterIcon,
@@ -86,8 +87,7 @@
   }
   /* Table Styles */
   .tableWrapper{
-    flex-direction: column;    
-    
+    flex-direction: column;
   }
   
   .table {
@@ -140,20 +140,26 @@
   }
   
   .statusWrapper {
-    display: inline-block;
+    display: flex;
   }
   
-  .tag {
-    display: flex;
+  .openStatus {
+    font-size: 12px;
+    color: #14804A;
+    padding: 1px 10px;
     justify-content: center;
     align-items: center;
-    padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 10px;
+    background: var(--Green-0, #E1FCEF);
   }
-  
-  .status {
+  .closeStatus {
     font-size: 12px;
-    color: #14804a;
+    color: #D12953;
+    padding: 1px 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background: var(--Red-0, #FAF0F3);
   }
   
   .salonImg {
@@ -165,7 +171,15 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    width: max-content;
+    cursor: pointer;
+    /* padding: 2px; */
+  }
+  .editGroup:hover{
+    color: #2264e5;
+    border: 1px solid #2264e5;
+    border-radius: 5px;
   }
   .edit{
-    padding: 5px;
+    padding: 2px;
   }
