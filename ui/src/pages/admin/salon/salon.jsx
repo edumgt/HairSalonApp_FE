@@ -1,10 +1,8 @@
 import styles from './salon.module.css';
-import addIcon from '../../../assets/admin/add.svg'
-import filterIcon from '../../../assets/admin/filter.svg'
 import editIcon from '../../../assets/admin/pencil-fiiled.svg'
-import searchIcon from '../../../assets/admin/Search.svg'
 import NavLink from '../../../layouts/admin/navLink'
 import HeaderColumn from '../../../layouts/admin/headerColumn'
+import HeaderButton from '../../../layouts/admin/headerButton';
 
 const ListItem = ({ number, city, address, status, iconSrc }) => {
   return (
@@ -43,24 +41,7 @@ const Salon = () => {
       <NavLink currentPage="Salon" />
 
     <div className={styles.tableGroup}>
-          <div className={styles.headerButton}>
-            <div className={styles.filter}>
-              <img className={styles.filterIcon} alt="" src={filterIcon} />
-            </div>
-            <div className={styles.search}>
-                <img className={styles.filterIcon} alt="" src={searchIcon} />
-                <input 
-                    className={styles.searchInput} 
-                    type="text" 
-                    placeholder="Search"
-                />
-            </div>
-            <div className={styles.addButton}>
-              <img className={styles.arrowIcon} alt="" src={addIcon}  />
-              <div className={styles.add}>Add salon</div>
-            </div>
-          </div>
-
+          <HeaderButton text="Salon" />
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>
