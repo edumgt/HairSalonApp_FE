@@ -1,19 +1,11 @@
 import styles from './salon.module.css';
-import sortIcon from '../../../assets/admin/column-sorting.svg'
 import addIcon from '../../../assets/admin/add.svg'
 import filterIcon from '../../../assets/admin/filter.svg'
 import editIcon from '../../../assets/admin/pencil-fiiled.svg'
 import searchIcon from '../../../assets/admin/Search.svg'
 import NavLink from '../../../layouts/admin/navLink'
+import HeaderColumn from '../../../layouts/admin/headerColumn'
 
-const HeaderColumn = ({ title, sortable }) => {
-  return (
-    <th className={styles.columnHeader}>
-      <div className={styles.headerName}>{title}</div>
-      {sortable && <img className={styles.filterIcon} alt="" src={sortIcon} />}
-    </th>
-  );
-};
 const ListItem = ({ number, city, address, status, iconSrc }) => {
   return (
     <tr className={styles.row}>

@@ -1,0 +1,15 @@
+.columnHeader {
+    font-weight: bold;
+  }
+  
+  .headerName {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 12px;
+  }
+    
+  .filterIcon {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
