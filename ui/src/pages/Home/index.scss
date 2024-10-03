@@ -75,7 +75,6 @@ body {
   flex: 1; // Make both sections take equal width
   max-width: 530px; // Set maximum width
   height: auto; // Allow height to adjust based on content
-
 }
 
 .booking-title {
@@ -189,7 +188,6 @@ body {
   font-size: 16px; // Increase font size
 }
 
-
 .feedback-title {
   margin: 0;
   font-weight: 600;
@@ -267,7 +265,8 @@ input[type="radio"]:checked + span::after {
     align-items: stretch;
   }
 
-  .booking-section, .feedback-section {
+  .booking-section,
+  .feedback-section {
     width: 100%;
     max-width: none;
   }

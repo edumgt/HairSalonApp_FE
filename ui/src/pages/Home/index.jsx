@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Nếu bạn sử dụng React Router
 import HairServices from "../../layouts/Component/hairservice";
 import SpaServices from "../../layouts/Component/spaservice";
+import BrandAmbassadors from "../../layouts/Component/saotoasang";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,7 +90,11 @@ function Home() {
                     <Rate onChange={handleRateChange} />
                   </Form.Item>
                   {/* Nút để gửi đánh giá */}
-                  <Button type="primary" onClick={handleSubmitRating} className="submit-rating-btn">
+                  <Button
+                    type="primary"
+                    onClick={handleSubmitRating}
+                    className="submit-rating-btn"
+                  >
                     Gửi đánh giá
                   </Button>
                 </div>
@@ -196,6 +201,7 @@ function Home() {
       </Row>
       <HairServices />
       <SpaServices />
+      <BrandAmbassadors />
     </div>
   );
 }

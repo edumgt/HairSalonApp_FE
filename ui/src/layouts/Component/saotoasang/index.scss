@@ -1,0 +1,107 @@
+.brand-ambassadors {
+    padding: 2rem;
+    width: 60%;
+    margin: 0 auto;
+  
+    &__main-title {
+      font-size: 2rem;
+      color: #15397f;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+  
+    &__subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+  
+    &__container {
+      position: relative;
+      padding: 0 50px; // Tạo khoảng trống cho các nút
+    }
+  
+    &__scroll-container {
+        display: flex;
+        overflow-x: scroll;
+        scroll-behavior: auto;
+        cursor: grab;
+        -webkit-overflow-scrolling: touch; // Cho iOS
+        scrollbar-width: none; // Ẩn thanh cuộn cho Firefox
+        -ms-overflow-style: none; // Ẩn thanh cuộn cho IE và Edge
+    
+        &::-webkit-scrollbar {
+          display: none; // Ẩn thanh cuộn cho Chrome, Safari và Opera
+        }
+    
+        &:active {
+          cursor: grabbing;
+        }
+    }
+  
+    &__card {
+        flex: 0 0 auto;
+        width: 250px;
+        margin-right: 20px;
+        user-select: none; // Ngăn chọn text khi kéo
+        background-color: #ffffff;
+        border-radius: 15px; 
+        overflow: hidden; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        transition: transform 0.3s ease; 
+        &:hover {
+            transform: translateY(-5px); // Thêm hiệu ứng hover
+        }
+    }
+  
+    &__image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+  
+    &__name {
+      font-size: 1.0rem;
+      margin-bottom: 0.5rem;
+      text-align: left;
+      color: #000;
+    }
+
+  
+    &__role {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: left ;
+    }
+  
+    &__scroll-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #15397f;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      &:hover {
+        background-color: darken(#15397f, 10%);
+      }
+  
+      &--left {
+        left: 0;
+      }
+  
+      &--right {
+        right: 0;
+      }
+    }
+  }
