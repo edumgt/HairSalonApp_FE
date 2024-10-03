@@ -34,11 +34,11 @@ import HeaderButton from '../../../layouts/admin/headerButton';
                         <tr className={styles.columnHeaderParent}>
                           <HeaderColumn title="No" sortable />
                           <HeaderColumn title="Name" sortable />
-                          <HeaderColumn title="Role" />
+                          <HeaderColumn title="Role" sortable />
                           <HeaderColumn title="Month" sortable />
-                          <HeaderColumn title="KPI" />
-                          <HeaderColumn title="Bonus" />
-                          <HeaderColumn title="Total" />
+                          <HeaderColumn title="KPI" sortable />
+                          <HeaderColumn title="Bonus" sortable />
+                          <HeaderColumn title="Total" sortable />
                         </tr>
                     </thead>
                     <tbody>

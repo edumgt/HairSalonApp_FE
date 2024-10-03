@@ -40,10 +40,10 @@ import HeaderButton from '../../../layouts/admin/headerButton';
                         <tr className={styles.columnHeaderParent}>
                           <HeaderColumn title="ID" sortable />
                           <HeaderColumn title="Name" sortable />
-                          <HeaderColumn title="Date of Birth" />
+                          <HeaderColumn title="Date of Birth" sortable/>
                           <HeaderColumn title="Applied date" sortable />
-                          <HeaderColumn title="Workplace" />
-                          <HeaderColumn title="Role" />
+                          <HeaderColumn title="Workplace" sortable />
+                          <HeaderColumn title="Role" sortable />
                           <HeaderColumn title="" />
                         </tr>
                     </thead>

@@ -4,7 +4,7 @@ import Profile from './pages/admin/profile/profile';
 import Salon from './pages/admin/salon/salon';
 import Staff from './pages/admin/staff/staff';
 import Wage from './pages/admin/wage/wage';
-// import Booking from './Pages/Booking/Booking';
+import Booking from './pages/admin/booking/booking';
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
           <Route path="salon" element={<Salon />} />
           <Route path="staff" element={<Staff />} />
           <Route path="wage" element={<Wage />} />
-          {/* <Route path="booking" element={<Booking />} /> */}
+          <Route path="booking" element={<Booking />} />
         </Route>
       </Routes>
   </Router>
