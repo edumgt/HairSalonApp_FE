@@ -19,7 +19,7 @@ const HeaderButton = ({text}) => {
             </div>
             <div className="addButton">
               <img className="arrowIcon" alt="" src={addIcon}  />
-              <div className="add">Add {text}</div>
+              <div className="add">{text}</div>
             </div>
           </div>  )
 }
