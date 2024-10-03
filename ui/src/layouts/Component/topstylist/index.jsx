@@ -102,6 +102,7 @@ const TopStylists = () => {
     <div className="top-stylists">
       <h2 className="top-stylists__main-title">TOP THỢ CẮT TRONG THÁNG</h2>
       <p className="top-stylists__subtitle">Đội ngũ Stylist dày dặn kinh nghiệm</p>
+      <a href="#" className="top-stylists__view-all">Xem tất cả &gt;</a>
       <div className="top-stylists__container">
         <button 
           className="top-stylists__scroll-button top-stylists__scroll-button--left" 
@@ -137,7 +138,6 @@ const TopStylists = () => {
           &gt;
         </button>
       </div>
-      {/* <a href="#" className="top-stylists__view-all">Xem tất cả &gt;</a> */}
     </div>
   );
 };

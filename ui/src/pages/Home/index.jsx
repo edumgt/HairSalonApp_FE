@@ -6,6 +6,7 @@ import HairServices from "../../layouts/Component/hairservice";
 import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
+import LatestNews from "../../layouts/Component/LatestNew";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -204,6 +205,7 @@ function Home() {
       <SpaServices />
       <BrandAmbassadors />
       <TopStylists />
+      <LatestNews />
     </div>
   );
 }
