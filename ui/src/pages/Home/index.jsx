@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"; // Nếu bạn sử dụng React
 import HairServices from "../../layouts/Component/hairservice";
 import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
+import TopStylists from "../../layouts/Component/topstylist";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -202,6 +203,7 @@ function Home() {
       <HairServices />
       <SpaServices />
       <BrandAmbassadors />
+      <TopStylists />
     </div>
   );
 }
