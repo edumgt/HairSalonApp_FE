@@ -1,9 +1,3 @@
-  .arrowIcon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-  }
-  
   .tableGroup{
     width: 97%;
     overflow-x: auto;
@@ -44,9 +38,7 @@
     font-size: 13px;
   }
   
-  .number,
-  .city,
-  .address {
+.info {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -80,19 +72,22 @@
     height: 36px;
     object-fit: cover;
   }
-  .editGroup{
+  .editGroup {
     display: flex;
-    align-items: center;
+    align-items: center; /* Đảm bảo các phần tử con được căn chỉnh giữa theo trục dọc */
     justify-content: flex-start;
     width: max-content;
     cursor: pointer;
-    /* padding: 2px; */
   }
-  .editGroup:hover{
+  
+  .editGroup:hover {
     color: #2264e5;
-    border: 1px solid #2264e5;
+    /* border: 1px solid #2264e5; */
     border-radius: 5px;
   }
-  .edit{
+  
+  .edit {
     padding: 2px;
+    margin-right: 0px; /* Thêm khoảng cách giữa text "Edit" và hình ảnh */
   }
+  

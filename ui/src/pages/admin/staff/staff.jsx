@@ -1,20 +1,18 @@
 import styles from './staff.module.css';
-import addIcon from '../../../assets/admin/add.svg'
-import filterIcon from '../../../assets/admin/filter.svg'
 import editIcon from '../../../assets/admin/pencil-fiiled.svg'
-import searchIcon from '../../../assets/admin/Search.svg'
 import NavLink from '../../../layouts/admin/navLink'
 import HeaderColumn from '../../../layouts/admin/headerColumn'
+import HeaderButton from '../../../layouts/admin/headerButton';
 
   const ListItem = ({ id, name, dob, appliedDate, workPlace, role }) => {
     return (
       <tr className={styles.row}>
-        <td className={styles.number}>{id}</td>
-        <td className={styles.city}>{name}</td>
-        <td className={styles.address}>{dob}</td>
-        <td className={styles.city}>{appliedDate}</td>
-        <td className={styles.address}>{workPlace}</td>
-        <td className={styles.address}>{role}</td>
+        <td className={styles.info}>{id}</td>
+        <td className={styles.info}>{name}</td>
+        <td className={styles.info}>{dob}</td>
+        <td className={styles.info}>{appliedDate}</td>
+        <td className={styles.info}>{workPlace}</td>
+        <td className={styles.info}>{role}</td>
         <td>
           <div className={styles.editGroup}>
             <div className={styles.edit}>Edit</div>
@@ -35,24 +33,7 @@ import HeaderColumn from '../../../layouts/admin/headerColumn'
         <div>
             <NavLink currentPage="Staff" />
             <div className={styles.tableGroup}>
-                <div className={styles.headerButton}>
-                    <div className={styles.filter}>
-                    <img className={styles.filterIcon} alt="" src={filterIcon} />
-                    </div>
-                    <div className={styles.search}>
-                        <img className={styles.filterIcon} alt="" src={searchIcon} />
-                        <input 
-                            className={styles.searchInput} 
-                            type="text" 
-                            placeholder="Search"
-                        />
-                    </div>
-                    <div className={styles.addButton}>
-                    <img className={styles.arrowIcon} alt="" src={addIcon}  />
-                    <div className={styles.add}>Add salon</div>
-                    </div>
-                </div>
-
+                <HeaderButton text="..."/>
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                     <thead>
@@ -62,6 +43,7 @@ import HeaderColumn from '../../../layouts/admin/headerColumn'
                           <HeaderColumn title="Date of Birth" />
                           <HeaderColumn title="Applied date" sortable />
                           <HeaderColumn title="Workplace" />
+                          <HeaderColumn title="Role" />
                           <HeaderColumn title="" />
                         </tr>
                     </thead>

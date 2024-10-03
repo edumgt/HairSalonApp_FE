@@ -1,15 +1,16 @@
 import styles from './salon.module.css';
-import editIcon from '../../../assets/admin/pencil-fiiled.svg'
 import NavLink from '../../../layouts/admin/navLink'
 import HeaderColumn from '../../../layouts/admin/headerColumn'
 import HeaderButton from '../../../layouts/admin/headerButton';
+// import EditButton from '../../../layouts/admin/editButton';
+import editIcon from '../../../assets/admin/pencil-fiiled.svg'
 
 const ListItem = ({ number, city, address, status, iconSrc }) => {
   return (
     <tr className={styles.row}>
-      <td className={styles.number}>{number}</td>
-      <td className={styles.city}>{city}</td>
-      <td className={styles.address}>{address}</td>
+      <td className={styles.info}>{number}</td>
+      <td className={styles.info}>{city}</td>
+      <td className={styles.info}>{address}</td>
       <td>
         <div className={styles.statusWrapper}>
           <div className={`${status === 'Open' ? styles.openStatus : styles.closeStatus}`}>{status}</div>
@@ -19,10 +20,10 @@ const ListItem = ({ number, city, address, status, iconSrc }) => {
         <img className={styles.salonImg} alt="" src={iconSrc} />
       </td>
       <td>
-        <div className={styles.editGroup}>
-          <div className={styles.edit}>Edit</div>
-          <img className={styles.edit} src={editIcon} alt="" />
-        </div>
+      <div className={styles.editGroup}>
+            <div className={styles.edit}>Edit</div>
+            <img className={styles.edit} src={editIcon} alt="" />
+          </div>
       </td>
     </tr>
   );

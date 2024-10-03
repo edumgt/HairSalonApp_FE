@@ -1,0 +1,66 @@
+.tableGroup{
+    width: 97%;
+    overflow-x: auto;
+    position: relative;
+    top: 70px;
+    left: 40px; 
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+  }
+  /* Table Styles */
+  .tableWrapper{
+    flex-direction: column;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .columnHeaderParent {
+    background-color: #f4f7fc;
+  }
+  
+  th,
+  td {
+    padding: 12px 10px;
+    text-align: left;
+  }
+
+  tr:hover{
+    background-color: #eeeeeeaa;
+  }
+  
+  /* Dòng của ListItem */
+  .row {
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+  }
+  
+.info {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+
+  .editGroup {
+    display: flex;
+    align-items: center; /* Đảm bảo các phần tử con được căn chỉnh giữa theo trục dọc */
+    justify-content: flex-start;
+    width: max-content;
+    cursor: pointer;
+  }
+  
+  .editGroup:hover {
+    color: #2264e5;
+    /* border: 1px solid #2264e5; */
+    border-radius: 5px;
+  }
+  
+  .edit {
+    padding: 2px;
+    margin-right: 0px; /* Thêm khoảng cách giữa text "Edit" và hình ảnh */
+  }
+  

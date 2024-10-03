@@ -1,0 +1,24 @@
+.editGroup {
+    display: flex;
+    align-items: center; /* Đảm bảo các phần tử con được căn chỉnh giữa theo trục dọc */
+    justify-content: flex-start;
+    width: max-content;
+    cursor: pointer;
+  }
+  
+  .editGroup:hover {
+    color: #2264e5;
+    border: 1px solid #2264e5;
+    border-radius: 5px;
+  }
+  
+  .edit {
+    padding: 2px;
+    margin-right: 8px; /* Thêm khoảng cách giữa text "Edit" và hình ảnh */
+  }
+  
+  img {
+    width: 16px; /* Điều chỉnh kích thước hình ảnh cho phù hợp */
+    height: 16px;
+  }
+  
