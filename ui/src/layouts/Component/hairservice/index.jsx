@@ -26,6 +26,12 @@ const HairServices = () => {
     },
   ];
 
+  const handleLinkClick = (link, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(link, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="hair-services">
       <h2 className="hair-services__title">DỊCH VỤ TÓC</h2>
@@ -36,6 +42,8 @@ const HairServices = () => {
               src={service.image}
               alt={service.title}
               className="hair-services__image"
+              onClick={(e) => handleLinkClick(service.link, e)}
+
             />
             <h3 className="hair-services__card-title">{service.title}</h3>
             {service.price && (

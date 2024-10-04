@@ -27,7 +27,13 @@ const SpaServices = () => {
       description: "Tìm hiểu thêm >",
       link: "#",
     },
-  ];
+  ];  
+
+  const handleLinkClick = (link, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(link, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="spa-services">
@@ -39,6 +45,7 @@ const SpaServices = () => {
               src={service.image}
               alt={service.title}
               className="spa-services__image"
+              onClick={(e) => handleLinkClick(service.link, e)}
             />
             <h3 className="spa-services__card-title">{service.title}</h3>
             {service.price && (
