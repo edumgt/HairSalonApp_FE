@@ -3,6 +3,7 @@ import "./index.scss";
 import uon1 from "../../../assets/imageHome/Service/uon-1.jpg";
 import uon2 from "../../../assets/imageHome/Service/uon-2.jpg";
 import uon3 from "../../../assets/imageHome/Service/uon-3.jpg";
+import { useNavigate } from "react-router-dom";
 
 const HairServices = () => {
   const services = [
@@ -10,7 +11,7 @@ const HairServices = () => {
       title: "Cắt tóc",
       image: uon1,
       price: null,
-      link: "#",
+      link: "/dich-vu-cat-toc",
     },
     {
       title: "Uốn định hình",
@@ -26,10 +27,12 @@ const HairServices = () => {
     },
   ];
 
+  const navigate = useNavigate();
+
   const handleLinkClick = (link, event) => {
     event.preventDefault();
     event.stopPropagation();
-    window.open(link, '_blank', 'noopener,noreferrer');
+    navigate(link);
   };
 
   return (

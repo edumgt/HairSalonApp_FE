@@ -6,6 +6,8 @@ import Home from "../src/pages/Home";
 import Login from '../src/pages/login';
 import About from '../src/pages/About';
 import ScrollToTopButton from '../src/layouts/Component/scrollButton';
+import HairCutServices from "./layouts/Component/haircombo";
+import ServiceDetail from "./layouts/Component/servicedetail";
 
 
 // ... phần còn lại của code ...
@@ -41,6 +43,8 @@ function App() {
         { path: "/login", element: <Login /> },
         { path: "/home", element: <Home /> },
         { path: "/about", element: <About /> },
+        { path: "/dich-vu-cat-toc", element: <HairCutServices /> },
+        { path: "/dich-vu/:serviceId", element: <ServiceDetail /> },
       ],
     },
   ]);
@@ -49,6 +53,7 @@ function App() {
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
+    
   );
 }
 
