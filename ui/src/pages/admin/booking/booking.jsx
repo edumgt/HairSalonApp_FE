@@ -38,7 +38,7 @@ import editIcon from '../../../assets/admin/pencil-fiiled.svg'
     ]
 
     return (
-        <div>
+      <div className={styles.main}>
             <NavLink currentPage="Booking" />
             <div className={styles.tableGroup}>
                 <HeaderButton text="?"/>

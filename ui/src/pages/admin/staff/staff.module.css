@@ -63,4 +63,7 @@
     padding: 2px;
     margin-right: 0px; /* Thêm khoảng cách giữa text "Edit" và hình ảnh */
   }
-  
+  .main{
+    width: 100%;
+    height: 100%;
+  }

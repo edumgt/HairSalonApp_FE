@@ -30,7 +30,7 @@ import HeaderButton from '../../../layouts/admin/headerButton';
     ]
 
     return (
-        <div>
+        <div className={styles.main}>
             <NavLink currentPage="Staff" />
             <div className={styles.tableGroup}>
                 <HeaderButton text="..."/>
