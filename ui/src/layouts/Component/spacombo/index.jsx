@@ -78,8 +78,7 @@ const SpaCombo = () => {
             description: 'Kỹ thuật lấy ráy tai nhẹ nhàng & thư thái trong không gian yên tĩnh, sạch sẽ.',
             images: [layRayTaiImage1, layRayTaiImage2, layRayTaiImage3],
             duration: '30 Phút',
-            price: '70K',
-            link: "/dich-vu/spa/lay-ray-tai-em"
+            link: "/dich-vu/spa/lay-ray-tai"
           },
         ]
       },
@@ -107,7 +106,8 @@ const SpaCombo = () => {
                 <div className="service-card__footer">
                   <span className="service-card__duration">{option.duration}</span>
                   {option.price && <span className="service-card__price">Chỉ từ {option.price}</span>}
-                </div>    
+                  <span className="service-card__link">Tìm hiểu thêm &gt;</span>
+                </div>  
               </Link>
             ))}
           </div>
