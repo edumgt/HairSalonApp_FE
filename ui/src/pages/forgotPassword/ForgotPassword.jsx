@@ -11,25 +11,27 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="forget-password-container">
+    <div className="forgot-password-page">
+    <div className="forgetPasswordContainer">
       <h2>Quên mật khẩu</h2>
-      <form className="forget-password-form" onSubmit={handleSubmit}>
-        <div className="form-group">
+      <form className="forgetPasswordForm" onSubmit={handleSubmit}>
+        <div className="formGroup">
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
-            className="forget-password-input"
+            className="forgetPasswordInput"
             placeholder="Nhập email của bạn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <button type="submit" className="forget-password-button">Gửi yêu cầu đặt lại mật khẩu</button>
+          <button type="submit" className="forgetPasswordButton">Gửi yêu cầu đặt lại mật khẩu</button>
       </form>
       <div className="divider"></div>
-      <Link to="/login" className="back-to-login">Quay lại trang đăng nhập</Link>
+      <Link to="/login" className="backToLogin">Quay lại trang đăng nhập</Link>
+    </div>
     </div>
   );
 }

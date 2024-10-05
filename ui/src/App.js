@@ -1,16 +1,14 @@
-========= khoaBranch
-import React from 'react';
+
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Login from './pages/login/Login';
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
-=======
+
 import React from "react";
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Layout from "../src/layouts/Component/layout";
 import Home from "../src/pages/Home";
-import Login from '../src/pages/login';
+import Login from "./pages/login/Login";
 import About from '../src/pages/About';
 import ScrollToTopButton from '../src/layouts/Component/scrollButton';
 import HairCutServices from "./layouts/Component/haircombo";
@@ -42,7 +40,7 @@ function LayoutWithScrollToTop() {
     </>
   );
 }
- dev
+
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +50,8 @@ function App() {
       children: [
         { path: "", element: <Home /> },
         { path: "/login", element: <Login /> },
+        { path: "register", element: <SignUp /> },
+        { path: "forgot-password", element: <ForgotPassword /> },
         { path: "/home", element: <Home /> },
         { path: "/about", element: <About /> },
         { path: "/dich-vu-cat-toc", element: <HairCutServices /> },
@@ -60,31 +60,16 @@ function App() {
         { path: "/dich-vu/uon/:serviceId", element: <HairStylingDetail /> },
         { path: "/dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
         { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
+
         ],
     },
   ]);
 
   return (
-==== khoaBranch
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          {/* Chuyển hướng từ trang chủ đến trang đăng nhập */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          {/* Chuyển hướng các đường dẫn không hợp lệ đến trang đăng nhập */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </div>
-    </Router>
-=======
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
     
-dev
   );
 }
 

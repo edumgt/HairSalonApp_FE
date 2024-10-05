@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './SignUp.css';
- // Đảm bảo đường dẫn này chính xác
 
 function SignUp() {
   const [profileName, setProfileName] = useState('');
@@ -49,8 +48,8 @@ function SignUp() {
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
   return (
+    <div className="signup-page">
     <div className="signup-container">
-      
       <h2>Đăng ký miễn phí</h2>
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -174,6 +173,7 @@ function SignUp() {
         </button>
       </div>
       <p className="login-link">Đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>
+    </div>
     </div>
   );
 }
