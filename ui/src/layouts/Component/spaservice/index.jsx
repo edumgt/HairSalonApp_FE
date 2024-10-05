@@ -15,13 +15,13 @@ const SpaServices = () => {
       title: "Gội Massage Relax",
       image: massageImage,
       description: "Tìm hiểu thêm >",
-      link: "/dich-vu-goi-massage-spa-relax",
+      link: "/dich-vu-goi-massage-spa-relax#goi-massage-relax",
     },
     {
       title: "Lấy ráy tai êm",
       image: earCleaningImage,
       description: "Tìm hiểu thêm >",
-      link: "/dich-vu-goi-massage-spa-relax",
+      link: "/dich-vu-goi-massage-spa-relax#lay-ray-tai",
     },
   ];  
 

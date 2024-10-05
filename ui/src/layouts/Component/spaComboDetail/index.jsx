@@ -17,7 +17,7 @@ const SpaComboDetail = () => {
       <p className="spa-combo-detail__subtitle">{combo.title} - {combo.description}</p>
       <div className="spa-combo-detail__steps">
         {combo.steps.map((step, index) => (
-          <div key={index} className="spa-combo-detail__step">
+          <div key={index} className="spa-combo-detail__step" >
             <img src={step.image} alt={step.name} />
             <p className="spa-combo-detail__step-name">{step.name}</p>
             <p className="spa-combo-detail__step-price">{step.price}</p>

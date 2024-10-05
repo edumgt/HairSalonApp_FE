@@ -32,7 +32,7 @@ const HairStylingServices = () => {
   }, [location]);
   const services = [
     {   
-      id: "uon-tieu-chuan",
+      id: "uontieuchuan",
       title: 'UỐN ĐỊNH HÌNH NẾP TÓC',
       subtitle: 'Dịch vụ uốn định hình nếp tóc độc quyền tại 30Shine thiết kế lên những mái tóc bồng bềnh, tự nhiên và không mất công tạo kiểu',
       options: [

@@ -17,7 +17,7 @@ const HairServices = () => {
       title: "Uốn định hình",
       image: uon2,
       price: "379.000đ",
-      link: "/dich-vu-uon-nhuom-toc#uontoc",
+      link: "/dich-vu-uon-nhuom-toc#uontieuchuan" ,
     },
     {
       title: "Thay đổi màu tóc",
