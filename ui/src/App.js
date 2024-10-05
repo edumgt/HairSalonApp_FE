@@ -10,6 +10,8 @@ import HairCutServices from "./layouts/Component/haircombo";
 import ServiceDetail from "./layouts/Component/servicedetail";
 import CurlyHairServices from "./layouts/Component/curlyhairservice";  
 import HairStylingDetail from "./layouts/Component/hairstylingdetail";
+import SpaServices from "./layouts/Component/spaservice";
+import SpaCombo from "./layouts/Component/spacombo";
 
 // ... phần còn lại của code ...
 // ScrollToTop component
@@ -49,6 +51,7 @@ function App() {
         { path: "/dich-vu/cat-goi/:serviceId", element: <ServiceDetail /> },
         { path: "/dich-vu/uon/:serviceId", element: <HairStylingDetail /> },
         { path: "/dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
+        { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
         ],
     },
   ]);

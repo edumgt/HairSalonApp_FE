@@ -4,29 +4,31 @@ import "./index.scss";
 // Import hình ảnh
 import massageImage from "../../../assets/imageHome/Service/pc_home_spa_1.png";
 import earCleaningImage from "../../../assets/imageHome/Service/pc_home_spa_3.png";
-import faceCleaningImage from "../../../assets/imageHome/Service/cao-long-mat.png";
+import { useNavigate } from "react-router-dom";
+
 const { Meta } = Card;
 
 const SpaServices = () => {
+  const navigate = useNavigate();
   const services = [
     {
       title: "Gội Massage Relax",
       image: massageImage,
       description: "Tìm hiểu thêm >",
-      link: "#",
+      link: "/dich-vu-goi-massage-spa-relax",
     },
     {
       title: "Lấy ráy tai êm",
       image: earCleaningImage,
       description: "Tìm hiểu thêm >",
-      link: "#",
+      link: "/dich-vu-goi-massage-spa-relax",
     },
   ];  
 
   const handleLinkClick = (link, event) => {
     event.preventDefault();
     event.stopPropagation();
-    window.open(link, '_blank', 'noopener,noreferrer');
+    navigate(link);
   };
 
   return (
