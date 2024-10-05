@@ -1,0 +1,286 @@
+* {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw; /* Thêm thuộc tính này */
+  height: 100vh; /* Thêm thuộc tính này */
+  overflow-x: hidden; /* Thêm thuộc tính này để loại bỏ scroll ngang */
+}
+
+.banner-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.image-banner {
+  width: 100%;
+  height: auto;
+  max-height: 400px; /* Adjust this value as needed */
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .banner-container {
+    padding: 10px;
+  }
+
+  .image-banner {
+    border-radius: 10px;
+    max-height: 300px; /* Adjust for mobile */
+  }
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  padding-top: 5px;
+}
+
+.booking-feedback-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 10px; /* Add space below the banner */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px; /* Add 10px gap between sections */
+}
+
+.booking-section {
+  width: 100%;
+  width: 530px;
+  position: relative;
+  color: #fff;
+  background-color: #15397f;
+  border-radius: 10px;
+  padding: 20px;
+  order: 1; /* Move booking section to the left */
+  flex: 1; // Make both sections take equal width
+  max-width: 530px; // Set maximum width
+  height: auto; // Allow height to adjust based on content
+}
+
+.booking-title {
+  text-transform: uppercase;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.booking-slogan-text {
+  width: 100%;
+  position: absolute;
+  font-size: 14px;
+  color: #e0e0e0;
+  text-transform: lowercase;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.booking-input {
+  width: 100%;
+  height: 100%;
+}
+
+.booking-input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.booking-input-background {
+  width: 331px;
+  height: 32px;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+}
+
+.booking-input-placeholder {
+  font-size: 16px;
+  font-weight: 300;
+  color: #a9a3b7;
+}
+
+.booking-button {
+  width: 144px;
+  height: 32px;
+  border-radius: 5px;
+  background: linear-gradient(
+      90deg,
+      rgba(72, 152, 241, 0.7),
+      rgba(255, 255, 255, 0.7) 30%,
+      rgba(254, 180, 255, 0.7) 60%,
+      rgba(72, 152, 241, 0.7)
+    ),
+    #222937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-button-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+}
+
+.feedback-section {
+  width: 310px;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  order: 2; /* Move feedback section to the right */
+  flex: 1; // Make both sections take equal width
+  max-width: 430px; // Set maximum width
+  height: auto; // Allow height to adjust based on content
+  margin-bottom: 5px;
+}
+
+.feedback-content {
+  margin-bottom: 10px;
+}
+
+.rating-container {
+  display: block;
+  flex-direction: column;
+}
+
+.ant-form-item {
+  margin-bottom: 15px;
+}
+
+.submit-rating-btn {
+  width: 30%;
+  margin-top: 5px;
+}
+
+.booking-form {
+  .ant-form-item {
+    margin-bottom: 30px;
+  }
+}
+
+.booking-input {
+  height: 40px; // Increase height for better visibility
+}
+.booking-button {
+  height: 40px; // Match height with input
+  font-size: 16px; // Increase font size
+}
+
+.feedback-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.feedback-description {
+  margin: 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+  color: #666;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.layer-1-icon {
+  width: 20px;
+  height: 20px;
+}
+
+//Modal content
+
+.scrollable-content {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 16px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+label span {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border: 2px solid #000;
+  margin-right: 10px;
+  position: relative;
+}
+
+input[type="radio"]:checked + span::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: #000;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 8px; /* Chiều rộng của thanh cuộn */
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background-color: #888; /* Màu của thanh cuộn */
+  border-radius: 4px; /* Bo góc thanh cuộn */
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .booking-feedback-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-section,
+  .feedback-section {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .booking-form {
+    .ant-col {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+
+  .booking-button {
+    margin-top: 10px;
+  }
+}
