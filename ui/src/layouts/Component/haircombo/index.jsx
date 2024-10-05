@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './index.scss';
 import thuongGia1 from '../../../assets/imageHome/Service/cat-goi-combo-thuong-gia-1.jpg';
 import thuongGia2 from '../../../assets/imageHome/Service/cat-goi-combo-thuong-gia-2.jpg';
@@ -22,14 +22,6 @@ import catgoicombo15 from '../../../assets/imageHome/Service/cat-goi-combo-5-3.j
 
 const HairCutServices = () => {
 
-  const navigate = useNavigate();
-
-  const handleCardClick = (link) => {
-    if (link) {
-      navigate(link);
-    }
-  };
-  
   const services = [
     {
         title: 'Cắt gội khoang thượng gia',
@@ -40,7 +32,7 @@ const HairCutServices = () => {
         thuongGia2,
         thuongGia3,
       ],    
-      link: "/dich-vu/cat-goi-thuong-gia"
+      link: "/dich-vu/cat-goi/cat-goi-thuong-gia"
     },  
     {
         title: 'Cắt gội Combo 1',
@@ -51,7 +43,7 @@ const HairCutServices = () => {
         catgoicombo2,
         catgoicombo3,
       ],    
-      link: "/dich-vu/cat-goi-combo-1"
+      link: "/dich-vu/cat-goi/cat-goi-combo-1"
     },
     {
         title: 'Cắt gội Combo 2',
@@ -62,7 +54,7 @@ const HairCutServices = () => {
         catgoicombo5,
         catgoicombo6,
       ],    
-      link: "/dich-vu/cat-goi-combo-2"
+      link: "/dich-vu/cat-goi/cat-goi-combo-2"
     },  
     {
         title: 'Cắt gội Combo 3',
@@ -73,7 +65,7 @@ const HairCutServices = () => {
         catgoicombo8,
         catgoicombo9,
       ],    
-      link: "/dich-vu/cat-goi-combo-3"
+      link: "/dich-vu/cat-goi/cat-goi-combo-3"
     },  
     {
         title: 'Cắt gội Combo 4',
@@ -84,7 +76,7 @@ const HairCutServices = () => {
         catgoicombo11,
         catgoicombo12,
       ],    
-      link: "/dich-vu/cat-goi-combo-4"
+        link: "/dich-vu/cat-goi/cat-goi-combo-4"
     },  
     {
         title: 'Cắt gội Combo 5',
@@ -95,7 +87,7 @@ const HairCutServices = () => {
         catgoicombo14,
         catgoicombo15,
       ],    
-      link: "/dich-vu/cat-goi-combo-5"
+          link: "/dich-vu/cat-goi/cat-goi-combo-5"
     },  
   ];
 
@@ -107,23 +99,23 @@ const HairCutServices = () => {
       </p>
       <div className="hair-cut-services__grid">
         {services.map((service, index) => (
-          <Link to={service.link} key={index} className="hair-cut-services__card" onClick={() => handleCardClick(service.link)}>
-          <h2 className="hair-cut-services__card-title">{service.title}</h2>
-          <div className="hair-cut-services__card-description">
-            {service.description.map((desc, i) => (
-              <p key={i}>{desc}</p>
-            ))}
-          </div>
-          <div className="hair-cut-services__image-container">
-            {service.images.map((img, i) => (
-              <img key={i} src={img} alt={`${service.title} ${i + 1}`} />
-            ))}
-          </div>
-          <div className="hair-cut-services__card-footer">
-            <span className="hair-cut-services__duration">{service.duration}</span>
-            <span className="hair-cut-services__link">Tìm hiểu thêm &gt;</span>
-          </div>
-        </Link>
+          <Link to={service.link} key={index} className="hair-cut-services__card">
+            <h2 className="hair-cut-services__card-title">{service.title}</h2>
+            <div className="hair-cut-services__card-description">
+              {service.description.map((desc, i) => (
+                <p key={i}>{desc}</p>
+              ))}
+            </div>
+            <div className="hair-cut-services__image-container">
+              {service.images.map((img, i) => (
+                <img key={i} src={img} alt={`${service.title} ${i + 1}`} />
+              ))}
+            </div>
+            <div className="hair-cut-services__card-footer">
+              <span className="hair-cut-services__duration">{service.duration}</span>
+              <span className="hair-cut-services__link">Tìm hiểu thêm &gt;</span>
+            </div>
+          </Link>
         ))}
       </div>
       <button className="hair-cut-services__book-button">ĐẶT LỊCH NGAY</button>

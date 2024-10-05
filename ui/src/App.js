@@ -8,7 +8,8 @@ import About from '../src/pages/About';
 import ScrollToTopButton from '../src/layouts/Component/scrollButton';
 import HairCutServices from "./layouts/Component/haircombo";
 import ServiceDetail from "./layouts/Component/servicedetail";
-
+import CurlyHairServices from "./layouts/Component/curlyhairservice";  
+import HairStylingDetail from "./layouts/Component/hairstylingdetail";
 
 // ... phần còn lại của code ...
 // ScrollToTop component
@@ -44,8 +45,11 @@ function App() {
         { path: "/home", element: <Home /> },
         { path: "/about", element: <About /> },
         { path: "/dich-vu-cat-toc", element: <HairCutServices /> },
-        { path: "/dich-vu/:serviceId", element: <ServiceDetail /> },
-      ],
+        { path: "/dich-vu-uon-nhuom-toc", element: <CurlyHairServices /> },
+        { path: "/dich-vu/cat-goi/:serviceId", element: <ServiceDetail /> },
+        { path: "/dich-vu/uon/:serviceId", element: <HairStylingDetail /> },
+        { path: "/dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
+        ],
     },
   ]);
 

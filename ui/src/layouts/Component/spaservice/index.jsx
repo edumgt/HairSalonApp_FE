@@ -21,12 +21,6 @@ const SpaServices = () => {
       description: "Tìm hiểu thêm >",
       link: "#",
     },
-    {
-      title: "Cạo mặt dưỡng da",
-      image: faceCleaningImage,
-      description: "Tìm hiểu thêm >",
-      link: "#",
-    },
   ];  
 
   const handleLinkClick = (link, event) => {
