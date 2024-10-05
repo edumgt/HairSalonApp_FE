@@ -17,18 +17,10 @@
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  
   "browserslist": {
     "production": [
       ">0.2%",
@@ -40,5 +32,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "homepage": ".",
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "react-app-rewired": "^2.2.1"
   }
 }
