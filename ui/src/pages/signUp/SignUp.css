@@ -29,6 +29,7 @@
 
 .form-group {
   margin-bottom: 20px;
+  margin-right: 10px;
 }
 
 .form-group label {
@@ -39,7 +40,7 @@
 }
 
 .signup-input {
-  width: 100%;
+  width: 96%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -164,6 +165,19 @@
   color: #1877f2;
   text-decoration: none;
   font-weight: bold;
+}
+
+.name-group {
+  display: flex;
+  gap: 50px; 
+}
+
+.name-input {
+  flex: 1; 
+}
+
+.name-input input {
+  width: 91%; 
 }
 
 .login-link a:hover {

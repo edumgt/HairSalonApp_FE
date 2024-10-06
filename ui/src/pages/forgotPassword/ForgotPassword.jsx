@@ -32,6 +32,7 @@ function ForgotPassword() {
       <div className="divider"></div>
       <Link to="/login" className="backToLogin">Quay lại trang đăng nhập</Link>
     </div>
+
     </div>
   );
 }

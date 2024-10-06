@@ -1,22 +1,20 @@
 .loginPage {
-  height: 100%;
-  margin: 0;
-  background-color: #f0f2f5;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #f0f2f5;
+  font-family: Arial, sans-serif;
+  padding: 20px;
 }
 
 .loginContainer {
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
   padding: 20px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .loginContainer h2 {
@@ -28,7 +26,6 @@
 .loginForm {
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .formGroup {
@@ -43,8 +40,8 @@
 }
 
 .loginInput {
-  width: 100%;
-  padding: 8px;
+  width: 93%;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
@@ -89,18 +86,15 @@
   color: #1877f2;
   text-decoration: none;
   font-size: 14px;
-  transition: color 0.3s ease;
 }
 
 .forgetPasswordLink:hover {
-  color: #166fe5;
   text-decoration: underline;
 }
 
 .divider {
   border-top: 1px solid #ddd;
   margin: 20px 0;
-  width: 100%;
 }
 
 .socialLoginText {
@@ -134,16 +128,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.googleLogin svg, .facebookLogin svg {
-  width: 24px;
-  height: 24px;
-  transition: transform 0.3s ease;
-}
-
-.googleLogin:hover svg, .facebookLogin:hover svg {
-  transform: scale(1.1);
-}
-
 .signupLink {
   text-align: center;
   margin-top: 20px;
@@ -154,10 +138,22 @@
 .signupLink a {
   color: #1877f2;
   text-decoration: none;
-  transition: color 0.3s ease;
 }
 
 .signupLink a:hover {
-  color: #166fe5;
   text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .loginContainer {
+    padding: 15px;
+  }
+  
+  .loginButton {
+    font-size: 14px;
+  }
+}
+
+.loginPage .footer-container {
+  margin-top: auto;
 }
