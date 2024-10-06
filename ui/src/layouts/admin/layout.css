@@ -4,12 +4,6 @@
     overflow: hidden;
     font-family: sans-serif;
   }
-  .main-content {
-    flex: 1; /* Chiếm toàn bộ không gian còn lại */
-    background-color: #fff;
-    padding: 20px;
-
-  }
   .sidebar{
     position: fixed;
   }

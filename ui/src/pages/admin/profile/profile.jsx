@@ -1,8 +1,13 @@
 import styles from './profile.module.css';
 import avatar from '../../../assets/admin/profileIcon.svg'
 import NavLink from '../../../layouts/admin/navLink'
-
+import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import { useContext } from 'react';
+import { UserContext } from './userContext'
 const Profile = () => {
+	const navigate = useNavigate();
+	const user = useContext(UserContext)
   	return (
     		<div className={styles.main}>
       			<NavLink currentPage="Profile" />
@@ -13,27 +18,32 @@ const Profile = () => {
           					<div className={styles.infoGroup}>
 								<div className={styles.infoChild}>
 									<div className={styles.infoParent}>
+										<div className={styles.infoTitle}>ID</div>
+										<div className={styles.info}>{user.id}</div>
+									</div>
+									<div className={styles.infoParent}>
 										<div className={styles.infoTitle}>Full name</div>
-										<div className={styles.info}>Lorem ipsum dolor sit amet</div>
+										<div className={styles.info}>{user.fullName}</div>
 									</div>
 									<div className={styles.infoParent}>
 										<div className={styles.infoTitle}>Role</div>
-										<div className={styles.info}>Lorem ipsum dolor sit amet</div>
-									</div>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>ID</div>
-										<div className={styles.info}>Lorem</div>
+										<div className={styles.info}>{user.role}</div>
 									</div>
 									<div className={styles.infoParent}>
 										<div className={styles.infoTitle}>Email</div>
-										<div className={styles.info}>Lorem@example.com</div>
+										<div className={styles.info}>{user.email}</div>
 									</div>
 									<div className={styles.infoParent}>
 										<div className={styles.infoTitle}>Phone number</div>
-										<div className={styles.info}>xxx.xxx.xxx</div>
+										<div className={styles.info}>{user.phone}</div>
 									</div>
 								</div>
           					</div>
+							
+								<Button type='primary'
+									className={styles.editProfileButton} onClick={() => navigate('/profile/editProfile')}>
+											<div className={styles.changePassword}>Edit profile</div>
+          						</Button>
         				</div>
         				<div className={styles.accountParent}>
           					<div className={styles.accountHeader}>Account</div>
@@ -41,20 +51,22 @@ const Profile = () => {
             						<div className={styles.infoChild}>
               							<div className={styles.infoParent}>
                 								<div className={styles.infoTitle}>User name</div>
-                								<div className={styles.info}>Chris_Schinner</div>
+                								<div className={styles.info}>{user.userName}</div>
               							</div>
               							<div className={styles.infoParent}>
                 								<div className={styles.infoTitle}>Password</div>
-                								<div className={styles.info}>xxx.xxx.xxx</div>
+                								<div className={styles.info}>{user.pass}</div>
               							</div>
             						</div>
           					</div>
-          					<button className={styles.changePasswordButton}>
+          					<Button type='primary'
+							 className={styles.changePasswordButton} onClick={() => navigate('/profile/changePassword')}>
             						<div className={styles.changePassword}>Change password</div>
-          					</button>
+          					</Button>
         				</div>
       			</div>
-    		</div>);
+    		</div>
+			);
 };
 
 export default Profile;

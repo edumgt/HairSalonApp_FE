@@ -14,24 +14,11 @@ import logoutIcon from '../../assets//admin/Fill.svg'
 const Sidebar = () => {
         
 		const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
-	  
-		// Hàm điều hướng đến trang "Dashboard"
-		// const onDashboardClick = useCallback(() => {
-		//   navigate('/dashboard'); // Điều hướng đến trang Dashboard
-		// }, [navigate]);
-	  
-		// const onProfileClick = useCallback(() => {
-		//   navigate('/profile'); // Điều hướng đến trang Profile
-		// }, [navigate]);
-	  
-		// const onSalonClick = useCallback(() => {
-		//   navigate('/salon'); // Điều hướng đến trang Salon
-		// }, [navigate]);
         
         const [activeItem, setActiveItem] = useState(null)
         const handleItem = useCallback((path, item) => {
-        setActiveItem(item);
-        navigate(path);
+			setActiveItem(item);
+			navigate(path);
         }, [navigate]);
 
         const [isVisible, setIsVisible] = useState(true)
@@ -41,7 +28,6 @@ const Sidebar = () => {
 
   	return (
     		<div className={`${styles.nav} ${isVisible ? '' : styles.toggle}`}>
-      			{/* <div className={styles.bg} />  */}
 				  <div className={styles.brand}>
         				<img className={styles.menuIcon} alt="" src={menuIcon} onClick={toggleSidebar}/>
         				<i className={styles.brandsName}>Brand’s name</i>
