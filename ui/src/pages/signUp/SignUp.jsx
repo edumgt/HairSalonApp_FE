@@ -6,12 +6,30 @@ function SignUp() {
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState(''); 
+  const [emailError, setEmailError] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('+84');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  
+  const validateEmail = (email) => {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    if (newEmail && !validateEmail(newEmail)) {
+      setEmailError('Vui lòng nhập một địa chỉ email hợp lệ');
+    } else {
+      setEmailError('');
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,6 +101,21 @@ function SignUp() {
               />
             </div>
           </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              className={`signup-input ${emailError ? 'input-error' : ''}`}
+              placeholder="Nhập email của bạn"
+              value={email}
+              onChange={handleEmailChange}
+              required
+            />
+            {emailError && <span className="error-message">{emailError}</span>}
+          </div>
+
           <div className="form-group">
             <label htmlFor="password">Mật khẩu</label>
             <div className="password-input-container">
