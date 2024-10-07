@@ -41,7 +41,7 @@ const Profile = () => {
           					</div>
 							
 								<Button type='primary'
-									className={styles.editProfileButton} onClick={() => navigate('/profile/editProfile')}>
+									className={styles.editProfileButton} onClick={() => navigate('/editProfile')}>
 											<div className={styles.changePassword}>Edit profile</div>
           						</Button>
         				</div>
@@ -60,7 +60,7 @@ const Profile = () => {
             						</div>
           					</div>
           					<Button type='primary'
-							 className={styles.changePasswordButton} onClick={() => navigate('/profile/changePassword')}>
+							 className={styles.changePasswordButton} onClick={() => navigate('/changePassword')}>
             						<div className={styles.changePassword}>Change password</div>
           					</Button>
         				</div>

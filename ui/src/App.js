@@ -16,14 +16,15 @@ function App() {
           {/* Các route con sẽ được render trong Outlet của Layout */}
           {/* <Route path="dashboard" element={<Dashboard />} /> */}
           <Route path="profile" element={<Profile />} />
-          <Route path="profile/changePassword" element={<ChangePassword />} />
+          
           <Route path="salon" element={<Salon />} />
           <Route path="staff" element={<Staff />} />
           <Route path="wage" element={<Wage />} />
           <Route path="booking" element={<Booking />} />
         {/* </Route> */}
         </Route>
-        <Route path="profile/editProfile" element={<EditProfile />} />
+        <Route path="changePassword" element={<ChangePassword />} />
+        <Route path="editProfile" element={<EditProfile />} />
       </Routes>
   </Router>
   )

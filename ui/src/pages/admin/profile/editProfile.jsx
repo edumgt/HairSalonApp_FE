@@ -1,9 +1,8 @@
-import { Button,Form,Input,Layout,Select } from 'antd';
+import { Button,Form,Input,Layout,Select,Modal } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import styles from './editProfile.module.css'
 import { useContext, useState } from 'react';
 import { UserContext } from './userContext';
-import Modal from 'antd/es/modal/Modal';
 import { useNavigate } from 'react-router-dom';
 const formItemLayout = {
   labelCol: {
@@ -50,6 +49,7 @@ const EditProfile = () => {
                 navigate('/profile'); // Navigate back to profile page with updated data
               } else {
                 // Handle API call errors (e.g., display error message)
+                console.log("Error")
               }
             } catch (error) {
               console.error('Error updating profile:', error);
@@ -72,7 +72,7 @@ const EditProfile = () => {
     <Form
         {...formItemLayout} 
         style={{maxWidth: 800, padding: '10px'}}
->
+    >
       <Form.Item
         label="ID"
         name="ID"
@@ -109,7 +109,11 @@ const EditProfile = () => {
           },
         ]}
       >
-        <Select defaultValue={info.role} onChange={handleChange}/>
+        <Select defaultValue={info.role} onChange={handleChange}>
+          <Select.Option value="Admin"/>
+          <Select.Option value="Staff"/>
+        </Select>
+        
       </Form.Item>
 
       <Form.Item
@@ -156,7 +160,7 @@ const EditProfile = () => {
           span: 16,
         }}
       >
-        <Button type="primary" htmlType="submit" onClick={() => editProfile}>
+        <Button type="primary" htmlType="submit" onClick={editProfile}>
           Update profile
         </Button>
       </Form.Item>

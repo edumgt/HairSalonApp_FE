@@ -1,12 +1,34 @@
 import { useState } from "react"
-import './changePassword.css'
+import styles from './changePassword.module.css'
 import { useNavigate } from "react-router-dom"
-import { Button, Modal, Space } from 'antd';
+import { Button,Form,Input,Layout,Modal } from 'antd';
+import { Content } from "antd/es/layout/layout";
 
 const ChangePassword = () => {
+    const formItemLayout = {
+        labelCol: {
+          xs: {
+            span: 24,
+          },
+          sm: {
+            span: 6,
+          },
+        },
+        wrapperCol: {
+          xs: {
+            span: 24,
+          },
+          sm: {
+            span: 14,
+          },
+        },
+      };
     const navigate = useNavigate()
     const [inputs, setInputs] = useState({})
     const [error, setError] = useState('')
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -14,7 +36,6 @@ const ChangePassword = () => {
         setError('')
     }
     const handleSubmit = () => {
-        // event.preventDefault();
         if(!inputs.password || !inputs.newPassword || !inputs.confirmPassword){
             setError('All fields must not be blank.')
             return;
@@ -42,52 +63,89 @@ const ChangePassword = () => {
     }
     
   return (
-    <div className="frame">
-            <div className="header">Change Password</div>
-            <form onSubmit={handleSubmit}>
-            <div className="inputContainer">
-                <div className="inputGroup">
-                    <div className="label">
-                        <label >Current password</label>
-                    </div>
-                    <div className="input">
-                        <input type="password" name="password" value={inputs.password}
-                            onChange={handleChange}/>
-                    </div>
-                </div>
-                <div className="inputGroup">
-                    <div className="label">
-                        <label >New password</label>
-                    </div>
-                    <div className="input">
-                        <input type="password" name="newPassword" value={inputs.newPassword}
-                            onChange={handleChange}/>
-                    </div>
-                </div>
-                <div className="inputGroup">
-                    <div className="label">
-                        <label >Confirm new password</label>
-                    </div>
-                    <div className="input">
-                        <input type="password" name="confirmPassword" value={inputs.confirmPassword}
-                            onChange={handleChange}/>
-                    </div>
-                </div>
-                {error && <div className="error">*{error}</div>}
-            </div>
-            <div className="change">
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={handleSubmit}
-                        >
-                        Change Password
-                    </Button>
-                </Space>
-                </div>
-            </form>
-                    
-    </div>
+    <Layout style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className={styles.bg}>
+        <div className={styles.header}>Change password</div>
+        <Content style={{ width: 800, maxHeight: 'fit-content'}}>
+        <Form
+        {...formItemLayout} 
+        style={{maxWidth: 800, padding: '10px'}}
+        >
+            <Form.Item
+                label="Current password"
+                name="password"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please input!',
+                },
+                ]}
+            >
+                <Input.Password
+                    name="password"
+                    value={inputs.password}
+                    onChange={handleChange}
+                    visibilityToggle={{
+                        visible: passwordVisible,
+                        onVisibleChange: setPasswordVisible,
+                    }}
+                />
+            </Form.Item>
+            <Form.Item
+                label="New password"
+                name="newPassword"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please input!',
+                },
+                ]}
+            >
+                <Input.Password
+                    name="newPassword"
+                    value={inputs.newPassword}
+                    onChange={handleChange}
+                    visibilityToggle={{
+                        visible: newPasswordVisible,
+                        onVisibleChange: setNewPasswordVisible,
+                    }}
+                />
+            </Form.Item>
+            <Form.Item
+                label="Confirm Password"
+                name="confirmPassword"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please input!',
+                },
+                ]}
+            >
+                <Input.Password
+                    name="confirmPassword"
+                    value={inputs.confirmPassword}
+                    onChange={handleChange}
+                    visibilityToggle={{
+                        visible: confirmPasswordVisible,
+                        onVisibleChange: setConfirmPasswordVisible,
+                    }}
+                />
+            </Form.Item>
+            {error && <div className="error">*{error}</div>}
+            <Form.Item
+                wrapperCol={{
+                offset: 6,
+                span: 16,
+                }}
+            >
+                <Button type="primary" htmlType="submit" onClick={handleSubmit}>
+                    Save
+                </Button>
+            </Form.Item>
+        </Form>
+        </Content>
+        </div>
+        </Layout>
   )
 }
 
