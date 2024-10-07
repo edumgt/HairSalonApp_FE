@@ -28,6 +28,7 @@ import tiaĐienTinh from '../assets/imageHome/Service/Cattockhoangthuonggia/26.p
 export const serviceDetails = {
   "cat-goi-thuong-gia": {
     title: "Dịch vụ Cắt Tóc Khoang Thượng Gia",
+    price: "250.000 VNĐ",
     description: "Mang đến trải nghiệm dịch vụ đỉnh cao lần đầu tiên xuất hiện tại Việt Nam",
     steps: [
       { name: "Khai huyệt", image: khaiHuyet },
@@ -42,6 +43,7 @@ export const serviceDetails = {
   },
   "cat-goi-combo-1": {  
     title: "Combo 1",
+    price: "100.000 VNĐ",
     description: "Dịch vụ được yêu thích nhất bao gồm Cắt - Gội - Massage thư giãn",
     steps: [
       { name: "Khai huyệt", image: khaiHuyet },
@@ -59,6 +61,7 @@ export const serviceDetails = {
 
   "cat-goi-combo-2": {  
     title: "Combo 2",
+    price: "100.000 VNĐ",
     description: "Quy trình Cắt Gội & Massage lưng, cổ vai gáy giãn cơ, thư giãn xua tan căng thẳng.",
     steps: [
       { name: "Khai huyệt", image: khaiHuyet },
@@ -79,6 +82,7 @@ export const serviceDetails = {
 
   "cat-goi-combo-3": {  
     title: "Combo 3",
+    price: "130.000 VNĐ",
     description: "Quy trình Cắt Gội & Massage lưng, cổ vai gáy giãn cơ, thư giãn xua tan căng thẳng.",
     steps: [
       { name: "Khai huyệt", image: khaiHuyet },
@@ -101,6 +105,7 @@ export const serviceDetails = {
 
   "cat-goi-combo-4": {  
     title: "Combo 4",
+    price: "160.000 VNĐ",
     description: "Quy trình Cắt Gội & Massage bấm lưng, cổ vai gáy bằng đá nóng giãn cơ, thư giãn xua tan căng thẳng.",
     steps: [
       {name: "Massage vùng lưng", image: massageLung},
@@ -120,6 +125,7 @@ export const serviceDetails = {
 
   "cat-goi-combo-5": {  
     title: "Combo 5",
+    price: "190.000 VNĐ",
     description: "Quy trình Cắt Gội & Chăm sóc da - Lấy nhân mụn chuyên sâu chuẩn y khoa",
     steps: [
       { name: "Tẩy trang & Rửa sạch mặt", image: tayTrang },

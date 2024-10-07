@@ -136,6 +136,49 @@
         }
       }
     }
+    .selected-city-salons {
+      margin-top: 20px;
+  
+      h3 {
+        color: #003366;
+        margin-bottom: 15px;
+      }
+  
+      .salon-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+  
+      .salon-item {
+        display: flex;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+        img {
+          width: 150px;
+          height: 150px;
+          object-fit: cover;
+        }
+  
+        .salon-info {
+          padding: 15px;
+          flex-grow: 1;
+  
+          h4 {
+            color: #003366;
+            margin-bottom: 10px;
+          }
+  
+          p {
+            font-size: 14px;
+            color: #666;
+          }
+        }
+      }
+    }
   }
 
 
@@ -172,57 +215,70 @@
       }
     }
   
-    .service-list {
+    .service-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
+    }
+
+    .service-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
   
-      .service-item {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        transition: box-shadow 0.3s;
+    .service-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      height: 100%;
+      
+      img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+  
+      h3 {
+        font-size: 18px;
+        margin: 10px;
+        color: #003366;
+      }
+  
+      p {
+        margin: 0 10px 10px;
+        font-size: 14px;
+      }
+  
+      .price {
+        font-weight: bold;
+        color: #003366;
+        margin-top: auto;
+      }
+  
+      .add-service {
+        margin: 10px;
+        padding: 10px 16px;
+        background-color: #003366;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
   
         &:hover {
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-  
-        img {
-          width: 100%;
-          height: 200px;
-          object-fit: cover;
-        }
-  
-        h3 {
-          padding: 10px;
-          margin: 0;
-          font-size: 18px;
-        }
-  
-        p {
-          padding: 0 10px;
-          margin: 5px 0;
-          font-size: 14px;
-        }
-  
-        .price {
-          font-weight: bold;
-          color: #003366;
-        }
-  
-        .add-service {
-          width: 100%;
-          padding: 10px;
-          background-color: #003366;
-          color: white;
-          border: none;
-          cursor: pointer;
-          transition: background-color 0.3s;
-  
-          &:hover {
-            background-color: #002244;
-          }
+          background-color: #002244;
         }
       }
+    }
+  
+    .no-results {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
     }
   }

@@ -45,6 +45,7 @@ export const hairStylingDetail = {
   "nhuom-tieu-chuan": { 
 
     title: "NHUỘM TIÊU CHUẨN",
+    price: "299.000Đ",
     description: "Dịch vụ nhuộm tóc chuyên nghiệp, đa dạng màu sắc, phù hợp với mọi phong cách",
     steps: [
       {name: "NHUỘM CÔNG SỞ", image: nhuomCongSo, price: "299.000Đ"},
@@ -59,6 +60,7 @@ export const hairStylingDetail = {
 
     title: "NHUỘM CAO CẤP",
     description: "Dịch vụ nhuộm tóc chuyên nghiệp, đa dạng màu sắc, phù hợp với mọi phong cách",
+    price: "349.000Đ",
     steps: [
       {name: "NHUỘM CÔNG SỞ", image: nhuomCongSo, price: "299.000Đ"},
       {name: "NHUỘM THỜI TRANG", image: nhuomThoiTrang, price: "349.000Đ"},
