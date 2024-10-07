@@ -85,13 +85,54 @@
   
   .salon-selection {
     .search-bar {
-      margin-bottom: 10px;
+      position: relative;
+      margin-bottom: 20px;
   
       input {
-        width: 100%;
-        padding: 10px;
+        width: 88%;
+        padding: 10px 40px 10px 35px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 20px;
+        font-size: 16px;
+  
+        &:focus {
+          outline: none;
+          border-color: #003366;
+          box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+        }
+      }
+  
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+      }
+  
+      .clear-button {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        font-size: 16px;
+        transition: color 0.3s ease;
+  
+        &:hover {
+          color: #333;
+        }
+  
+        &:focus {
+          outline: none;
+        }
       }
     }
   
@@ -280,5 +321,50 @@
       text-align: center;
       color: #666;
       margin-top: 20px;
+    }
+  }
+
+  //search salon
+
+  .search-results {
+    margin-top: 20px;
+  
+    .city-salons {
+      margin-bottom: 20px;
+  
+      h4 {
+        color: #003366;
+        margin-bottom: 10px;
+      }
+    }
+  
+    .salon-item {
+      display: flex;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+      img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+      }
+  
+      .salon-info {
+        padding: 10px;
+        flex-grow: 1;
+  
+        h5 {
+          color: #003366;
+          margin-bottom: 5px;
+        }
+  
+        p {
+          font-size: 14px;
+          color: #666;
+        }
+      }
     }
   }

@@ -6,7 +6,7 @@ import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail'; 
 import { salonData} from '../../../../data/salonData';
 import debounce from 'lodash/debounce';
-import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 
 const BookingComponent = () => {
   const [step, setStep] = useState(0);
@@ -89,22 +89,42 @@ const SalonSelectionStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [filteredCities, setFilteredCities] = useState([]);
+  const [filteredSalons, setFilteredSalons] = useState({});
 
-  const cities = Object.keys(salonData);
+  const cities = Object.keys(salonData).sort((a, b) => a.localeCompare(b, 'vi'));
 
   useEffect(() => {
     const filtered = cities.filter(city => 
       city.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCities(filtered);
-  }, [searchTerm]);
+
+    const filteredSalonData = {};
+    Object.entries(salonData).forEach(([city, salons]) => {
+      const filteredCitySalons = salons.filter(salon => 
+        city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        salon.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        salon.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      if (filteredCitySalons.length > 0) {
+        filteredSalonData[city] = filteredCitySalons;
+      }
+    });
+    setFilteredSalons(filteredSalonData);
+  }, [searchTerm, cities]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSelectedCity(''); // Reset selected city when searching
+  };
 
   const handleCitySelect = (city) => {
     setSelectedCity(city);
   };
 
-  const handleFindNearby = () => {
-    console.log("Finding nearby salons...");
+
+  const clearSearch = () => {
+    setSearchTerm('');
   };
 
   return (
@@ -115,44 +135,72 @@ const SalonSelectionStep = () => {
           type="text" 
           placeholder="Tìm kiếm salon theo tỉnh, thành phố, quận" 
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
         />
+         {searchTerm && (
+          <button className="clear-button" onClick={clearSearch} aria-label="Clear search">
+            <FaTimes />
+          </button>
+        )}
       </div>
-      <button className="find-nearby" onClick={handleFindNearby}>
-        <FaMapMarkerAlt /> Tìm salon gần anh
-      </button>
-      <div className="city-list">
-        <h3>30Shine có mặt trên các tỉnh thành:</h3>
-        <div className="city-grid">
-          {filteredCities.map((city, index) => (
-            <button 
-              key={index} 
-              className={`city-button ${selectedCity === city ? 'selected' : ''}`}
-              onClick={() => handleCitySelect(city)}
-            >
-              {city}
-            </button>
-          ))}
-        </div>
-      </div>
-      {selectedCity && salonData[selectedCity] && (
-        <div className="selected-city-salons">
-          <h3>Các salon tại {selectedCity}:</h3>
-          <div className="salon-list">
-            {salonData[selectedCity].map((salon) => (
+
+      {searchTerm ? (
+      <div className="search-results">
+        <h3>Kết quả tìm kiếm:</h3>
+        {Object.entries(filteredSalons).map(([city, salons]) => (
+          <div key={city} className="city-salons">
+            <h4>{city}</h4>
+            {salons.map(salon => (
               <div key={salon.id} className="salon-item">
                 <img src={salon.image} alt={salon.address} />
                 <div className="salon-info">
-                  <h4>{salon.address}</h4>
+                  <h5>{salon.address}</h5>
                   <p>{salon.description}</p>
                 </div>
               </div>
             ))}
           </div>
+        ))}
+        {Object.keys(filteredSalons).length === 0 && (
+          <p>Không tìm thấy kết quả phù hợp.</p>
+        )}
+      </div>
+    ) : (
+      <>
+        <div className="city-list">
+          <h3>30Shine có mặt trên các tỉnh thành:</h3>
+          <div className="city-grid">
+            {filteredCities.map((city, index) => (
+              <button 
+                key={index} 
+                className={`city-button ${selectedCity === city ? 'selected' : ''}`}
+                onClick={() => handleCitySelect(city)}
+              >
+                {city}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-    </div>
-  );
+        {selectedCity && salonData[selectedCity] && (
+          <div className="selected-city-salons">
+            <h3>Các salon tại {selectedCity}:</h3>
+            <div className="salon-list">
+              {salonData[selectedCity].map((salon) => (
+                <div key={salon.id} className="salon-item">
+                  <img src={salon.image} alt={salon.address} />
+                  <div className="salon-info">
+                    <h4>{salon.address}</h4>
+                    <p>{salon.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
 };
 
 const ServiceSelectionStep = () => {
