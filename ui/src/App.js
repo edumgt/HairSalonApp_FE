@@ -18,6 +18,7 @@ import HairStylingDetail from "./layouts/Component/hairstylingdetail";
 import SpaServices from "./layouts/Component/spaservice";
 import SpaCombo from "./layouts/Component/spacombo";
 import SpaComboDetail from './layouts/Component/spaComboDetail';
+import BookingComponent from './layouts/Component/Booking/bookingcomponent';
 
 // ... phần còn lại của code ...
 // ScrollToTop component
@@ -62,6 +63,7 @@ function App() {
         { path: "/dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
         { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
         { path: "/dich-vu/spa/:comboId", element: <SpaComboDetail /> },
+        { path: "booking", element: <BookingComponent /> },
         ],
     },
   ]);
