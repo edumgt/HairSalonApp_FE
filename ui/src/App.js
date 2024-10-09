@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
+import ResetPassword from './pages/resetPassword/resetPassword';
 
 import React from "react";
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
@@ -62,6 +63,7 @@ function App() {
         { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
         { path: "/dich-vu/spa/:comboId", element: <SpaComboDetail /> },
         { path: "booking", element: <BookingComponent /> },
+        { path: "reset-password", element: <ResetPassword /> },
       ],
     },
   ]);
