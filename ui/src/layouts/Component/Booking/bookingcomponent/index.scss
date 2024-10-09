@@ -320,6 +320,27 @@
           color: #15397f;
         background-color: #f0f8ff;
         }
+        &:not(.selected) {
+          background-color: #15397f;
+          color: white;
+    
+          &:hover {
+            background-color: #fff;
+            color: #15397f;
+            border: 1px solid #15397f;
+          }
+        }
+    
+        &.selected {
+          background-color: #fff;
+          color: #15397f;
+          border: 1px solid #15397f;
+    
+          &:hover {
+            background-color: #bcd9f2;
+            border: 1px solid #15397f;
+          }
+        }
       }
     }
   
@@ -388,7 +409,10 @@
     }
   }
 
-  
+  .add-service.selected {
+    background-color: #4CAF50;
+    color: white;
+  }
 
   //search salon
 

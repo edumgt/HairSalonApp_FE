@@ -84,7 +84,7 @@ const BookingComponent = () => {
             </div>
             <div className="step">
               <h3>2. Chọn dịch vụ</h3>
-              <div className="option" onClick={selectedServices.length > 0 ? showModal : handleViewAllServices}>
+              <div className="option" onClick={handleViewAllServices}>
                 <span className="icon">✂️</span>
                 <span>
                   {selectedServices.length > 0
@@ -291,6 +291,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   const [selectedServices, setSelectedServices] = useState(initialServices || []);
   const [totalPrice, setTotalPrice] = useState(initialTotalPrice || 0);
   const summaryRef = useRef(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const formatPrice = (price) => {
     return price.toLocaleString('vi-VN', {
@@ -300,12 +301,34 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   };
 
   const handleAddService = (service) => {
-    setSelectedServices(prevServices => [...prevServices, service]);
+    const isServiceSelected = selectedServices.some(s => s.title === service.title);
+    if (!isServiceSelected) {
+      setSelectedServices(prevServices => [...prevServices, service]);
+      setTotalPrice(prevTotal => {
+        const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
+        return prevTotal + servicePrice;
+      });
+    } else {
+      // Nếu dịch vụ đã được chọn, hãy xóa nó
+      setSelectedServices(prevServices => prevServices.filter(s => s.title !== service.title));
+      setTotalPrice(prevTotal => {
+        const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
+        return prevTotal - servicePrice;
+      });
+    }
+  };
+
+
+  const showModal = () => setIsModalVisible(true);
+  const hideModal = () => setIsModalVisible(false);
+
+  const handleRemoveService = (index) => {
+    const newServices = [...selectedServices];
+    const removedService = newServices.splice(index, 1)[0];
+    setSelectedServices(newServices);
     setTotalPrice(prevTotal => {
-      const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
-      const newTotal = prevTotal + servicePrice;
-      console.log('New total:', newTotal); // Để kiểm tra
-      return newTotal;
+      const servicePrice = parseInt(removedService.price.replace(/\D/g, '')) || 0;
+      return prevTotal - servicePrice;
     });
   };
 
@@ -348,25 +371,37 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
         <button onClick={() => setSelectedCategory('goi-combo')} className={selectedCategory === 'goi-combo' ? 'active' : ''}>Gội massage</button>
       </div>
       <div className="service-grid">
-        {filteredServices.map(([key, service]) => (
-          <div key={key} className="service-item">
-            <img src={service.steps[0].image} alt={service.title} />
-            <div className="service-content">
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-              <p className="price">{service.price || 'Giá liên hệ'}</p>
-              <button className="add-service" onClick={() => handleAddService(service)}>Thêm dịch vụ</button>
-            </div>
-          </div>
-        ))}
+  {filteredServices.map(([key, service]) => {
+    const isSelected = selectedServices.some(s => s.title === service.title);
+    return (
+      <div key={key} className="service-item">
+        <img src={service.steps[0].image} alt={service.title} />
+        <div className="service-content">
+          <h3>{service.title}</h3>
+          <p>{service.description}</p>
+          <p className="price">{service.price || 'Giá liên hệ'}</p>
+          <button 
+            className={`add-service ${isSelected ? 'selected' : ''}`} 
+            onClick={() => handleAddService(service)}
+          >
+            {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
+          </button>
+        </div>
       </div>
+    );
+  })}
+</div>
       {filteredServices.length === 0 && (
         <p className="no-results">Không tìm thấy dịch vụ phù hợp.</p>
       )}
       
       <div className="service-summary">
         <div className="summary-content">
-          <span className="selected-services">
+          <span 
+            className="selected-services"
+            onClick={showModal}
+            style={{ cursor: 'pointer' }}
+          >
             {`Đã chọn ${selectedServices.length} dịch vụ`}
           </span>
           <span className="total-amount">
@@ -381,6 +416,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           Xong
         </button>
       </div>
+
+      <SelectedServicesModal
+        visible={isModalVisible}
+        onClose={hideModal}
+        selectedServices={selectedServices}
+        onRemoveService={handleRemoveService}
+        totalPrice={totalPrice}
+      />
     </div>
   );
 };
