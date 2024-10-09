@@ -136,23 +136,7 @@
       }
     }
   
-    .find-nearby {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 10px;
-      background-color: #fff;
-      border: 1px solid #003366;
-      color: #003366;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-bottom: 20px;
-  
-      &:hover {
-        background-color: #f0f0f0;
-      }
-    }
+    
   
     .city-list {
       h3 {
@@ -163,6 +147,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
+        
       }
   
       .city-button {
@@ -179,6 +164,7 @@
     }
     .selected-city-salons {
       margin-top: 20px;
+      cursor: pointer;
   
       h3 {
         color: #003366;
@@ -386,4 +372,45 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .selected-salon-info {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  
+    h4 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+  
+    p {
+      margin: 0 0 15px;
+      color: #666;
+    }
+  
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  .ant-message-notice-content {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ant-message-warning .anticon {
+    color: #faad14;
   }

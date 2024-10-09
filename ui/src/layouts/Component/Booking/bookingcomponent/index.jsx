@@ -5,11 +5,11 @@ import { serviceDetails } from '../../../../data/serviceDetails';
 import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail'; 
 import { salonData} from '../../../../data/salonData';
-import debounce from 'lodash/debounce';
 import { FaSearch, FaTimes, FaChevronLeft } from 'react-icons/fa';
-
+import { message } from 'antd';
 const BookingComponent = () => {
   const [step, setStep] = useState(0);
+  const [selectedSalon, setSelectedSalon] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -28,9 +28,20 @@ const BookingComponent = () => {
   };
 
   const handleViewAllServices = () => {
-    navigate('/booking?step=2');
+    if (selectedSalon) {
+      navigate('/booking?step=2');
+    } else {
+      // Hiển thị thông báo
+      message.warning("Anh vui lòng chọn salon trước để xem lịch còn trống ạ!");
+    }
   };
+
   const handleBack = () => {
+    navigate('/booking?step=0');
+  };
+
+  const handleSalonSelect = (salon) => {
+    setSelectedSalon(salon);
     navigate('/booking?step=0');
   };
 
@@ -43,7 +54,7 @@ const BookingComponent = () => {
               <h3>1. Chọn salon</h3>
               <div className="option" onClick={handleViewAllSalons}>
                 <span className="icon">🏠</span>
-                <span>Xem tất cả salon</span>
+                <span>{selectedSalon ? selectedSalon.address : "Xem tất cả salon"}</span>
                 <span className="arrow">›</span>
               </div>
             </div>
@@ -67,9 +78,9 @@ const BookingComponent = () => {
           </div>
         );
       case 1:
-        return <SalonSelectionStep />;
+        return <SalonSelectionStep onSalonSelect={handleSalonSelect} />;
       case 2:
-        return <ServiceSelectionStep />;
+        return selectedSalon ? <ServiceSelectionStep /> : null;
       case 3:
         return <DateTimeSelectionStep />;
       default:
@@ -93,13 +104,13 @@ const BookingComponent = () => {
   );
 };
 
-const SalonSelectionStep = () => {
+const SalonSelectionStep = ({ onSalonSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [filteredCities, setFilteredCities] = useState([]);
   const [filteredSalons, setFilteredSalons] = useState({});
-
   const cities = Object.keys(salonData).sort((a, b) => a.localeCompare(b, 'vi'));
+  const [selectedSalon, setSelectedSalon] = useState(null);
 
   useEffect(() => {
     const filtered = cities.filter(city => 
@@ -130,6 +141,10 @@ const SalonSelectionStep = () => {
     setSelectedCity(city);
   };
 
+  const handleSalonSelect = (salon) => {
+    setSelectedSalon(salon);
+    onSalonSelect(salon);
+  };
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -142,15 +157,24 @@ const SalonSelectionStep = () => {
         <input 
           type="text" 
           placeholder="Tìm kiếm salon theo tỉnh, thành phố, quận" 
-          value={searchTerm}
+          value={selectedSalon ? selectedSalon.address : searchTerm}
           onChange={handleSearchChange}
-        />
-         {searchTerm && (
-          <button className="clear-button" onClick={clearSearch} aria-label="Clear search">
+          readOnly={selectedSalon !== null}
+        />  
+          {searchTerm && (
+          <button 
+            className="clear-button" 
+            onClick={() => {
+              clearSearch();
+              setSelectedSalon(null);
+            }} 
+            aria-label="Clear search"
+          >
             <FaTimes />
           </button>
         )}
       </div>
+
 
       {searchTerm ? (
       <div className="search-results">
@@ -159,7 +183,7 @@ const SalonSelectionStep = () => {
           <div key={city} className="city-salons">
             <h4>{city}</h4>
             {salons.map(salon => (
-              <div key={salon.id} className="salon-item">
+              <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
                 <img src={salon.image} alt={salon.address} />
                 <div className="salon-info">
                   <h5>{salon.address}</h5>
@@ -194,7 +218,7 @@ const SalonSelectionStep = () => {
             <h3>Các salon tại {selectedCity}:</h3>
             <div className="salon-list">
               {salonData[selectedCity].map((salon) => (
-                <div key={salon.id} className="salon-item">
+                <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
                   <img src={salon.image} alt={salon.address} />
                   <div className="salon-info">
                     <h4>{salon.address}</h4>
