@@ -1,0 +1,29 @@
+.selected-services-list {
+    .selected-service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #e8e8e8;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .anticon-close {
+        cursor: pointer;
+        color: #ff4d4f;
+        background-color: #f0f8ff;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .total-price {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #e8e8e8;
+  }

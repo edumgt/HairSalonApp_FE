@@ -17,7 +17,7 @@ export const hairStylingDetail = {
 
     title: "UỐN BASIC",
     description: "Tóc uốn phong cách đơn giản, nhẹ nhàng và tinh tế",
-    price: "379.000Đ",
+    price: "379.000 VNĐ",
     steps: [
       {name: "UỐN BASIC", image: uonBasic, price: "379.000Đ"},
       {name: "UỐN ĐỊNH HÌNH K-PERM", image: uonKPerm, price: "449.000Đ"},
@@ -30,7 +30,7 @@ export const hairStylingDetail = {
     
     title: "UỐN CAO CẤP",
     description: "Tóc uốn phong cách cao cấp, đa dạng và ấn tượng",
-    price: "449.000Đ",
+    price: "449.000 VNĐ",
     steps: [
       {name: "UỐN BASIC", image: uonBasic, price: "379.000Đ"},
       {name: "UỐN CAO CẤP", image: uonCaoCap, price: "449.000Đ"},
@@ -45,7 +45,7 @@ export const hairStylingDetail = {
   "nhuom-tieu-chuan": { 
 
     title: "NHUỘM TIÊU CHUẨN",
-    price: "299.000Đ",
+    price: "299.000 VNĐ",
     description: "Dịch vụ nhuộm tóc chuyên nghiệp, đa dạng màu sắc, phù hợp với mọi phong cách",
     steps: [
       {name: "NHUỘM CÔNG SỞ", image: nhuomCongSo, price: "299.000Đ"},
@@ -60,7 +60,7 @@ export const hairStylingDetail = {
 
     title: "NHUỘM CAO CẤP",
     description: "Dịch vụ nhuộm tóc chuyên nghiệp, đa dạng màu sắc, phù hợp với mọi phong cách",
-    price: "349.000Đ",
+    price: "349.000 VNĐ",
     steps: [
       {name: "NHUỘM CÔNG SỞ", image: nhuomCongSo, price: "299.000Đ"},
       {name: "NHUỘM THỜI TRANG", image: nhuomThoiTrang, price: "349.000Đ"},

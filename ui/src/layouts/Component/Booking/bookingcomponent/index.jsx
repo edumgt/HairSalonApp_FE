@@ -7,11 +7,29 @@ import { hairStylingDetail } from '../../../../data/hairStylingDetail';
 import { salonData} from '../../../../data/salonData';
 import { FaSearch, FaTimes, FaChevronLeft } from 'react-icons/fa';
 import { message } from 'antd';
+import SelectedServicesModal from '../selectservicemodal';
+
 const BookingComponent = () => {
+
+
   const [step, setStep] = useState(0);
   const [selectedSalon, setSelectedSalon] = useState(null);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => setIsModalVisible(true);
+  const hideModal = () => setIsModalVisible(false);
+
+  const handleRemoveService = (index) => {
+    const newServices = [...selectedServices];
+    const removedService = newServices.splice(index, 1)[0];
+    setSelectedServices(newServices);
+    setTotalPrice(prevTotal => prevTotal - parseInt(removedService.price.replace(/\D/g, '')));
+  };
+
   
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -45,6 +63,12 @@ const BookingComponent = () => {
     navigate('/booking?step=0');
   };
 
+  const handleServiceSelection = (services, price) => {
+    setSelectedServices(services);
+    setTotalPrice(price);
+    navigate('/booking?step=0');
+  };
+
   const renderStepContent = () => {
     switch (step) {
       case 0:
@@ -60,11 +84,23 @@ const BookingComponent = () => {
             </div>
             <div className="step">
               <h3>2. Chọn dịch vụ</h3>
-              <div className="option" onClick={handleViewAllServices}>
-              <span className="icon">✂️</span>
-              <span>Xem tất cả dịch vụ hấp dẫn</span>
-              <span className="arrow">›</span>
-            </div>
+              <div className="option" onClick={selectedServices.length > 0 ? showModal : handleViewAllServices}>
+                <span className="icon">✂️</span>
+                <span>
+                  {selectedServices.length > 0
+                    ? `Đã chọn ${selectedServices.length} dịch vụ`
+                    : "Xem tất cả dịch vụ hấp dẫn"}
+                </span>
+                <span className="arrow">›</span>
+              </div>
+              {selectedServices.length > 0 && (
+                <div className="selected-services-summary">
+                  {selectedServices.map((service, index) => (
+                    <p key={index}>{service.title}</p>
+                  ))}
+                  <p className="total-price">Tổng thanh toán: {totalPrice.toLocaleString()} VND</p>
+                </div>
+              )}
             </div>
             <div className="step">
               <h3>3. Chọn ngày, giờ & stylist</h3>
@@ -79,8 +115,14 @@ const BookingComponent = () => {
         );
       case 1:
         return <SalonSelectionStep onSalonSelect={handleSalonSelect} />;
-      case 2:
-        return selectedSalon ? <ServiceSelectionStep /> : null;
+        case 2:
+          return selectedSalon ? (
+            <ServiceSelectionStep 
+              onServiceSelection={handleServiceSelection} 
+              initialServices={selectedServices}
+              initialTotalPrice={totalPrice}
+            />
+          ) : null;
       case 3:
         return <DateTimeSelectionStep />;
       default:
@@ -100,6 +142,13 @@ const BookingComponent = () => {
         {renderStepContent()}
         {(step === 0 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
       </div>
+      <SelectedServicesModal
+        visible={isModalVisible}
+        onClose={hideModal}
+        selectedServices={selectedServices}
+        onRemoveService={handleRemoveService}
+        totalPrice={totalPrice}
+      />
     </div>
   );
 };
@@ -235,12 +284,12 @@ const SalonSelectionStep = ({ onSalonSelect }) => {
 );
 };
 
-const ServiceSelectionStep = () => {
+const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredServices, setFilteredServices] = useState([]);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedServices, setSelectedServices] = useState(initialServices || []);
+  const [totalPrice, setTotalPrice] = useState(initialTotalPrice || 0);
   const summaryRef = useRef(null);
 
   const formatPrice = (price) => {
@@ -264,6 +313,10 @@ const ServiceSelectionStep = () => {
     ...serviceDetails,
     ...spaComboDetail,
     ...hairStylingDetail
+  };
+
+  const handleDoneSelection = () => {
+    onServiceSelection(selectedServices, totalPrice);
   };
 
   useEffect(() => {
@@ -320,7 +373,11 @@ const ServiceSelectionStep = () => {
             Tổng thanh toán: {formatPrice(totalPrice)}
           </span>
         </div>
-        <button className="done-button" disabled={selectedServices.length === 0}>
+        <button 
+          className="done-button" 
+          disabled={selectedServices.length === 0}
+          onClick={handleDoneSelection}
+        >
           Xong
         </button>
       </div>

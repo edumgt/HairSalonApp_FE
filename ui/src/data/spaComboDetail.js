@@ -42,7 +42,7 @@ export const spaComboDetail = {
   "goi-combo-2" : {
     title: "GỘI MASSAGE RELAX", 
     description: "Quy trình 10 bước Gội & Massage lưng, cổ vai gáy giãn cơ, thư giãn xua tan căng thẳng.",
-    price: "70.000Đ",
+    price: "70.000 VNĐ",
     steps: [
         { name: "Khai huyệt", image: khaiHuyet },
         { name: "Rửa mặt & Massage mặt", image: ruaMat },
@@ -60,7 +60,7 @@ export const spaComboDetail = {
   "goi-combo-3": {
     title: "GỘI MASSAGE CAO CẤP",
     description: "Quy trình Gội & Massage cổ vai gáy, kết hợp đắp mặt nạ mát lạnh & tẩy da chết căng mịn.",
-    price: "70.000Đ",
+    price: "70.000 VNĐ",
     steps: [
         { name: "Tẩy trang & Rửa sạch mặt", image: tayTrang },
       { name: "Hút mụn", image: hutMun },
@@ -82,6 +82,7 @@ export const spaComboDetail = {
   "goi-combo-4": {
     title: "GỘI MASSAGE CAO CẤP",
     description: "Quy trình Gội & Massage bấm lưng, cổ vai gáy bằng đá nóng giãn cơ, thư giãn xua tan căng thẳng.",
+    price: "70.000 VNĐ",
     steps: [
         {name: "Massage vùng lưng", image: massageLung},
         {name: "Bấm lưng bằng đá nóng", image: massageDaNong},
@@ -100,7 +101,7 @@ export const spaComboDetail = {
   "goi-combo-5": {
     title: "GỘI MASSAGE CAO CẤP",
     description: "Dịch vụ được yêu thích nhất bao gồm Cắt - Gội - Massage thư giãn",
-    price: "70.000Đ",
+    price: "70.000 VNĐ",
     steps: [
         { name: "Tẩy trang & Rửa sạch mặt", image: tayTrang },
         {name: "Xông hơi & Sát khuẩn", image: xongHoiSátKhuẩn},
@@ -118,7 +119,7 @@ export const spaComboDetail = {
   "lay-ray-tai": {
     title: "LẤY RÁY TAI",
     description: "11 bước Kỹ thuật lấy ráy tai Lông Công với dụng cụ chuyên nghiệp, thư giãn âm thoa tạo rung động sảng khoái.",
-    price: "70.000Đ",
+    price: "70.000 VNĐ",
     steps: [
         {name: "Làm sạch dụng cụ", image: lamSachDungCu},
         {name: "Đắp khăn nóng & Massage đầu", image: dapKhanNong},

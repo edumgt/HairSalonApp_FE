@@ -63,6 +63,22 @@
           margin-left: 10px;
         }
       }
+      .selected-services-summary {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+  
+        p {
+          margin: 5px 0;
+          font-size: 14px;
+        }
+  
+        .total-price {
+          color: #11b197;
+          margin-top: 10px;
+        }
+      }
     }
   }
   
@@ -275,24 +291,25 @@
       h3 {
         font-size: 18px;
         margin: 10px;
-        color: #003366;
+        color: #15397f;
       }
   
       p {
         margin: 0 10px 10px;
         font-size: 14px;
+        
       }
   
       .price {
         font-weight: bold;
-        color: #003366;
+        color: #15397f;
         margin-top: auto;
       }
   
       .add-service {
         margin: 10px;
         padding: 10px 16px;
-        background-color: #003366;
+        background-color: #15397f;
         color: white;
         border: none;
         border-radius: 4px;
@@ -300,7 +317,8 @@
         transition: background-color 0.3s;
   
         &:hover {
-          background-color: #002244;
+          color: #15397f;
+        background-color: #f0f8ff;
         }
       }
     }
@@ -350,8 +368,8 @@
     }
 
     .done-button {
-      background-color: #f2f2f2;
-      color: #333;
+      background-color: #15397f;
+      color: #fff;
       border: none;
       padding: 10px 20px;
       border-radius: 4px;
@@ -359,7 +377,8 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #e6e6e6;
+        color: #15397f;
+        background-color: #f0f8ff;
       }
 
       &:disabled {
@@ -368,6 +387,8 @@
       }
     }
   }
+
+  
 
   //search salon
 
@@ -475,3 +496,5 @@
   .ant-message-warning .anticon {
     color: #faad14;
   }
+
+  
