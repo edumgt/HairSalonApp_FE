@@ -6,7 +6,7 @@ import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail'; 
 import { salonData} from '../../../../data/salonData';
 import debounce from 'lodash/debounce';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaChevronLeft } from 'react-icons/fa';
 
 const BookingComponent = () => {
   const [step, setStep] = useState(0);
@@ -29,6 +29,9 @@ const BookingComponent = () => {
 
   const handleViewAllServices = () => {
     navigate('/booking?step=2');
+  };
+  const handleBack = () => {
+    navigate('/booking?step=0');
   };
 
   const renderStepContent = () => {
@@ -76,10 +79,15 @@ const BookingComponent = () => {
 
   return (
     <div className="booking-wrapper">
+      {step > 0 && (
+        <button className="back-button" onClick={handleBack}>
+          <FaChevronLeft />
+        </button>
+      )}
       <h2>Đặt lịch giữ chỗ</h2>
       <div className="booking-container">
         {renderStepContent()}
-         {(step === 0 || step === 2 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
+        {(step === 0 || step === 2 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
       </div>
     </div>
   );

@@ -368,3 +368,22 @@
       }
     }
   }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #002244;
+    cursor: pointer;
+    font-size: 20px;
+    margin-bottom: 10px;
+  
+    svg {
+      margin-right: 5px;
+    }
+  
+    &:hover {
+      text-decoration: underline;
+    }
+  }

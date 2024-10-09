@@ -9,7 +9,7 @@ import salon1 from '../assets/imageHome/Salon/HCM1.jpg'
 import danang_1 from '../assets/imageHome/Salon/DaNang1.jpg'
 
 export const salonData = {
-    "Bắc Ninh": [
+    "Tân Bình": [
       {
         id: 1,
         address: "386 Ngô Gia Tự, Phường 2, Tp Bắc Ninh, Bắc Ninh",
@@ -24,7 +24,7 @@ export const salonData = {
       }
     ],
 
-    "Đồng Nai": [
+    "Tân Phú": [
         {
             id: 1,
             address: "135 Lê Duẩn, Thị Trấn Long Thành, Long Thành, Đồng Nai",
@@ -51,7 +51,7 @@ export const salonData = {
         }
 
     ],
-    "Hà Nội": [
+    "Quận 1": [
         {
             id: 1,
             address: "10 Trần Phú, P. Mộ Lao, Q. Hà Đông, Hà Nội",
@@ -77,7 +77,7 @@ export const salonData = {
             image: hainoi_1
         }
     ],
-    "Hồ Chí Minh": [
+    "Quận 2": [
         {
             id: 1,
             address: "1146 Kha Vạn Cân, Phường Linh Chiểu, Quận Thủ Đức, TP HCM",
@@ -104,7 +104,7 @@ export const salonData = {
         }
     ],
 
-    "Bình Dương": [
+    "Quận 9": [
         {
             id: 1,
             address: "255 Nguyễn An Ninh, P. Dĩ An, Dĩ An, Bình Dương",
@@ -119,7 +119,7 @@ export const salonData = {
         }
     ],
 
-    "Đà Nẵng": [
+    "Phú Nhuận": [
         {
             id: 1,
             address: "130 Xô Viết Nghệ Tĩnh, Phường Hòa Cường Nam, Quận Hải Châu, Đà Nẵng",
@@ -134,7 +134,7 @@ export const salonData = {
         }
     ],
 
-    "Hải Phòng": [
+    "Quận 12": [
         {
             id: 1,
             address: "278 Trần Nguyên Hãn, P. Niệm Nghĩa, Quận Lê Chân, Hải Phòng",
@@ -149,7 +149,7 @@ export const salonData = {
         }
     ],
 
-    "Cần Thơ": [
+    "Thủ Đức": [
         {
             id: 1,
             address: "205 Đường 30/4, P. Xuân Khánh, Quận Ninh Kiều, Cần Thơ",
@@ -164,7 +164,7 @@ export const salonData = {
         }
     ],
 
-    "An Giang": [
+    "Bình Thạnh": [
         {
             id: 1,
             address: "113 Trần Hưng Đạo, P. Mỹ Bình, Long Xuyên, An Giang",
@@ -173,84 +173,52 @@ export const salonData = {
         }
     ],
 
-    "Vũng Tàu": [
+    "Quận 10": [
         {
             id: 1,
-            address: "294 Lê Hồng Phong, Phường 4, TP. Vũng Tàu, Vũng Tàu",
-            description: "Ngay ngã 5 Vũng Tàu, cạnh Highland Coffee",
+            address: "113 Trần Hưng Đạo, P. Mỹ Bình, Long Xuyên, An Giang",
+            description: "Nằm trên đường Trần Hưng Đạo đối diện khách sạn Hòa Bình và sân vận động",
             image: salon1
         }
     ],
 
-    "Khánh Hòa": [
+    "Quận 11": [
         {
             id: 1,
-            address: "152 Thống Nhất, P. Phương Sài, TP. Nha Trang, Khánh Hòa",
-            description: "Salon nằm ngay ngã tư Thống Nhất - Lê Thành Phương. Cách vòng xoay tượng đài 300m",
+            address: "113 Trần Hưng Đạo, P. Mỹ Bình, Long Xuyên, An Giang",
+            description: "Nằm trên đường Trần Hưng Đạo đối diện khách sạn Hòa Bình và sân vận động",
             image: salon1
         }
     ],
-
-    "Thanh Hóa": [
-        {
-            id: 1,
-            address: "304 Nguyễn Trãi, phường Tân Sơn, TP Thanh Hóa",
-            description: "Cách chợ Tây Thành 100m đi về hướng bến xe phía Tây",
-            image: salon1
-        },
-        {
-            id: 2,
-            address: "290 Quang Trung, phường Đông Vệ, TP Thanh Hóa",
-            description: "Đối diện chợ Nam Thành",
-            image: salon1
-        },
-        {
-            id: 3,
-            address: "19 Trần Phú, P. Điện Biên, TP. Thanh Hóa, Thanh Hóa",
-            description: "Salon nằm cách ngã tư tượng đài Lê Lợi 100m về hướng Công an thành phố Thanh Hóa",
-            image: salon1
-        }
-    ],
-
-    "Hà Tĩnh": [
-        {
-            id: 1,
-            address: "99 Trần Phú, Phường Trần Phú, TP Hà Tĩnh",
-            description: "Cạnh xe máy điện Vinfat 3S, đối diện Đại Lý xe máy Honda Phú Tài Đức 3",
-            image: salon1
-        }
-    ],
-
-    "Đắk Lắk": [
-        {
-            id: 1,
-            address: "147 Lê Hồng Phong, P. Thống Nhất, TP Buôn Ma Thuột, Đắk Lắc",
-            description: "Ngã 3 Nơ Trang Lòng với Lê Hồng Phong, đi từ Nơ Trang Long xuống nhìn bên tay trái",
-            image: salon1
-        }
-    ],
-
-    "Thái Nguyên": [
-        {
-            id: 1,
-            address: "147 Lê Hồng Phong, P. Thống Nhất, TP Buôn Ma Thuột, Đắk Lắc",
-            description: "Đối diện ngân hàng Agribank Quang Trung, đường Lương Ngọc Quyến",
-            image: salon1
-        }
-    ],
-
-    "Quảng Ninh": [
-        {
-            id: 1,
-            address: "Time Garden, Đường 25/4, P. Bạch Đằng, TP Hạ Long, Quảng Ninh",
-            description: "Đối diện cột đồng hồ",
-            image: salon1
-        }
-    ],
-
-
-
-
 
 
   };
+
+
+
+
+
+// Goi api de lay database salon
+//   export function useSalonData() {
+//     const [salonData, setSalonData] = useState({});
+//     const [loading, setLoading] = useState(true);
+//     const [error, setError] = useState(null);
+  
+//     useEffect(() => {
+//       fetchSalonData();
+//     }, []);
+  
+//     const fetchSalonData = async () => {
+//       try {
+//         setLoading(true);
+//         const response = await axios.get('YOUR_API_ENDPOINT_HERE');
+//         setSalonData(response.data);
+//         setLoading(false);
+//       } catch (err) {
+//         setError(err);
+//         setLoading(false);
+//       }
+//     };
+  
+//     return { salonData, loading, error };
+//   }
