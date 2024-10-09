@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
 import { serviceDetails } from '../../../../data/serviceDetails';
@@ -98,7 +98,7 @@ const BookingComponent = () => {
       <h2>Đặt lịch giữ chỗ</h2>
       <div className="booking-container">
         {renderStepContent()}
-        {(step === 0 || step === 2 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
+        {(step === 0 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
       </div>
     </div>
   );
@@ -239,6 +239,26 @@ const ServiceSelectionStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredServices, setFilteredServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const summaryRef = useRef(null);
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).replace(',', '.') + ' VND';
+  };
+
+  const handleAddService = (service) => {
+    setSelectedServices(prevServices => [...prevServices, service]);
+    setTotalPrice(prevTotal => {
+      const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
+      const newTotal = prevTotal + servicePrice;
+      console.log('New total:', newTotal); // Để kiểm tra
+      return newTotal;
+    });
+  };
 
   const allServices = {
     ...serviceDetails,
@@ -277,19 +297,33 @@ const ServiceSelectionStep = () => {
       <div className="service-grid">
         {filteredServices.map(([key, service]) => (
           <div key={key} className="service-item">
-          <img src={service.steps[0].image} alt={service.title} />
-          <div className="service-content">
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-            <p className="price">{service.price || 'Giá liên hệ'}</p>
-            <button className="add-service">Thêm dịch vụ</button>
+            <img src={service.steps[0].image} alt={service.title} />
+            <div className="service-content">
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              <p className="price">{service.price || 'Giá liên hệ'}</p>
+              <button className="add-service" onClick={() => handleAddService(service)}>Thêm dịch vụ</button>
+            </div>
           </div>
-        </div>
         ))}
       </div>
       {filteredServices.length === 0 && (
         <p className="no-results">Không tìm thấy dịch vụ phù hợp.</p>
       )}
+      
+      <div className="service-summary">
+        <div className="summary-content">
+          <span className="selected-services">
+            {`Đã chọn ${selectedServices.length} dịch vụ`}
+          </span>
+          <span className="total-amount">
+            Tổng thanh toán: {formatPrice(totalPrice)}
+          </span>
+        </div>
+        <button className="done-button" disabled={selectedServices.length === 0}>
+          Xong
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,11 +1,12 @@
 .footer-container {
-    background-color: #15397f;
-    padding: 20px;
-    text-align: center;
-    color:#fff;
-    text-align: left;
-
-  }
+  background-color: #15397f;
+  padding: 20px;
+  text-align: center;
+  color:#fff;
+  text-align: left;
+  position: relative;
+  z-index: 999; // Đảm bảo footer luôn ở trên cùng
+}
   
   .footer-row {
     display: flex;
