@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
@@ -43,7 +42,6 @@ function LayoutWithScrollToTop() {
   );
 }
 
-
 function App() {
   const router = createBrowserRouter([
     {
@@ -64,7 +62,7 @@ function App() {
         { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
         { path: "/dich-vu/spa/:comboId", element: <SpaComboDetail /> },
         { path: "booking", element: <BookingComponent /> },
-        ],
+      ],
     },
   ]);
 
@@ -72,7 +70,6 @@ function App() {
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
-    
   );
 }
 
