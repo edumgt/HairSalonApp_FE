@@ -3,7 +3,7 @@ import filterIcon from '../../assets/admin/filter.svg'
 import searchIcon from '../../assets/admin/Search.svg'
 import './headerButton.css'
 
-const HeaderButton = ({text}) => {
+const HeaderButton = ({text, add}) => {
   return (
         <div className="headerButton">
             <div className="filter">
@@ -17,11 +17,15 @@ const HeaderButton = ({text}) => {
                     placeholder="Search"
                 />
             </div>
-            <div className="addButton">
-              <img className="arrowIcon" alt="" src={addIcon}  />
-              <div className="add">{text}</div>
-            </div>
-          </div>  )
+            {add && 
+              <div className="addButton">
+                <img className="arrowIcon" alt="" src={addIcon}  />
+                <div className="add">{text}</div>
+              </div>
+            }
+          </div>
+            
+          )
 }
 
 export default HeaderButton

@@ -78,33 +78,44 @@ const EditProfile = () => {
         name="ID"
         rules={[
           {
-            required: false,
+            required: true,
             message: 'Please input!',
           },
         ]}
       >
-        <Input defaultValue={info.id} onChange={handleChange}/>
+        <Input defaultValue={info.id} onChange={handleChange} disabled/>
       </Form.Item>
 
       <Form.Item
-        label="Full Name"
-        name="Full Name"
+        label="First Name"
+        name="First Name"
         rules={[
           {
-            required: false,
+            required: true,
             message: 'Please input!',
           },
         ]}
       >
         <Input defaultValue={info.fullName} onChange={handleChange}/>
       </Form.Item>
-
+      <Form.Item
+        label="Last Name"
+        name="Last Name"
+        rules={[
+          {
+            required: true,
+            message: 'Please input!',
+          },
+        ]}
+      >
+        <Input defaultValue={info.userName}  onChange={handleChange}/>
+      </Form.Item>
       <Form.Item
         label="Role"
         name="Role"
         rules={[
           {
-            required: false,
+            required: true,
             message: 'Please input!',
           },
         ]}
@@ -121,12 +132,12 @@ const EditProfile = () => {
         name="Email"
         rules={[
           {
-            required: false,
+            required: true,
             message: 'Please input!',
           },
         ]}
       >
-        <Input suffix="@gmail.com" defaultValue={info.email}  onChange={handleChange}/>
+        <Input defaultValue={info.email}  onChange={handleChange}/>
       </Form.Item>
 
       <Form.Item
@@ -134,25 +145,14 @@ const EditProfile = () => {
         name="Phone number"
         rules={[
           {
-            required: false,
+            required: true,
             message: 'Please input!',
           },
         ]}
       >
-        <Input addonBefore="+84" defaultValue={info.phone}  onChange={handleChange}/>
+        <Input defaultValue={info.phone}  onChange={handleChange}/>
       </Form.Item>
-      <Form.Item
-        label="User Name"
-        name="User Name"
-        rules={[
-          {
-            required: false,
-            message: 'Please input!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.userName}  onChange={handleChange}/>
-      </Form.Item>
+      
 
       <Form.Item
         wrapperCol={{

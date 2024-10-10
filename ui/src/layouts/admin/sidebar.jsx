@@ -10,7 +10,8 @@ import staffIcon from '../../assets//admin/staff.svg'
 import wageIcon from '../../assets//admin/coins.svg'
 import bookingIcon from '../../assets//admin/booking.svg'
 import logoutIcon from '../../assets//admin/Fill.svg'
-
+import serviceIcon from '../../assets/admin/serviceIcon.svg'
+import categoryIcon from '../../assets/admin/categoryIcon.svg'
 const Sidebar = () => {
         
 		const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
@@ -72,6 +73,20 @@ const Sidebar = () => {
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={bookingIcon} />
             						<div className={styles.itemContent}>Booking</div>
+          					</div>
+        				</div>
+						<div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
+                            onClick={() => handleItem('/service', 'service')}>
+          					<div className={styles.itemGroup}>
+            						<img className={styles.navIcon} alt="" src={serviceIcon} />
+            						<div className={styles.itemContent}>Service</div>
+          					</div>
+        				</div>
+						<div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
+                            onClick={() => handleItem('/category', 'category')}>
+          					<div className={styles.itemGroup}>
+            						<img className={styles.navIcon} alt="" src={categoryIcon} />
+            						<div className={styles.itemContent}>Category</div>
           					</div>
         				</div>
       			</div>

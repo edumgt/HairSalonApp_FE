@@ -27,7 +27,7 @@ import HeaderButton from '../../../layouts/admin/headerButton';
       <div className={styles.main}>
             <NavLink currentPage="Wage" />
             <div className={styles.tableGroup}>
-                <HeaderButton text="Import wage"/>
+                <HeaderButton text="Import wage" add={true}/>
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                     <thead>

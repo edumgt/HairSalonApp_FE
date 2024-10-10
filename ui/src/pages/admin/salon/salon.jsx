@@ -2,8 +2,7 @@ import styles from './salon.module.css';
 import NavLink from '../../../layouts/admin/navLink'
 import HeaderColumn from '../../../layouts/admin/headerColumn'
 import HeaderButton from '../../../layouts/admin/headerButton';
-// import EditButton from '../../../layouts/admin/editButton';
-import editIcon from '../../../assets/admin/pencil-fiiled.svg'
+import EditButton from '../../../layouts/admin/editButton';
 
 const ListItem = ({ number, city, address, status, iconSrc }) => {
   return (
@@ -20,10 +19,7 @@ const ListItem = ({ number, city, address, status, iconSrc }) => {
         <img className={styles.salonImg} alt="" src={iconSrc} />
       </td>
       <td>
-      <div className={styles.editGroup}>
-            <div className={styles.edit}>Edit</div>
-            <img className={styles.edit} src={editIcon} alt="" />
-          </div>
+        <EditButton/>
       </td>
     </tr>
   );
@@ -42,7 +38,7 @@ const Salon = () => {
       <NavLink currentPage="Salon" />
 
     <div className={styles.tableGroup}>
-          <HeaderButton text="Salon" />
+          <HeaderButton text="Add salon" add={true} />
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>

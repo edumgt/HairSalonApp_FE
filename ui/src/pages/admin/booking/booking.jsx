@@ -2,7 +2,7 @@ import styles from './booking.module.css';
 import NavLink from '../../../layouts/admin/navLink'
 import HeaderColumn from '../../../layouts/admin/headerColumn'
 import HeaderButton from '../../../layouts/admin/headerButton';
-import editIcon from '../../../assets/admin/pencil-fiiled.svg'
+import EditButton from '../../../layouts/admin/editButton';
 
   const ListItem = ({ id, name, cutomerID, serviceName, bookedDate, paymentStatus, bookingStatus }) => {
     return (
@@ -22,10 +22,7 @@ import editIcon from '../../../assets/admin/pencil-fiiled.svg'
                 <div className={`${bookingStatus === 'Done' ? styles.greenStatus : styles.redStatus}`}>{bookingStatus}</div>
             </div></td>
         <td>
-          <div className={styles.editGroup}>
-            <div className={styles.edit}>Edit</div>
-            <img className={styles.edit} src={editIcon} alt="" />
-          </div>
+          <EditButton/>
         </td>
       </tr>
     );
@@ -41,7 +38,7 @@ import editIcon from '../../../assets/admin/pencil-fiiled.svg'
       <div className={styles.main}>
             <NavLink currentPage="Booking" />
             <div className={styles.tableGroup}>
-                <HeaderButton text="?"/>
+                <HeaderButton add={false} />
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                     <thead>

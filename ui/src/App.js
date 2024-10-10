@@ -7,21 +7,21 @@ import Wage from './pages/admin/wage/wage';
 import Booking from './pages/admin/booking/booking';
 import ChangePassword from './pages/admin/profile/changePassword';
 import EditProfile from './pages/admin/profile/editProfile';
+import Service from './pages/admin/service/service';
+import Category from './pages/admin/category/category';
 function App() {
   return (
     <Router>
       <Routes>
       <Route path="/" element={<Layout />}>
-        {/* <Route path="/admin"> */}
           {/* Các route con sẽ được render trong Outlet của Layout */}
-          {/* <Route path="dashboard" element={<Dashboard />} /> */}
           <Route path="profile" element={<Profile />} />
-          
           <Route path="salon" element={<Salon />} />
           <Route path="staff" element={<Staff />} />
           <Route path="wage" element={<Wage />} />
           <Route path="booking" element={<Booking />} />
-        {/* </Route> */}
+          <Route path="service" element={<Service />} />
+          <Route path="category" element={<Category />} />
         </Route>
         <Route path="changePassword" element={<ChangePassword />} />
         <Route path="editProfile" element={<EditProfile />} />
