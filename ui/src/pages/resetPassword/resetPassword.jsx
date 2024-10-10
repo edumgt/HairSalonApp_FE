@@ -1,19 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { LockOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    } else {
+      message.error('Token không hợp lệ');
+      navigate('/forgot-password');
+    }
+  }, [location, navigate]);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Ở đây, bạn sẽ gọi API để đặt lại mật khẩu
-      console.log('Received values of form: ', values);
-      message.success('Mật khẩu đã được đặt lại thành công!');
+      const response = await axios.post(
+        'http://localhost:8080/api/v1/auth/reset-password', 
+        {
+          newPassword: values.newPassword
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token // Gửi token trực tiếp
+          },
+          timeout: 10000
+        }
+      );
+
+      if (response.data.code === 200) {
+        message.success('Mật khẩu đã được đặt lại thành công!');
+        navigate('/login');
+      } else {
+        throw new Error(response.data.message || 'Có lỗi xảy ra khi đặt lại mật khẩu.');
+      }
     } catch (error) {
-      message.error('Có lỗi xảy ra khi đặt lại mật khẩu.');
+      console.error('Error details:', error);
+      if (error.response) {
+        message.error(`Lỗi server: ${error.response.data.message || error.response.statusText}`);
+      } else if (error.request) {
+        message.error('Không nhận được phản hồi từ server. Vui lòng kiểm tra kết nối mạng.');
+      } else {
+        message.error(`Lỗi: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ function ForgotPassword() {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [showResetLink, setShowResetLink] = useState(false);
+  const [resetToken, setResetToken] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,6 +23,7 @@ function ForgotPassword() {
       if (response.status === 200) {
         setMessage('Yêu cầu đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn.');
         setShowResetLink(true);
+        setResetToken(response.data.token); // Giả sử backend trả về token trong response
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -34,7 +36,7 @@ function ForgotPassword() {
   };
 
   const handleGoToResetPage = () => {
-    navigate('/reset-password');
+    navigate(`/reset-password?token=${resetToken}`);
   };
 
   return (
