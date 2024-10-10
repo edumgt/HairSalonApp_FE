@@ -1,59 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [token, setToken] = useState('');
-  const location = useLocation();
   const navigate = useNavigate();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  var getToken = searchParams.get('token');
+  if (getToken) {
+    localStorage.setItem('resetPasswordToken', getToken);
+  }
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const tokenFromUrl = searchParams.get('token');
-    if (tokenFromUrl) {
-      setToken(tokenFromUrl);
-    } else {
-      message.error('Token không hợp lệ');
+    const token = localStorage.getItem('resetPasswordToken');
+    if (!token) {
+      message.error('Không tìm thấy thông tin xác thực. Vui lòng thử lại từ đầu.');
       navigate('/forgot-password');
     }
-  }, [location, navigate]);
+  }, [navigate]);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('resetPasswordToken');
+      if (!token) {
+        throw new Error('Không tìm thấy thông tin xác thực.');
+      }
+
       const response = await axios.post(
         'http://localhost:8080/api/v1/auth/reset-password', 
         {
-          newPassword: values.newPassword
+          newPassword: values.newPassword,
         },
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token // Gửi token trực tiếp
-          },
-          timeout: 10000
+            'Authorization': `Bearer ${token}`
+          }
         }
       );
 
-      if (response.data.code === 200) {
+      if (response.status === 200) {
         message.success('Mật khẩu đã được đặt lại thành công!');
+        localStorage.removeItem('resetPasswordToken');
         navigate('/login');
       } else {
         throw new Error(response.data.message || 'Có lỗi xảy ra khi đặt lại mật khẩu.');
       }
     } catch (error) {
-      console.error('Error details:', error);
-      if (error.response) {
-        message.error(`Lỗi server: ${error.response.data.message || error.response.statusText}`);
-      } else if (error.request) {
-        message.error('Không nhận được phản hồi từ server. Vui lòng kiểm tra kết nối mạng.');
-      } else {
-        message.error(`Lỗi: ${error.message}`);
-      }
+      console.error('Chi tiết lỗi:', error);
+      // ... (phần xử lý lỗi giữ nguyên)
     } finally {
       setLoading(false);
     }

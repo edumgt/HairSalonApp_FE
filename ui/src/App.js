@@ -3,6 +3,7 @@ import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
 
+
 import React from "react";
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -64,6 +65,8 @@ function App() {
         { path: "/dich-vu/spa/:comboId", element: <SpaComboDetail /> },
         { path: "booking", element: <BookingComponent /> },
         { path: "reset-password", element: <ResetPassword /> },
+        // Thêm route mới để xử lý token từ email
+        { path: "reset-password/:token", element: <ResetPassword /> },
       ],
     },
   ]);

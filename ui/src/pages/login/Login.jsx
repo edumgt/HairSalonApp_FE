@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Form } from 'antd';
+import { Form, message } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import './Login.css';
 
 function Login() {
@@ -32,19 +33,46 @@ function Login() {
         body: JSON.stringify(loginData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        saveToken(data.token);
-        console.log('Đăng nhập thành công!');
-        navigate('/home');
+        saveToken(data.result.token);
+        message.success({
+          content: 'Đăng nhập thành công!',
+          icon: <CheckCircleOutlined />,
+          duration: 2,
+          style: {
+            marginTop: '20vh',
+          },
+        });
+        setTimeout(() => navigate('/home'), 2000);
       } else {
-        const errorData = await response.json();
-        console.error('Đăng nhập thất bại:', errorData.message);
-        alert('Đăng nhập thất bại: ' + errorData.message);
+        console.error('Đăng nhập thất bại:', data);
+        let errorMessage = 'Vui lòng kiểm tra lại thông tin đăng nhập';
+        if (data.message) {
+          errorMessage = data.message;
+        } else if (response.status === 403) {
+          errorMessage = 'Không có quyền truy cập. Vui lòng kiểm tra lại thông tin đăng nhập hoặc liên hệ quản trị viên.';
+        }
+        message.error({
+          content: `Đăng nhập thất bại: ${errorMessage}`,
+          icon: <CloseCircleOutlined />,
+          duration: 3,
+          style: {
+            marginTop: '20vh',
+          },
+        });
       }
     } catch (error) {
       console.error('Lỗi khi đăng nhập:', error);
-      alert('Lỗi khi đăng nhập. Vui lòng thử lại.');
+      message.error({
+        content: `Lỗi khi đăng nhập: ${error.message || 'Vui lòng thử lại sau'}`,
+        icon: <CloseCircleOutlined />,
+        duration: 3,
+        style: {
+          marginTop: '20vh',
+        },
+      });
     }
   };
 
