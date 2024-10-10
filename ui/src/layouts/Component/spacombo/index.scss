@@ -1,6 +1,6 @@
 .spa-combo {
     padding: 2rem;
-    width: 60%;
+    width: 70%;
     max-width: 1200px;
     margin: 0 auto;
     font-family: sans-serif;
@@ -24,15 +24,15 @@
   
       &__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr)); // Sử dụng minmax để đảm bảo các cột có kích thước bằng nhau
         gap: 2rem;
+        justify-content: start;
       }
   
       &#lay-ray-tai {
         .service-category__grid {
-          grid-template-columns: 1fr;
-          max-width: 500px;
-          margin: 0 auto 0 0 ;
+          grid-template-columns: minmax(0, 580px); // Giới hạn chiều rộng tối đa là 500px
+          justify-content: start; // Căn trái grid
         }
       }
     }
@@ -70,12 +70,14 @@
         color: #666;
         font-size: 0.9rem;
         text-align: left;
+        
       }
   
       &__image-container {
         display: flex;
         padding: 0 1rem 1rem;
         background-color: #f0f4ff;
+        height: 150px;
       }
   
       &__main-image {
@@ -159,26 +161,19 @@
     }
   }
   
-  @media (max-width: 1024px) {
-    .spa-combo {
-      width: 90%;
   
-      .service-category__grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-  
-      .service-category#lay-ray-tai .service-category__grid {
-        grid-template-columns: 1fr;
-      }
+@media (max-width: 1024px) {
+  .spa-combo {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .spa-combo {
+    width: 95%;
+
+    .service-category__grid {
+      grid-template-columns: 1fr;
     }
   }
-  
-  @media (max-width: 768px) {
-    .spa-combo {
-      width: 95%;
-  
-      .service-category__grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  }
+}

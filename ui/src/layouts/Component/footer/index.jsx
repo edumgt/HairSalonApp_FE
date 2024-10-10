@@ -12,7 +12,7 @@ function Footer() {
     }
   };
   return (
-    <div className="footer-container">
+    <footer className="footer-container">
       <Row className="footer-row">
         <Col
           xs={{ span: 5, offset: 1 }}
@@ -86,7 +86,7 @@ function Footer() {
           </ul>
         </Col>
       </Row>
-    </div>
+    </footer>
   );
 }
 
