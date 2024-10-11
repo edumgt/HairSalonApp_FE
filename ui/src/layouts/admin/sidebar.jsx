@@ -5,7 +5,6 @@ import styles from './sidebar.module.css';
 import menuIcon from '../../assets/admin/menu.svg'
 import dashboardIcon from '../../assets//admin/chart.svg'
 import profileIcon from '../../assets//admin/profile.svg'
-import salonIcon from '../../assets//admin/store.svg'
 import staffIcon from '../../assets//admin/staff.svg'
 import wageIcon from '../../assets//admin/coins.svg'
 import bookingIcon from '../../assets//admin/booking.svg'
@@ -45,13 +44,6 @@ const Sidebar = () => {
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={profileIcon} />
             						<div className={styles.itemContent}>Profile</div>
-          					</div>
-        				</div>
-        				<div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/salon', 'salon')}>
-          					<div className={styles.itemGroup}>
-            						<img className={styles.navIcon} alt="" src={salonIcon}/>
-            						<div className={styles.itemContent}>Salon</div>
           					</div>
         				</div>
         				<div className={`${styles.item} ${activeItem === 'staff' ? styles.active : ''}`} 

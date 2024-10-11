@@ -5,6 +5,7 @@ import { Button, DatePicker, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Upload from "antd/es/upload/Upload";
 import './addForm.css'
+import TextArea from "antd/es/input/TextArea";
 
 const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -12,6 +13,7 @@ const normFile = (e) => {
     }
     return e?.fileList;
   };
+const monthFormat = 'YYYY/MM'
 function AddForm({inputs}) {
   return (
     <div className="content">
@@ -25,7 +27,8 @@ function AddForm({inputs}) {
                         rules={input.rules}
                     >
                         {input.isInput && <Input/>}
-                        {input.isStatus && 
+                        {input.isTextArea && <TextArea rows={2} maxLength={3}/>}
+                        {input.isSelect && 
                             <Select allowClear>
                                 {input.options.map((option) => (
                                     <Select.Option key={option.value} value={option.value}>
@@ -35,6 +38,7 @@ function AddForm({inputs}) {
                             </Select>
                         }
                         {input.isDate && <DatePicker/>}
+                        {input.isMonth && <DatePicker format={monthFormat} picker="month"/>}
                         {input.isImg && 
                             <Upload action="/upload.do" listType="picture-card" getValueFromEvent={normFile}>
                                 <button
