@@ -6,7 +6,7 @@ import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
 import LatestNews from "../../layouts/Component/LatestNew";
-
+import "./index.scss";
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
