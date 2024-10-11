@@ -1,0 +1,17 @@
+.navLink {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.navLink a {
+    color: #0066cc;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.navLink span {
+    color: #666;
+}

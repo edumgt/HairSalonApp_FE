@@ -10,8 +10,10 @@ import Service from './pages/admin/service/service';
 import Category from './pages/admin/category/category';
 import AddStaff from './pages/admin/staff/addStaff';
 import ImportWage from './pages/admin/wage/importWage';
-import AddService from './pages/admin/service/addService';
+import AddService from './pages/admin/service/Create/addService';
+import UpdateService from './pages/admin/service/Update/updateService';
 import AddCategory from './pages/admin/category/addCategory';
+
 function App() {
   return (
     <Router>
@@ -26,9 +28,9 @@ function App() {
               <Route path="importWage" element={<ImportWage />}/>
             </Route>
             <Route path="booking" element={<Booking />} />
-            <Route path="service" element={<Service />} >
-              <Route path="addService" element={<AddService />} />
-            </Route>
+            <Route path="service" element={<Service />} />
+            <Route path="service/addService" element={<AddService />} />
+            <Route path="service/updateService/:id" element={<UpdateService />} />
             <Route path="category" element={<Category />}>
               <Route path="addCategory" element={<AddCategory />}/>
             </Route>
@@ -36,7 +38,7 @@ function App() {
           <Route path="changePassword" element={<ChangePassword />} />
           <Route path="editProfile" element={<EditProfile />} />
       </Routes>
-  </Router>
+    </Router>
   )
 }
 

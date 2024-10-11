@@ -1,0 +1,51 @@
+.addServiceContainer {
+    padding: 20px;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.cancelButton, .saveButton {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+}
+
+.saveButton {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Thêm các styles khác cho form và các nút */
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.formGroup textarea {
+    height: 100px;
+    resize: vertical;
+}
