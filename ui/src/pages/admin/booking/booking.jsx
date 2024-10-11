@@ -1,8 +1,8 @@
 import styles from './booking.module.css';
-import NavLink from '../../../layouts/admin/navLink'
-import HeaderColumn from '../../../layouts/admin/headerColumn'
-import HeaderButton from '../../../layouts/admin/headerButton';
-import EditButton from '../../../layouts/admin/editButton';
+import NavLink from '../../../layouts/admin/components/link/navLink'
+import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
+import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
+import EditButton from '../../../layouts/admin/components/table/button/editButton';
 
   const ListItem = ({ id, name, cutomerID, serviceName, bookedDate, paymentStatus, bookingStatus }) => {
     return (

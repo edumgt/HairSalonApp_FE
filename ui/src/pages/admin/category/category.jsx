@@ -1,8 +1,8 @@
-import NavLink from '../../../layouts/admin/navLink'
-import HeaderColumn from '../../../layouts/admin/headerColumn'
-import HeaderButton from '../../../layouts/admin/headerButton'
+import NavLink from '../../../layouts/admin/components/link/navLink'
+import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
+import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './category.module.css'
-import EditButton from '../../../layouts/admin/editButton'
+import EditButton from '../../../layouts/admin/components/table/button/editButton'
 
 const ListItem = ({categoryID, categoryName, categoryDes}) => {
     return(

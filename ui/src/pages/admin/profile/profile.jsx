@@ -1,6 +1,6 @@
 import styles from './profile.module.css';
 import avatar from '../../../assets/admin/profileIcon.svg'
-import NavLink from '../../../layouts/admin/navLink'
+import NavLink from '../../../layouts/admin/components/link/navLink'
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
 import { useContext } from 'react';

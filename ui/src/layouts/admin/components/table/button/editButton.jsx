@@ -1,6 +1,6 @@
 import './editButton.css'
-import editIcon from '../../assets/admin/pencil-fiiled.svg'
-import deleteIcon from '../../assets/admin/deleteIcon.svg'
+import editIcon from '../../../../../assets/admin/pencil-fiiled.svg'
+import deleteIcon from '../../../../../assets/admin/deleteIcon.svg'
 import { Button } from 'antd';
 // import { useResponsive } from 'antd-style';
 const EditButton  = () => {

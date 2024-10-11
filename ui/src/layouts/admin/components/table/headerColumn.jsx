@@ -1,5 +1,5 @@
 import './headerColumn.css'
-import sortIcon from '../../assets/admin/column-sorting.svg'
+import sortIcon from '../../../../assets/admin/column-sorting.svg'
 
 const HeaderColumn = ({ title, sortable }) => {
     return (
