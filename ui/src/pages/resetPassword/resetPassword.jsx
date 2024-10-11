@@ -8,11 +8,13 @@ const ResetPassword = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
   const [searchParams, setSearchParams] = useSearchParams();
   var getToken = searchParams.get('token');
   if (getToken) {
     localStorage.setItem('resetPasswordToken', getToken);
   }
+
   useEffect(() => {
     const token = localStorage.getItem('resetPasswordToken');
     if (!token) {
