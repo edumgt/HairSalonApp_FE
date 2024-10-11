@@ -1,137 +1,159 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Thêm useNavigate vào đây
+import { Form } from 'antd'; // Thêm import này
 import './SignUp.css';
 
 function SignUp() {
-  const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState(''); 
   const [emailError, setEmailError] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('+84');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('STAFF');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  
+  const [form] = Form.useForm(); // Thêm dòng này
+
+  const navigate = useNavigate(); // Thêm dòng này
+
   const validateEmail = (email) => {
     const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return re.test(String(email).toLowerCase());
   };
 
-  const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    if (newEmail && !validateEmail(newEmail)) {
-      setEmailError('Vui lòng nhập một địa chỉ email hợp lệ');
-    } else {
-      setEmailError('');
-    }
-  };
+  const handleSignUp = async (values) => {
+    const { firstName, lastName, email, phone, password, confirmPassword } = values;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Mật khẩu không khớp!");
+    if (!validateEmail(email)) {
+      setEmailError('Địa chỉ email không hợp lệ');
       return;
     }
-    console.log('Đăng ký với:', { firstName, lastName, username, phoneNumber, password, acceptTerms });
-  };
 
-  const handleFacebookSignUp = () => {
-    console.log('Đăng ký bằng Facebook');
-    // Thêm logic đăng ký Facebook ở đây
-  };
+    if (password !== confirmPassword) {
+      alert('Mật khẩu không khớp');
+      return;
+    }
 
-  const handleGoogleSignUp = () => {
-    console.log('Đăng ký bằng Google');
-    // Thêm logic đăng ký Google ở đây
-  };
+    const userData = {
+      phone,
+      password,
+      firstName,
+      lastName,
+      email,
+      role
+    };
 
-  const togglePasswordVisibility = (field) => {
-    if (field === 'password') {
-      setShowPassword(!showPassword);
-    } else if (field === 'confirmPassword') {
-      setShowConfirmPassword(!showConfirmPassword);
+    console.log('Dữ liệu đăng ký:', userData);
+
+    try {
+      console.log('Đang gửi yêu cầu đăng ký...');
+      
+      const response = await fetch('http://localhost:8080/api/v1/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Lỗi khi đăng ký');
+      }
+
+      console.log('Đăng ký thành công!', data);
+      alert('Đăng ký thành công!');
+      
+      // Chuyển hướng đến trang đăng nhập
+      navigate('/login');
+    } catch (error) {
+      console.error('Lỗi đăng ký:', error);
+      alert(`Đăng ký thất bại: ${error.message}`);
     }
   };
 
   return (
     <div className="signup-page">
       <div className="signup-container">
-      <h2>Đăng ký</h2>
-        <form className="signup-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-            <label htmlFor="username">Tên người dùng</label>
-            <input
-              id="username"
-              type="text"
-              className="signup-input"
-              placeholder="Nhập tên người dùng"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+        <h2>Đăng ký</h2>
+        <Form form={form} className="signup-form" onFinish={handleSignUp}>
           <div className="form-group name-group">
             <div className="name-input">
-              <label htmlFor="firstName">Họ</label>
-              <input
-                id="firstName"
-                type="text"
-                className="signup-input"
-                placeholder="Nhập họ"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
+              <Form.Item
+                name="firstName"
+                label="Họ"
+                rules={[{ required: true, message: 'Vui lòng nhập họ' }]}
+              >
+                <input
+                  type="text"
+                  className="signup-input"
+                  placeholder="Nhập họ"
+                />
+              </Form.Item>
             </div>
             <div className="name-input">
-              <label htmlFor="lastName">Tên</label>
-              <input
-                id="lastName"
-                type="text"
-                className="signup-input"
-                placeholder="Nhập tên"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
+              <Form.Item
+                name="lastName"
+                label="Tên"
+                rules={[{ required: true, message: 'Vui lòng nhập tên' }]}
+              >
+                <input
+                  type="text"
+                  className="signup-input"
+                  placeholder="Nhập tên"
+                />
+              </Form.Item>
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: 'Vui lòng nhập email' },
+              { type: 'email', message: 'Email không hợp lệ' }
+            ]}
+          >
             <input
-              id="email"
               type="email"
               className={`signup-input ${emailError ? 'input-error' : ''}`}
               placeholder="Nhập email của bạn"
-              value={email}
-              onChange={handleEmailChange}
-              required
             />
-            {emailError && <span className="error-message">{emailError}</span>}
-          </div>
+          </Form.Item>
+          {emailError && <span className="error-message">{emailError}</span>}
 
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu</label>
+          <Form.Item
+            name="phone"
+            label="Số điện thoại"
+            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+          >
+            <input
+              type="text"
+              className="signup-input"
+              placeholder="Nhập số điện thoại"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="password"
+            label="Mật khẩu"
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+          >
             <div className="password-input-container">
               <input
-                id="password"
                 type={showPassword ? "text" : "password"}
                 className="signup-input"
                 placeholder="Nhập mật khẩu"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
               />
               <button 
                 type="button" 
                 className="toggle-password"
-                onClick={() => togglePasswordVisibility('password')}
+                onClick={() => setShowPassword(!showPassword)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                   {showPassword ? (
@@ -148,24 +170,35 @@ function SignUp() {
                 </svg>
               </button>
             </div>
-            <small>Sử dụng 8 ký tự trở lên kết hợp chữ cái, số và ký tự đặc biệt</small>
-          </div>
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
+          </Form.Item>
+          <small>Sử dụng 8 ký tự trở lên kết hợp chữ cái, số và ký tự đặc biệt</small>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: 'Vui lòng xác nhận mật khẩu' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Mật khẩu không khớp'));
+                },
+              }),
+            ]}
+          >
             <div className="password-input-container">
               <input
-                id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 className="signup-input"
                 placeholder="Nhập lại mật khẩu"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
               />
               <button 
                 type="button" 
                 className="toggle-password"
-                onClick={() => togglePasswordVisibility('confirmPassword')}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                   {showConfirmPassword ? (
@@ -182,28 +215,32 @@ function SignUp() {
                 </svg>
               </button>
             </div>
-          </div>
-          <div className="form-group checkbox-group">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-              required
-            />
-            <label htmlFor="terms">Tôi đồng ý với các điều khoản và chính sách bảo mật</label>
-          </div>
+          </Form.Item>
+
+          <Form.Item
+            name="acceptTerms"
+            valuePropName="checked"
+            rules={[
+              { required: true, message: 'Vui lòng đồng ý với điều khoản và chính sách' }
+            ]}
+          >
+            <div className="form-group checkbox-group">
+              <input type="checkbox" id="terms" />
+              <label htmlFor="terms">Tôi đồng ý với các điều khoản và chính sách bảo mật</label>
+            </div>
+          </Form.Item>
+
           <button type="submit" className="signup-button">Đăng ký</button>
-        </form>
+        </Form>
         <div className="divider"></div>
         <p className="social-signup-text">Hoặc đăng ký bằng:</p>
         <div className="social-signup">
-          <button onClick={handleFacebookSignUp} className="facebook-signup">
+          <button onClick={() => console.log('Đăng ký bằng Facebook')} className="facebook-signup">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
           </button>
-          <button onClick={handleGoogleSignUp} className="google-signup">
+          <button onClick={() => console.log('Đăng ký bằng Google')} className="google-signup">
             <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
               <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
                 <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
@@ -216,7 +253,6 @@ function SignUp() {
         </div>
         <p className="login-link">Đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>
       </div>
-     
     </div>
   );
 }

@@ -1,8 +1,54 @@
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
+import { Dropdown, Menu, Modal } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import "./index.scss";
 
 function Header() {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    window.addEventListener('storage', checkLoginStatus);
+    window.addEventListener('login', checkLoginStatus);
+    window.addEventListener('logout', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('login', checkLoginStatus);
+      window.removeEventListener('logout', checkLoginStatus);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    Modal.confirm({
+      title: 'Xác nhận đăng xuất',
+      content: 'Bạn có chắc chắn muốn đăng xuất?',
+      onOk() {
+        localStorage.removeItem('token');
+        window.dispatchEvent(new Event('logout'));
+        navigate('/home');
+      },
+      onCancel() {
+        console.log('Hủy đăng xuất');
+      },
+    });
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" onClick={handleLogout} icon={<LogoutOutlined />}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div className="header">
@@ -12,8 +58,8 @@ function Header() {
           alt="logo"
           className="header__logo"
           width={100}
-          onClick={() => navigate("/home")} // Điều hướng về trang chủ
-          style={{ cursor: "pointer" }} // Thêm con trỏ để chỉ ra logo có thể click
+          onClick={() => navigate("/home")}
+          style={{ cursor: "pointer" }}
         />
 
         <ul className="header__navigation">
@@ -54,12 +100,20 @@ function Header() {
         </ul>
       </div>
       <div className="header__right">
-        <div
-          className="header__right__login-button"
-          onClick={() => navigate("/login")}
-        >
-          <span className="header__right__login-button__text">Đăng nhập</span>
-        </div>
+        {isLoggedIn ? (
+          <Dropdown overlay={menu} placement="bottomRight">
+            <div className="header__right__user-icon">
+              <UserOutlined style={{ fontSize: '20px' }} />
+            </div>
+          </Dropdown>
+        ) : (
+          <div
+            className="header__right__login-button"
+            onClick={() => navigate("/login")}
+          >
+            <span className="header__right__login-button__text">Đăng nhập</span>
+          </div>
+        )}
       </div>
     </div>
   );
