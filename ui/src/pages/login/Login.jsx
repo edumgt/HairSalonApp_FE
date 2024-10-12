@@ -8,12 +8,14 @@ function Login() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
 
   //lưu cả token và số điện thoại
-  const saveUserData = (token, phoneNumber) => {
+  const saveUserData = (token, phoneNumber, userName) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userPhone', phoneNumber);
+    localStorage.setItem('userName', userName);
     window.dispatchEvent(new Event('login'));
   };
 
@@ -26,6 +28,7 @@ function Login() {
     };
 
     console.log('Dữ liệu đăng nhập:', loginData);
+    setIsLoggingIn(true);
 
     try {
       const response = await fetch('http://localhost:8080/api/v1/auth/login', {
@@ -39,17 +42,31 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        saveUserData(data.result.token, username); // Lưu token và số điện thoại
-        window.dispatchEvent(new Event('login'));
-        message.success({
-          content: 'Đăng nhập thành công!',
-          icon: <CheckCircleOutlined />,
-          duration: 2,
-          style: {
-            marginTop: '20vh',
-          },
-        });
-        setTimeout(() => navigate('/home'), 2000);
+        console.log('Full login response:', data);
+        if (data.result && data.result.token) {
+          const userName = data.result.userName || username; // Sử dụng username nếu userName không có trong response
+          saveUserData(data.result.token, username, userName);
+          console.log('User data saved:', { token: data.result.token, username, userName });
+          
+          window.dispatchEvent(new Event('login'));
+          console.log('Login event dispatched');
+          
+          message.success({
+            content: 'Đăng nhập thành công!',
+            icon: <CheckCircleOutlined />,
+            duration: 2,
+            style: {
+              marginTop: '20vh',
+            },
+          });
+          
+          setTimeout(() => {
+            navigate('/home');
+          }, 2000);
+        } else {
+          console.error('Missing required data in response:', data);
+          message.error('Đăng nhập thất bại: Dữ liệu không hợp lệ từ server');
+        }
       } else {
         console.error('Đăng nhập thất bại:', data);
         let errorMessage = 'Vui lòng kiểm tra lại thông tin đăng nhập';
@@ -77,8 +94,12 @@ function Login() {
           marginTop: '20vh',
         },
       });
+    } finally {
+      setIsLoggingIn(false);
     }
   };
+
+  
 
   return (
     <div className="loginPage">
@@ -137,7 +158,9 @@ function Login() {
             </div>
           </Form.Item>
 
-          <button type="submit" className="loginButton">Đăng nhập</button>
+          <button type="submit" className="loginButton" disabled={isLoggingIn}>
+            {isLoggingIn ? 'Đang đăng nhập...' : 'Đăng nhập'}
+          </button>
         </Form>
         <Link to="/forgot-password" className="forgetPasswordLink">Quên mật khẩu?</Link>
         <div className="divider"></div>

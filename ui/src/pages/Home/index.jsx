@@ -22,11 +22,13 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkLoginStatus = () => { // kiem tra trang thai dang nhap va so dien thoai 
+    const checkLoginStatus = () => {
+      console.log('Checking login status in Home');
       const token = localStorage.getItem('token');
-      setIsLoggedIn(!!token);
-
       const userPhone = localStorage.getItem('userPhone');
+      console.log('Stored token:', token);
+      console.log('Stored userPhone:', userPhone);
+      setIsLoggedIn(!!token);
       if (userPhone) {
         setPhoneNumber(userPhone);
         form.setFieldsValue({ phone: userPhone });
@@ -36,22 +38,21 @@ function Home() {
       }
     };
 
-    const handleLogout = () => {
-      setPhoneNumber('');
-      form.setFieldsValue({ phone: '' });
-      setIsLoggedIn(false);
-    };
-
     checkLoginStatus();
 
+    const handleLoginEvent = () => {
+      console.log('Login event received in Home');
+      checkLoginStatus();
+    };
+
     window.addEventListener('storage', checkLoginStatus);
-    window.addEventListener('login', checkLoginStatus);
-    window.addEventListener('logout', handleLogout);
+    window.addEventListener('login', handleLoginEvent);
+    window.addEventListener('logout', checkLoginStatus);
 
     return () => {
       window.removeEventListener('storage', checkLoginStatus);
-      window.removeEventListener('login', checkLoginStatus);
-      window.removeEventListener('logout', handleLogout);
+      window.removeEventListener('login', handleLoginEvent);
+      window.removeEventListener('logout', checkLoginStatus);
     };
   }, [form]);
 
@@ -197,7 +198,12 @@ function Home() {
 
       if (response.ok) {
         localStorage.setItem('token', data.result.token);
-        localStorage.setItem('userPhone', phoneNumber);
+        localStorage.setItem('userPhone', currentPhoneNumber);
+        localStorage.setItem('userName', data.result.userName || currentPhoneNumber); // Thêm dòng này
+        
+        setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
+        setPhoneNumber(currentPhoneNumber); // Cập nhật số điện thoại
+        
         window.dispatchEvent(new Event('login'));
 
         setIsPasswordModalVisible(false);
@@ -309,7 +315,7 @@ function Home() {
                 <Modal
                   title="Thông báo cập nhật Chính sách bảo mật Công ty Cổ Phần Thương Mại Dịch vụ 30 Shine Việt Nam"
                   style={{ textAlign: "center", top: 20 }}
-                  visible={isModalOpen}
+                  open={isModalOpen}
                   onOk={handleOk}
                   onCancel={handleCancel}
                   width={700}
@@ -357,7 +363,7 @@ function Home() {
                   </div>
                 </Modal>
                 <Modal
-                  key={currentPhoneNumber} 
+                    key={currentPhoneNumber} 
                   title="Nhập mật khẩu"
                   visible={isPasswordModalVisible}
                   onOk={handlePasswordSubmit}
@@ -386,7 +392,7 @@ function Home() {
                 </Modal>
                 <Modal
                   title="Số điện thoại chưa đăng ký"
-                  visible={isUnregisteredModalVisible}
+                  open={isUnregisteredModalVisible}
                   onOk={() => setIsUnregisteredModalVisible(false)}
                   onCancel={() => setIsUnregisteredModalVisible(false)}
                   footer={[
