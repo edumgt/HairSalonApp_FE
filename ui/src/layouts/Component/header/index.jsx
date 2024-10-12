@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
-import { Dropdown, Menu, Modal } from 'antd';
+import { Dropdown, Menu, Modal, message } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import "./index.scss";
 
@@ -33,8 +33,10 @@ function Header() {
       content: 'Bạn có chắc chắn muốn đăng xuất?',
       onOk() {
         localStorage.removeItem('token');
+        localStorage.removeItem('userPhone');
         window.dispatchEvent(new Event('logout'));
         navigate('/home');
+        message.success('Đăng xuất thành công');
       },
       onCancel() {
         console.log('Hủy đăng xuất');

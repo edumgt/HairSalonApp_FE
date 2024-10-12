@@ -9,8 +9,11 @@ function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const saveToken = (token) => {
+
+  //lưu cả token và số điện thoại
+  const saveUserData = (token, phoneNumber) => {
     localStorage.setItem('token', token);
+    localStorage.setItem('userPhone', phoneNumber);
     window.dispatchEvent(new Event('login'));
   };
 
@@ -36,7 +39,8 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        saveToken(data.result.token);
+        saveUserData(data.result.token, username); // Lưu token và số điện thoại
+        window.dispatchEvent(new Event('login'));
         message.success({
           content: 'Đăng nhập thành công!',
           icon: <CheckCircleOutlined />,

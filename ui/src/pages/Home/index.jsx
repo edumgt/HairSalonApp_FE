@@ -7,17 +7,49 @@ import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
 import LatestNews from "../../layouts/Component/LatestNew";
 import "./index.scss";
+
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [form] = Form.useForm(); // tạo 1 ínstance cua form 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
+    const checkLoginStatus = () => { // kiem tra trang thai dang nhap va so dien thoai 
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+
+      const userPhone = localStorage.getItem('userPhone');
+      if (userPhone) {
+        setPhoneNumber(userPhone);
+        form.setFieldsValue({ phone: userPhone });
+      } else {
+        setPhoneNumber('');
+        form.setFieldsValue({ phone: '' });
+      }
+    };
+
+    const handleLogout = () => {
+      setPhoneNumber('');
+      form.setFieldsValue({ phone: '' });
+      setIsLoggedIn(false);
+    };
+
+    checkLoginStatus();
+
+    window.addEventListener('storage', checkLoginStatus);
+    window.addEventListener('login', checkLoginStatus);
+    window.addEventListener('logout', handleLogout);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('login', checkLoginStatus);
+      window.removeEventListener('logout', handleLogout);
+    };
+  }, [form]);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -55,7 +87,7 @@ function Home() {
 
   const handleBooking = () => {
     if (isChecked) {
-      navigate(`/datlich`);
+      navigate(`/booking`);
       setIsModalOpen(false);
     } else {
       message.warning("Bạn cần đồng ý với chính sách trước khi đặt lịch.");
@@ -105,8 +137,10 @@ function Home() {
                 </div>
                 <br />
                 <Form
+                  form={form}
                   className="booking-form"
                   onFinish={showModal}
+                  
                 >
                   <Row gutter={16}>
                     <Col span={16}>
@@ -126,7 +160,8 @@ function Home() {
                         <Input
                           placeholder="Nhập SĐT để đặt lịch"
                           className="booking-input"
-                        />
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                        />  
                       </Form.Item>
                     </Col>
                     <Col span={8}>
