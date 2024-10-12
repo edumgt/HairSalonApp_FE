@@ -10,18 +10,16 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-
-  //lưu cả token và số điện thoại
-  const saveUserData = (token, phoneNumber, userName) => {
+  const saveUserData = (token, username, userName) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('userPhone', phoneNumber);
+    localStorage.setItem('username', username);
     localStorage.setItem('userName', userName);
     window.dispatchEvent(new Event('login'));
   };
 
   const handleLogin = async (values) => {
     const { username, password } = values;
-    
+
     const loginData = {
       username,
       password
@@ -44,7 +42,7 @@ function Login() {
       if (response.ok) {
         console.log('Full login response:', data);
         if (data.result && data.result.token) {
-          const userName = data.result.userName || username; // Sử dụng username nếu userName không có trong response
+          const userName = data.result.userName || username;
           saveUserData(data.result.token, username, userName);
           console.log('User data saved:', { token: data.result.token, username, userName });
           
@@ -98,8 +96,6 @@ function Login() {
       setIsLoggingIn(false);
     }
   };
-
-  
 
   return (
     <div className="loginPage">

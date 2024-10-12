@@ -13,28 +13,30 @@ function Home() {
   const [isChecked, setIsChecked] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [username, setUsername] = useState('');
+  const [currentUsername, setCurrentUsername] = useState('');
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [isUnregisteredModalVisible, setIsUnregisteredModalVisible] = useState(false);
   const [password, setPassword] = useState('');
-  const [currentPhoneNumber, setCurrentPhoneNumber] = useState('');
   const [form] = Form.useForm(); // tạo 1 ínstance cua form 
   const navigate = useNavigate();
 
   useEffect(() => {
+// kiem tra trang thai dang nhap va so dien thoai 
     const checkLoginStatus = () => {
       console.log('Checking login status in Home');
       const token = localStorage.getItem('token');
-      const userPhone = localStorage.getItem('userPhone');
+
+      const storedUsername = localStorage.getItem('username');
       console.log('Stored token:', token);
-      console.log('Stored userPhone:', userPhone);
+      console.log('Stored username:', storedUsername);
       setIsLoggedIn(!!token);
-      if (userPhone) {
-        setPhoneNumber(userPhone);
-        form.setFieldsValue({ phone: userPhone });
+      if (storedUsername) {
+        setUsername(storedUsername);
+        form.setFieldsValue({ username: storedUsername });
       } else {
-        setPhoneNumber('');
-        form.setFieldsValue({ phone: '' });
+        setUsername('');
+        form.setFieldsValue({ username: '' });
       }
     };
 
@@ -44,13 +46,14 @@ function Home() {
       console.log('Login event received in Home');
       checkLoginStatus();
     };
-
     window.addEventListener('storage', checkLoginStatus);
+
     window.addEventListener('login', handleLoginEvent);
     window.addEventListener('logout', checkLoginStatus);
 
     return () => {
       window.removeEventListener('storage', checkLoginStatus);
+
       window.removeEventListener('login', handleLoginEvent);
       window.removeEventListener('logout', checkLoginStatus);
     };
@@ -65,14 +68,14 @@ function Home() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    console.log('currentPhoneNumber changed:', currentPhoneNumber);
-  }, [currentPhoneNumber]);
+    console.log('currentUsername changed:', currentUsername);
+  }, [currentUsername]);
 
 
-  const checkPhoneRegistration = async (phone) => {
+  const checkUsernameRegistration = async (username) => {
     try {
-      console.log('Checking phone registration for:', phone);
-      const response = await fetch(`http://localhost:8080/api/v1/auth/${phone}`);
+      console.log('Checking username registration for:', username);
+      const response = await fetch(`http://localhost:8080/api/v1/auth/${username}`);
       console.log('API response status:', response.status);
 
       if (response.status === 400) {
@@ -96,7 +99,7 @@ function Home() {
         return false;
       }
     } catch (error) {
-      console.error('Error checking phone registration:', error);
+      console.error('Error checking username registration:', error);
       if (error.message.includes('400')) {
         return false; // Số điện thoại chưa đăng ký
       }
@@ -153,20 +156,20 @@ function Home() {
       showModal();
       return;
     }
-    const phoneNumber = form.getFieldValue('phone');
-    if (!phoneNumber) {
+    const username = form.getFieldValue('username');
+    if (!username) {
       message.error('Vui lòng nhập số điện thoại');
       return;
     }
-    setCurrentPhoneNumber(phoneNumber);
-    console.log('Current phone number set to:', phoneNumber);
+    setCurrentUsername(username);
+    console.log('Current username set to:', username);
 
     try {
-      const isRegistered = await checkPhoneRegistration(phoneNumber);
-      console.log('Is phone registered?', isRegistered);
+      const isRegistered = await checkUsernameRegistration(username);
+      console.log('Is username registered?', isRegistered);
 
       if (isRegistered === null) {
-        // Xử lý lỗi đã được thực hiện trong hàm checkPhoneRegistration
+        // Xử lý lỗi đã được thực hiện trong hàm checkUsernameRegistration
         return;
       }
 
@@ -189,7 +192,7 @@ function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: currentPhoneNumber,
+          username: currentUsername,
           password: password
         }),
       });
@@ -198,11 +201,11 @@ function Home() {
 
       if (response.ok) {
         localStorage.setItem('token', data.result.token);
-        localStorage.setItem('userPhone', currentPhoneNumber);
-        localStorage.setItem('userName', data.result.userName || currentPhoneNumber); // Thêm dòng này
+        localStorage.setItem('username', currentUsername);
+        localStorage.setItem('userName', data.result.userName || currentUsername); 
         
         setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
-        setPhoneNumber(currentPhoneNumber); // Cập nhật số điện thoại
+        setUsername(currentUsername); // Cập nhật số điện thoại
         
         window.dispatchEvent(new Event('login'));
 
@@ -278,7 +281,7 @@ function Home() {
                   <Row gutter={16}>
                     <Col span={16}>
                       <Form.Item
-                        name="phone"
+                        name="username"
                         rules={[
                           {
                             required: true,
@@ -294,8 +297,8 @@ function Home() {
                           placeholder="Nhập SĐT để đặt lịch"
                           className="booking-input"
                           onChange={(e) => {
-                            setPhoneNumber(e.target.value);
-                            form.setFieldsValue({ phone: e.target.value });
+                            setUsername(e.target.value);
+                            form.setFieldsValue({ username: e.target.value });
                           }}
                         />
                       </Form.Item>
@@ -363,9 +366,9 @@ function Home() {
                   </div>
                 </Modal>
                 <Modal
-                    key={currentPhoneNumber} 
+                  key={currentUsername}
                   title="Nhập mật khẩu"
-                  visible={isPasswordModalVisible}
+                  open={isPasswordModalVisible}
                   onOk={handlePasswordSubmit}
                   onCancel={() => setIsPasswordModalVisible(false)}
                   okText="Đăng nhập"
@@ -375,7 +378,7 @@ function Home() {
                     <Form.Item
                       label="Số điện thoại"
                     >
-                      <Input  value={currentPhoneNumber} disabled />
+                      <Input  value={currentUsername} disabled />
                     </Form.Item>
                     <Form.Item
                       label="Mật khẩu"
@@ -419,5 +422,4 @@ function Home() {
     </div>
   );
 }
-
 export default Home;

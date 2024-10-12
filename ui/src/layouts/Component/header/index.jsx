@@ -8,18 +8,20 @@ function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const checkLoginStatus = () => {
       console.log('Checking login status in Header');
       const token = localStorage.getItem('token');
       const name = localStorage.getItem('userName');
-      const userPhone = localStorage.getItem('userPhone');
+      const storedUsername = localStorage.getItem('username');
       console.log('Stored token:', token);
       console.log('Stored userName:', name);
-      console.log('Stored userPhone:', userPhone);
+      console.log('Stored username:', storedUsername);
       setIsLoggedIn(!!token);
-      setUserName(name || userPhone || ''); // Sử dụng userPhone nếu userName không tồn tại
+      setUserName(name || '');
+      setUsername(storedUsername || '');
     };
 
     checkLoginStatus();
@@ -28,8 +30,8 @@ function Header() {
       console.log('Login event received in Header');
       checkLoginStatus();
     };
-
     window.addEventListener('storage', checkLoginStatus);
+
     window.addEventListener('login', handleLoginEvent);
     window.addEventListener('logout', checkLoginStatus);
 
@@ -38,7 +40,8 @@ function Header() {
       window.removeEventListener('login', handleLoginEvent);
       window.removeEventListener('logout', checkLoginStatus);
     };
-  }, [isLoggedIn]); // Thêm isLoggedIn vào dependency array
+
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     Modal.confirm({
@@ -46,9 +49,10 @@ function Header() {
       content: 'Bạn có chắc chắn muốn đăng xuất?',
       onOk() {
         localStorage.removeItem('token');
-        localStorage.removeItem('userPhone');
+        localStorage.removeItem('username');
         localStorage.removeItem('userName');
         setUserName('');
+        setUsername('');
         window.dispatchEvent(new Event('logout'));
         navigate('/home');
         message.success('Đăng xuất thành công');
@@ -118,6 +122,7 @@ function Header() {
       </div>
       <div className="header__right">
         {isLoggedIn ? (
+          
           <Dropdown.Button 
           overlay={menu} 
           placement="bottomRight" 
