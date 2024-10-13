@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Form, Input, Row, Rate, Modal, message } from "antd";
+import { Button, Col, Form, Input, Row, Rate, Modal, message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import HairServices from "../../layouts/Component/hairservice";
 import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
 import LatestNews from "../../layouts/Component/LatestNew";
+
 import "./index.scss";
 
 function Home() {
@@ -20,22 +21,28 @@ function Home() {
   const [password, setPassword] = useState('');
   const [form] = Form.useForm(); // tạo 1 ínstance cua form 
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
 // kiem tra trang thai dang nhap va so dien thoai 
     const checkLoginStatus = () => {
       console.log('Checking login status in Home');
       const token = localStorage.getItem('token');
-
       const storedUsername = localStorage.getItem('username');
+      const storedFirstName = localStorage.getItem('firstName');
+      const storedLastName = localStorage.getItem('lastName');
       console.log('Stored token:', token);
       console.log('Stored username:', storedUsername);
+      console.log('Stored firstName:', storedFirstName);
+      console.log('Stored lastName:', storedLastName);
       setIsLoggedIn(!!token);
+      setUsername(storedUsername || '');
+      setFirstName(storedFirstName || '');
+      setLastName(storedLastName || '');
       if (storedUsername) {
-        setUsername(storedUsername);
         form.setFieldsValue({ username: storedUsername });
       } else {
-        setUsername('');
         form.setFieldsValue({ username: '' });
       }
     };
@@ -202,16 +209,19 @@ function Home() {
       if (response.ok) {
         localStorage.setItem('token', data.result.token);
         localStorage.setItem('username', currentUsername);
-        localStorage.setItem('userName', data.result.userName || currentUsername); 
+        localStorage.setItem('firstName', data.result.firstName || '');
+        localStorage.setItem('lastName', data.result.lastName || '');
         
-        setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
-        setUsername(currentUsername); // Cập nhật số điện thoại
+        setIsLoggedIn(true);
+        setUsername(currentUsername);
+        setFirstName(data.result.firstName || '');
+        setLastName(data.result.lastName || '');
         
         window.dispatchEvent(new Event('login'));
 
         setIsPasswordModalVisible(false);
         message.success('Đăng nhập thành công!');
-        showModal(); // Hiển thị modal chính sách
+        showModal();
       } else {
         message.error(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       }

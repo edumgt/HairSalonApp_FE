@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
 import { Dropdown, Menu, Modal, message } from 'antd';
-import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, DownOutlined, KeyOutlined, StarOutlined } from '@ant-design/icons';
 import "./index.scss";
 
 function Header() {
@@ -9,6 +9,9 @@ function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [shinePoint, setShinePoint] = useState(0);
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -22,6 +25,22 @@ function Header() {
       setIsLoggedIn(!!token);
       setUserName(name || '');
       setUsername(storedUsername || '');
+      if (token) {
+        fetch('http://localhost:8080/api/v1/profile/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.result) {
+            setFirstName(data.result.firstName || '');
+            setLastName(data.result.lastName || '');
+            setShinePoint(data.result.shinePoint || 0);
+          }
+        })
+        .catch(error => console.error('Error fetching profile:', error));
+      }
     };
 
     checkLoginStatus();
@@ -65,7 +84,18 @@ function Header() {
 
   const menu = (
     <Menu>
-      <Menu.Item key="1" onClick={handleLogout} icon={<LogoutOutlined />}>
+      <Menu.Item key="1" icon={<StarOutlined className="shine-point-icon" />}>
+      <span className="shine-point-item">
+        Điểm tích lũy: <span className="shine-point-value">{shinePoint}</span>
+      </span>
+    </Menu.Item>
+      <Menu.Item key="2" icon={<UserOutlined />}>
+        Thông tin người dùng
+      </Menu.Item>
+      <Menu.Item key="3" icon={<KeyOutlined />}>
+        Đổi mật khẩu
+      </Menu.Item>
+      <Menu.Item key="4" onClick={handleLogout} icon={<LogoutOutlined />}>
         Đăng xuất
       </Menu.Item>
     </Menu>
@@ -122,13 +152,12 @@ function Header() {
       </div>
       <div className="header__right">
         {isLoggedIn ? (
-          
           <Dropdown.Button 
-          overlay={menu} 
-          placement="bottomRight" 
-          icon={<DownOutlined />}
-        >
-          <span>Xin chào, {userName || 'Người dùng'}</span>
+            overlay={menu} 
+            placement="bottomRight" 
+            icon={<DownOutlined />}
+          >
+            <span style={{ fontWeight: 'bold', color: '#15397f' }}>Xin chào, {firstName} {lastName}</span>
             <UserOutlined style={{ fontSize: '20px', marginLeft: '8px' }} />
           </Dropdown.Button>
         ) : (

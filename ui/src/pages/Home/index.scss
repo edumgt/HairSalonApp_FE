@@ -49,7 +49,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 20px;
+  padding: 10px;
   padding-top: 5px;
 }
 
@@ -272,6 +272,12 @@ input[type="radio"]:checked + span::after {
   }
 }
 
+@media (min-width: 768px) {
+  .home-container {
+    padding: 20px;
+  }
+}
+
 @media (max-width: 576px) {
   .booking-form {
     .ant-col {
@@ -280,7 +286,15 @@ input[type="radio"]:checked + span::after {
     }
   }
 
+  @media (min-width: 768px) {
+  .booking-title {
+    font-size: 20px;
+  }
+}
+
   .booking-button {
     margin-top: 10px;
   }
 }
+
+
