@@ -12,7 +12,7 @@ import AddStaff from './pages/admin/staff/addStaff';
 import ImportWage from './pages/admin/wage/importWage';
 import AddService from './pages/admin/service/Create/addService';
 import UpdateService from './pages/admin/service/Update/updateService';
-import AddCategory from './pages/admin/category/addCategory';
+import CreateCategory from './pages/admin/category/addCategory/createCategory';
 
 function App() {
   return (
@@ -31,9 +31,8 @@ function App() {
             <Route path="service" element={<Service />} />
             <Route path="service/addService" element={<AddService />} />
             <Route path="service/updateService/:id" element={<UpdateService />} />
-            <Route path="category" element={<Category />}>
-              <Route path="addCategory" element={<AddCategory />}/>
-            </Route>
+            <Route path="category" element={<Category />} />
+            <Route path="category/addCategory/createCategory" element={<CreateCategory />} />
           </Route>
           <Route path="changePassword" element={<ChangePassword />} />
           <Route path="editProfile" element={<EditProfile />} />
