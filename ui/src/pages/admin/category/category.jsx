@@ -5,16 +5,17 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './category.module.css'
 import EditButton from '../../../layouts/admin/components/table/button/editButton'
-import { Outlet, useLocation, Link } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Modal } from 'antd'
 
-const ListItem = ({categoryId, categoryName, categoryDescription}) => {
+const ListItem = ({categoryId, categoryName, categoryDescription, onEdit, onDelete}) => {
     return(
         <tr className={styles.row}>
             <td className={styles.info}>{categoryId}</td>
             <td className={styles.info}>{categoryName}</td>
             <td className={styles.info}>{categoryDescription}</td>
-            <td>
-                <EditButton/>
+            <td className={styles.info} style={{ textAlign: 'center' }}>
+                <EditButton onEdit={() => onEdit(categoryId)} onDelete={() => onDelete(categoryId)}/>
             </td>
         </tr>
     )
@@ -23,27 +24,57 @@ const ListItem = ({categoryId, categoryName, categoryDescription}) => {
 function Category() {
     const [categories, setCategories] = useState([]);
     const location = useLocation()
+    const navigate = useNavigate()
     
     const isRootPath = location.pathname === '/category'
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/v1/category');
-                if (response.data && Array.isArray(response.data.result)) {
-                    setCategories(response.data.result);
-                } else {
-                    console.error('Dữ liệu trả về không hợp lệ:', response.data);
-                    setCategories([]);
-                }
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách danh mục:', error);
-                setCategories([]);
-            }
-        };
-
         fetchCategories();
     }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/category');
+            if (response.data && Array.isArray(response.data.result)) {
+                setCategories(response.data.result);
+            } else {
+                console.error('Dữ liệu trả về không hợp lệ:', response.data);
+                setCategories([]);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách danh mục:', error);
+            setCategories([]);
+        }
+    };
+
+    const handleAddCategory = () => {
+        navigate('/category/addCategory/createCategory');
+    };
+
+    const handleEditCategory = (categoryId) => {
+        navigate(`/category/editCategory/${categoryId}`);
+    };
+
+    const handleDeleteCategory = (categoryId) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa danh mục này không?',
+            onOk: async () => {
+                try {
+                    await axios.delete(`http://localhost:8080/api/v1/category/${categoryId}`);
+                    Modal.success({
+                        content: 'Xóa danh mục thành công',
+                    });
+                    fetchCategories(); // Cập nhật lại danh sách sau khi xóa
+                } catch (error) {
+                    console.error('Lỗi khi xóa danh mục:', error);
+                    Modal.error({
+                        content: 'Có lỗi xảy ra khi xóa danh mục',
+                    });
+                }
+            },
+        });
+    };
 
     return (
         <div className={styles.main}>
@@ -51,9 +82,9 @@ function Category() {
                 ? (
                     <><NavLink currentPage="Category" />
                     <div className={styles.tableGroup}>
-                        <Link to="/category/addCategory/createCategory" className={styles.addCategoryLink} style={{ textDecoration: 'none' }}>
-                            <HeaderButton text="Add category" add={true} />
-                        </Link>
+                        <div className={styles.addCategoryLink} style={{ textDecoration: 'none' }}>
+                            <HeaderButton text="Add category" add={true} onClick={handleAddCategory} />
+                        </div>
                         <div className={styles.tableWrapper}>
                             <table className={styles.table}>
                                 <thead>
@@ -61,7 +92,7 @@ function Category() {
                                         <HeaderColumn title="Category ID" sortable />
                                         <HeaderColumn title="Category Name" sortable />
                                         <HeaderColumn title="Category Description" />
-                                        <HeaderColumn title="" />
+                                        <HeaderColumn title="" align="center" />
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,6 +103,8 @@ function Category() {
                                                 categoryId={category.categoryId}
                                                 categoryName={category.categoryName}
                                                 categoryDescription={category.categoryDescription}
+                                                onEdit={handleEditCategory}
+                                                onDelete={handleDeleteCategory}
                                             />
                                         ))
                                     ) : (
