@@ -5,7 +5,7 @@ import { serviceDetails } from '../../../../data/serviceDetails';
 import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail'; 
 import { salonData} from '../../../../data/salonData';
-import { FaSearch, FaTimes, FaChevronLeft } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { message } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
 
@@ -104,12 +104,7 @@ const BookingComponent = () => {
             </div>
             <div className="step">
               <h3>3. Chọn ngày, giờ & stylist</h3>
-              <div className="option">
-              <span className="icon">📅</span>
-              <span>Hôm nay, T2 (07/10)</span>
-              <span className="tag">Ngày thường</span>
-              <span className="arrow">›</span>
-            </div>
+              <DateTimeSelectionStep />
             </div>
           </div>
         );
@@ -429,7 +424,152 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
 };
 
 const DateTimeSelectionStep = () => {
-  return <div>Chọn ngày, giờ & stylist</div>;
+  const [selectedStylist, setSelectedStylist] = useState(null);
+  const [isStyleListOpen, setIsStyleListOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isDateListOpen, setIsDateListOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
+
+
+  const times = [
+    '7h00', '7h20', '7h40', '8h00', '8h20',
+    '8h40', '9h00', '9h20', '9h40', '10h00',
+    '10h20', '10h40', '11h00', '11h20', '11h40'
+  ];
+
+  const stylists = [
+    { id: 1, name: '30Shine Chọn Giúp Anh', image: '/path/to/default-image.png' },
+    { id: 2, name: 'Luận Triệu', image: '/path/to/luan-trieu-image.png' },
+    { id: 3, name: 'Bắc Lý', image: '/path/to/bac-ly-image.png' },
+    { id: 4, name: 'Huy Nguyễn', image: '/path/to/huy-nguyen-image.png' },
+  ];
+
+  const handleStylistSelect = (stylist) => {
+    setSelectedStylist(stylist);
+    setIsStyleListOpen(false);
+  };
+
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const formatDate = (date) => {
+    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    return `${date.getDate()}/${date.getMonth() + 1} (${days[date.getDay()]})`;
+  };
+
+  const dates = [
+    { date: today, label: `Hôm nay, ${formatDate(today)}`, tag: today.getDay() === 0 || today.getDay() === 6 ? 'Cuối tuần' : 'Ngày thường' },
+    { date: tomorrow, label: `Ngày mai, ${formatDate(tomorrow)}`, tag: tomorrow.getDay() === 0 || tomorrow.getDay() === 6 ? 'Cuối tuần' : 'Ngày thường' },
+  ];
+
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setIsDateListOpen(false);
+  };
+
+  const toggleStyleList = () => {
+    setIsStyleListOpen(!isStyleListOpen);
+    setIsDateListOpen(false);
+  };
+
+  const toggleDateList = () => {
+    setIsDateListOpen(!isDateListOpen);
+    setIsStyleListOpen(false);
+  };
+
+  return (
+    <div className="date-time-selection">
+      <div className="stylist-selection">
+        <div 
+          className="stylist-dropdown"
+          onClick={toggleStyleList}
+        >
+          <FaUser className="icon" />
+          <span>{selectedStylist ? selectedStylist.name : 'Chọn Stylist'}</span>
+          <FaChevronRight className="arrow" />
+        </div>
+        
+        {isStyleListOpen && (
+          <div className="stylist-list">
+            {stylists.map((stylist) => (
+              <div 
+                key={stylist.id} 
+                className={`stylist-item ${selectedStylist && selectedStylist.id === stylist.id ? 'selected' : ''}`}
+                onClick={() => handleStylistSelect(stylist)}
+              >
+                {stylist.id === 1 ? (
+                  <div className="default-stylist">
+                    <FaUser className="icon" />
+                    <span>{stylist.name}</span>
+                  </div>
+                ) : (
+                  <>
+                    <img src={stylist.image} alt={stylist.name} />
+                    <span>{stylist.name}</span>
+                  </>
+                )}
+                {selectedStylist && selectedStylist.id === stylist.id && (
+                  <div className="check-icon">✓</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="date-selection">
+        <div 
+          className="date-dropdown"
+          onClick={toggleDateList}
+        >
+          <FaCalendarAlt className="icon" />
+          <span>{selectedDate ? selectedDate.label : 'Chọn ngày'}</span>
+          <span className={`tag ${selectedDate ? (selectedDate.tag === 'Cuối tuần' ? 'weekend' : 'weekday') : ''}`}>
+            {selectedDate ? selectedDate.tag : ''}
+          </span>
+          <FaChevronRight className="arrow" />
+        </div>
+        
+        {isDateListOpen && (
+          <div className="date-list">
+            {dates.map((date, index) => (
+              <div 
+                key={index} 
+                className={`date-item ${selectedDate && selectedDate.label === date.label ? 'selected' : ''}`}
+                onClick={() => handleDateSelect(date)}
+              >
+                <span>{date.label}</span>
+                <span className={`tag ${date.tag === 'Cuối tuần' ? 'weekend' : 'weekday'}`}>{date.tag}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {selectedDate && (
+        <div className="time-selection">
+          <h4>
+            <FaClock className="icon" />
+            Chọn giờ
+          </h4>
+          <div className="time-grid">
+            {times.map((time) => (
+              <button
+                key={time}
+                className={`time-button ${selectedTime === time ? 'selected' : ''}`}
+                onClick={() => setSelectedTime(time)}
+              >
+                {time}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
+
 
 export default BookingComponent;

@@ -510,71 +510,112 @@
   }
 
   .date-time-selection {
-    .stylist-selection, .date-selection {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background-color: #f5f5f5;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      cursor: pointer;
+    .stylist-selection,
+    .date-selection {
+      position: relative;
+      margin-bottom: 20px;
   
-      .icon {
-        margin-right: 10px;
-      }
-  
-      .arrow {
-        margin-left: auto;
-      }
-    }
-  
-    .stylist-list {
-      background-color: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-  
-      .stylist-item {
+      .stylist-dropdown,
+      .date-dropdown {
         display: flex;
         align-items: center;
         padding: 10px;
+        width: 95%;
         cursor: pointer;
   
-        &:hover {
-          background-color: #f0f0f0;
-        }
-  
-        &.selected {
-          background-color: #e6f7ff;
-        }
-  
-        img {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
+        .icon {
           margin-right: 10px;
         }
   
-        .default-stylist {
-          display: flex;
-          align-items: center;
+        .tag {
+          margin-left: auto;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.8em;
   
-          .icon {
-            width: 50px;
-            height: 50px;
-            background-color: #0056b3;
+          &.weekend {
+            background-color: #ff9999;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-right: 10px;
+          }
+  
+          &.weekday {
+            background-color: #66cc66;
+            color: white;
           }
         }
   
-        .check-icon {
-          margin-left: auto;
-          color: #0056b3;
+        .arrow {
+          margin-left: 10px;
+        }
+      }
+  
+      .stylist-list,
+      .date-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        z-index: 10;
+  
+        .stylist-item,
+        .date-item {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          cursor: pointer;
+  
+          &:hover {
+            background-color: #f0f0f0;
+          }
+  
+          &.selected {
+            background-color: #e6f7ff;
+          }
+  
+          img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+          }
+  
+          .default-stylist {
+            display: flex;
+            align-items: center;
+  
+            .icon {
+              width: 40px;
+              height: 40px;
+              background-color: #007bff;
+              color: white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 10px;
+            }
+          }
+  
+          .tag {
+            margin-left: auto;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+  
+            &.weekend {
+              background-color: #ff9999;
+              color: white;
+            }
+  
+            &.weekday {
+              background-color: #66cc66;
+              color: white;
+            }
+          }
         }
       }
     }
@@ -596,7 +637,46 @@
         }
       }
     }
+    .time-selection {
+      margin-top: 20px;
+  
+      h4 {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+  
+        .icon {
+          margin-right: 10px;
+          color: #007bff;
+        }
+      }
+  
+      .time-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+  
+        .time-button {
+          padding: 10px;
+          border: 1px solid #ccc;
+          background-color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+  
+          &:hover {
+            background-color: #f0f0f0;
+          }
+  
+          &.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+          }
+        }
+      }
+    }
   }
+
 
   
 
