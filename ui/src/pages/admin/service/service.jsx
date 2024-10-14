@@ -1,35 +1,94 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './service.module.css'
 import EditButton from '../../../layouts/admin/components/table/button/editButton'
 
-const ListItem = ({no, categoryID, serviceID, serviceName, serviceDes, duration, price, onEdit}) => {
-    return(
-    <tr className={styles.row}>
-      <td className={styles.info}>{no}</td>
-      <td className={styles.info}>{categoryID}</td>
-      <td className={styles.info}>{serviceID}</td>
-      <td className={styles.info}>{serviceName}</td>
-      <td className={styles.info}>{serviceDes}</td>
-      <td className={styles.info}>{duration}</td>
-      <td className={styles.info}>{price}</td>
-      <td>
-        <EditButton onClick={() => onEdit({no, categoryID, serviceID, serviceName, serviceDes, duration, price})}/>
-      </td>
-    </tr>
+const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit }) => {
+    const [imageError, setImageError] = useState(false);
+
+    const handleImageError = () => {
+        setImageError(true);
+    };
+
+    // Hàm để chuyển đổi URL imgur thành URL trực tiếp của hình ảnh
+    const getImgurDirectUrl = (url) => {
+        if (!url) return '';
+        const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+        const match = url.match(imgurRegex);
+        if (match && match[1]) {
+            return `https://i.imgur.com/${match[1]}.jpg`;
+        }
+        return url;
+    };
+
+    const imageUrl = getImgurDirectUrl(image);
+
+    return (
+        <tr className={styles.row}>
+            <td className={styles.info}>{serviceId}</td>
+            <td className={styles.info}>{categories.categoryId}</td>
+            <td className={styles.info}>{serviceName}</td>
+            <td className={styles.info}>{description}</td>
+            <td className={styles.info}>{duration}</td>
+            <td className={styles.info}>{price.toLocaleString()} VND</td>
+            <td className={`${styles.info} ${styles.imageCell}`}>
+                {!imageError ? (
+                    <img 
+                        src={imageUrl} 
+                        alt={serviceName} 
+                        className={styles.serviceImage} 
+                        onError={handleImageError}
+                    />
+                ) : (
+                    <div className={styles.imagePlaceholder}>No Image</div>
+                )}
+            </td>
+            <td className={styles.actionCell}>
+                <EditButton onClick={() => onEdit(serviceId)} />
+            </td>
+        </tr>
     )
 }
 
 const Service = () => {
     const navigate = useNavigate()
-    const listItems = [
-        { no: "1", categoryID: "Milwaukee", serviceID: "419 Kacey Valley, Hyattshire 88420-6093", serviceName: "Open", serviceDes: "abc", duration: "list.png", price: "" },
-        { no: "2", categoryID: "Milwaukee", serviceID: "62870 Hettie Glens, Bradtkestead 37879", serviceName: "Close", serviceDes: "abc", duration: "list.png", price: "" },
-        { no: "3", categoryID: "Milwaukee", serviceID: "Lorem ipsum dolor sit amet,", serviceName: "Open", serviceDes: "abc", duration: "list.png", price: "" },
-    ];
+    const [services, setServices] = useState([])
+    const [filteredServices, setFilteredServices] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [searchText, setSearchText] = useState('')
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/service')
+                if (response.data && response.data.code === 0) {
+                    setServices(response.data.result)
+                    setFilteredServices(response.data.result)
+                } else {
+                    throw new Error('Failed to fetch services')
+                }
+            } catch (err) {
+                setError('An error occurred while fetching services')
+                console.error('Error fetching services:', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchServices()
+    }, [])
+
+    useEffect(() => {
+        const filtered = services.filter(service => 
+            service.serviceName.toLowerCase().includes(searchText.toLowerCase())
+        )
+        setFilteredServices(filtered)
+    }, [searchText, services])
 
     const handleAddService = () => {
         navigate('addService')
@@ -39,28 +98,44 @@ const Service = () => {
         navigate(`/service/updateService/${serviceId}`)
     }
 
+    const handleSearch = (value) => {
+        setSearchText(value)
+    }
+
+    if (isLoading) return <div>Loading...</div>
+    if (error) return <div>Error: {error}</div>
+
     return (
         <div className={styles.main}>
             <NavLink currentPage="Service" />
             <div className={styles.tableGroup}>
-                <HeaderButton text="Add service" add={true} onClick={handleAddService} />
+                <HeaderButton 
+                    text="Add service" 
+                    add={true} 
+                    onClick={handleAddService} 
+                    onSearch={handleSearch}
+                />
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                         <thead>
                             <tr className={styles.columnHeaderParent}>
-                                <HeaderColumn title="No" sortable />
+                                <HeaderColumn title="Service ID" sortable />
                                 <HeaderColumn title="Category ID" sortable />
-                                <HeaderColumn title="Service ID" />
                                 <HeaderColumn title="Service Name" sortable />
-                                <HeaderColumn title="Service Description" sortable />
+                                <HeaderColumn title="Description" />
                                 <HeaderColumn title="Duration" />
-                                <HeaderColumn title="Price" />
+                                <HeaderColumn title="Price" sortable />
+                                <HeaderColumn title="Image" className={styles.imageHeader} />
                                 <HeaderColumn title="" />
                             </tr>
                         </thead>
                         <tbody>
-                            {listItems.map((item, index) => (
-                                <ListItem key={index} {...item} onEdit={handleEditService} />
+                            {filteredServices.map((service) => (
+                                <ListItem 
+                                    key={service.serviceId} 
+                                    {...service} 
+                                    onEdit={handleEditService} 
+                                />
                             ))}
                         </tbody>
                     </table>
