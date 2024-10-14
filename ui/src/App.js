@@ -34,7 +34,7 @@ function App() {
             <Route path="service/updateService/:id" element={<UpdateService />} />
             <Route path="category" element={<Category />} />
             <Route path="category/addCategory/createCategory" element={<CreateCategory />} />
-            <Route path="category/edit/:categoryId" element={<UpdateCategory />} />
+            <Route path="category/updateCategory/:categoryId" element={<UpdateCategory />} />
           </Route>
           <Route path="changePassword" element={<ChangePassword />} />
           <Route path="editProfile" element={<EditProfile />} />

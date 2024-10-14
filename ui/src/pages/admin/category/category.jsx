@@ -23,6 +23,7 @@ const ListItem = ({categoryId, categoryName, categoryDescription, onEdit, onDele
 
 function Category() {
     const [categories, setCategories] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const location = useLocation()
     const navigate = useNavigate()
     
@@ -52,7 +53,7 @@ function Category() {
     };
 
     const handleEditCategory = (categoryId) => {
-        navigate(`/category/editCategory/${categoryId}`);
+        navigate(`/category/updateCategory/${categoryId}`);
     };
 
     const handleDeleteCategory = (categoryId) => {
@@ -76,15 +77,26 @@ function Category() {
         });
     };
 
+    const handleSearch = (value) => {
+        setSearchText(value);
+    };
+
+    const filteredCategories = categories.filter(category => 
+        category.categoryName.toLowerCase().includes(searchText.toLowerCase())
+    );
+
     return (
         <div className={styles.main}>
             {isRootPath 
                 ? (
                     <><NavLink currentPage="Category" />
                     <div className={styles.tableGroup}>
-                        <div className={styles.addCategoryLink} style={{ textDecoration: 'none' }}>
-                            <HeaderButton text="Add category" add={true} onClick={handleAddCategory} />
-                        </div>
+                        <HeaderButton 
+                            text="Add category" 
+                            add={true} 
+                            onClick={handleAddCategory} 
+                            onSearch={handleSearch}
+                        />
                         <div className={styles.tableWrapper}>
                             <table className={styles.table}>
                                 <thead>
@@ -96,8 +108,8 @@ function Category() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {categories.length > 0 ? (
-                                        categories.map((category) => (
+                                    {filteredCategories.length > 0 ? (
+                                        filteredCategories.map((category) => (
                                             <ListItem 
                                                 key={category.categoryId}
                                                 categoryId={category.categoryId}
@@ -109,7 +121,7 @@ function Category() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4" style={{textAlign: 'center'}}>Không có danh mục nào.</td>
+                                            <td colSpan="4" style={{textAlign: 'center'}}>Không có danh mục nào phù hợp.</td>
                                         </tr>
                                     )}
                                 </tbody>
