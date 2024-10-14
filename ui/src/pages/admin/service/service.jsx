@@ -6,7 +6,9 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './service.module.css'
 import EditButton from '../../../layouts/admin/components/table/button/editButton'
-import { Modal } from 'antd'
+import { Modal, Form, Input, InputNumber, Select, Button } from 'antd'
+
+const { Option } = Select;
 
 const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit, onDelete }) => {
     const [imageError, setImageError] = useState(false);
@@ -62,9 +64,14 @@ const Service = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
     const [searchText, setSearchText] = useState('')
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false)
+    const [editingService, setEditingService] = useState(null)
+    const [categories, setCategories] = useState([])
+    const [form] = Form.useForm()
 
     useEffect(() => {
         fetchServices()
+        fetchCategories()
     }, [])
 
     const fetchServices = async () => {
@@ -84,6 +91,17 @@ const Service = () => {
         }
     }
 
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/category')
+            if (response.data && response.data.code === 0) {
+                setCategories(response.data.result)
+            }
+        } catch (err) {
+            console.error('Error fetching categories:', err)
+        }
+    }
+
     useEffect(() => {
         const filtered = services.filter(service => 
             service.serviceName.toLowerCase().includes(searchText.toLowerCase())
@@ -95,9 +113,55 @@ const Service = () => {
         navigate('addService')
     }
 
-    const handleEditService = (serviceId) => {
-        navigate(`/service/updateService/${serviceId}`)
+    const handleEditService = async (serviceId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/v1/service/${serviceId}`)
+            if (response.data && response.data.code === 0) {
+                const serviceData = response.data.result;
+                setEditingService(serviceData)
+                form.setFieldsValue({
+                    ...serviceData,
+                    categoryId: serviceData.categories.categoryId // Đặt giá trị categoryId
+                })
+                setIsEditModalVisible(true)
+            }
+        } catch (error) {
+            console.error('Error fetching service details:', error)
+            Modal.error({
+                content: 'Failed to fetch service details',
+            })
+        }
     }
+
+    const handleUpdateService = async (values) => {
+        try {
+            const updatedService = {
+                serviceId: editingService.serviceId,
+                categoryId: values.categories.categoryId,
+                serviceName: values.serviceName,
+                description: values.description,
+                duration: values.duration,
+                price: values.price,
+                image: values.image
+            };
+
+            const response = await axios.put('http://localhost:8080/api/v1/service', updatedService);
+            if (response.data && response.data.code === 0) {
+                Modal.success({
+                    content: 'Service updated successfully',
+                });
+                setIsEditModalVisible(false);
+                fetchServices();
+            } else {
+                throw new Error('Failed to update service');
+            }
+        } catch (error) {
+            console.error('Error updating service:', error);
+            Modal.error({
+                content: 'Failed to update service: ' + (error.response?.data?.message || error.message),
+            });
+        }
+    };
 
     const handleDeleteService = (serviceId) => {
         Modal.confirm({
@@ -164,6 +228,52 @@ const Service = () => {
                     </table>
                 </div>
             </div>
+            <Modal
+                title="Edit Service"
+                visible={isEditModalVisible}
+                onCancel={() => setIsEditModalVisible(false)}
+                footer={null}
+            >
+                <Form
+                    form={form}
+                    onFinish={handleUpdateService}
+                    layout="vertical"
+                    initialValues={editingService}
+                >
+                    <Form.Item name={["categories", "categoryId"]} label="Category">
+                        <Select>
+                            {categories.map(category => (
+                                <Option key={category.categoryId} value={category.categoryId}>
+                                    {category.categoryName}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item name="serviceId" label="Service ID">
+                        <Input disabled />
+                    </Form.Item>
+                    <Form.Item name="serviceName" label="Service Name" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item name="duration" label="Duration" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+                        <InputNumber min={0} />
+                    </Form.Item>
+                    <Form.Item name="image" label="Image URL" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            Update Service
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     )
 }
