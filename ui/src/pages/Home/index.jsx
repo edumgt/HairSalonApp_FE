@@ -7,6 +7,8 @@ import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
 import LatestNews from "../../layouts/Component/LatestNew";
 
+
+
 import "./index.scss";
 
 function Home() {
@@ -19,12 +21,13 @@ function Home() {
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [isUnregisteredModalVisible, setIsUnregisteredModalVisible] = useState(false);
   const [password, setPassword] = useState('');
-  const [form] = Form.useForm(); // tạo 1 ínstance cua form 
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
   useEffect(() => {
+
 // kiem tra trang thai dang nhap va so dien thoai 
     const checkLoginStatus = () => {
       console.log('Checking login status in Home');
@@ -32,10 +35,8 @@ function Home() {
       const storedUsername = localStorage.getItem('username');
       const storedFirstName = localStorage.getItem('firstName');
       const storedLastName = localStorage.getItem('lastName');
-      console.log('Stored token:', token);
-      console.log('Stored username:', storedUsername);
-      console.log('Stored firstName:', storedFirstName);
-      console.log('Stored lastName:', storedLastName);
+      const storedUserRole = localStorage.getItem('userRole');
+      console.log('Stored data:', { token, storedUsername, storedFirstName, storedLastName, storedUserRole });
       setIsLoggedIn(!!token);
       setUsername(storedUsername || '');
       setFirstName(storedFirstName || '');
@@ -49,8 +50,18 @@ function Home() {
 
     checkLoginStatus();
 
-    const handleLoginEvent = () => {
-      console.log('Login event received in Home');
+    const handleLoginEvent = (event) => {
+      console.log('Login event received in Home', event.detail);
+      if (event.detail && typeof event.detail === 'object') {
+        const { role, firstName, lastName } = event.detail;
+        console.log('Received data:', { role, firstName, lastName });
+        // Cập nhật state nếu cần
+        // setUserRole(role || '');
+        // setFirstName(firstName || '');
+        // setLastName(lastName || '');
+      } else {
+        console.error('Invalid login event detail:', event.detail);
+      }
       checkLoginStatus();
     };
     window.addEventListener('storage', checkLoginStatus);
@@ -207,21 +218,56 @@ function Home() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.result.token);
-        localStorage.setItem('username', currentUsername);
-        localStorage.setItem('firstName', data.result.firstName || '');
-        localStorage.setItem('lastName', data.result.lastName || '');
-        
-        setIsLoggedIn(true);
-        setUsername(currentUsername);
-        setFirstName(data.result.firstName || '');
-        setLastName(data.result.lastName || '');
-        
-        window.dispatchEvent(new Event('login'));
-
-        setIsPasswordModalVisible(false);
-        message.success('Đăng nhập thành công!');
-        showModal();
+        console.log('Login response:', data);
+        if (data.result && data.result.token) {
+          localStorage.setItem('token', data.result.token);
+          localStorage.setItem('username', currentUsername);
+          
+          // Gọi API profile để lấy thông tin chi tiết
+          try {
+            const profileResponse = await fetch('http://localhost:8080/api/v1/profile/', {
+              headers: {
+                'Authorization': `Bearer ${data.result.token}`
+              }
+            });
+            const profileData = await profileResponse.json();
+            console.log('Profile data:', profileData);
+            
+            if (profileResponse.ok && profileData.result) {
+              const userRole = profileData.result.role || '';
+              const firstName = profileData.result.firstName || '';
+              const lastName = profileData.result.lastName || '';
+              
+              localStorage.setItem('firstName', firstName);
+              localStorage.setItem('lastName', lastName);
+              localStorage.setItem('userRole', userRole);
+              
+              setIsLoggedIn(true);
+              setUsername(currentUsername);
+              setFirstName(firstName);
+              setLastName(lastName);
+              
+              // Dispatch event với role
+              window.dispatchEvent(new CustomEvent('login', { 
+                detail: { 
+                  role: userRole,
+                  firstName: firstName,
+                  lastName: lastName
+                } 
+              }));
+            } else {
+              console.error('Failed to fetch profile data');
+            }
+          } catch (profileError) {
+            console.error('Error fetching profile:', profileError);
+          }
+          
+          setIsPasswordModalVisible(false);
+          message.success('Đăng nhập thành công!');
+          showModal();
+        } else {
+          message.error('Đăng nhập thất bại: Dữ liệu không hợp lệ từ server');
+        }
       } else {
         message.error(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       }

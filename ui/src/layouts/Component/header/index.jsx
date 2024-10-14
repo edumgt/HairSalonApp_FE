@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
 import { Dropdown, Menu, Modal, message } from 'antd';
 import { UserOutlined, LogoutOutlined, DownOutlined, KeyOutlined, StarOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import "./index.scss";
 
 function Header() {
@@ -12,6 +13,18 @@ function Header() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [shinePoint, setShinePoint] = useState(0);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const storedUserRole = localStorage.getItem('userRole');
+    setUserRole(storedUserRole || null);
+  }, []);
+
+  useEffect(() => {
+    console.log('userRole changed:', userRole);
+  }, [userRole]);
+
+  console.log('Stored userRole:', userRole);
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -19,12 +32,15 @@ function Header() {
       const token = localStorage.getItem('token');
       const name = localStorage.getItem('userName');
       const storedUsername = localStorage.getItem('username');
+      const storedUserRole = localStorage.getItem('userRole');
+      console.log('Stored userRole:', storedUserRole);
       console.log('Stored token:', token);
       console.log('Stored userName:', name);
       console.log('Stored username:', storedUsername);
       setIsLoggedIn(!!token);
       setUserName(name || '');
       setUsername(storedUsername || '');
+      setUserRole(storedUserRole || null);
       if (token) {
         fetch('http://localhost:8080/api/v1/profile/', {
           headers: {
@@ -37,6 +53,10 @@ function Header() {
             setFirstName(data.result.firstName || '');
             setLastName(data.result.lastName || '');
             setShinePoint(data.result.shinePoint || 0);
+            if (data.result.userRole) {
+              setUserRole(data.result.userRole);
+              localStorage.setItem('userRole', data.result.userRole);
+            }
           }
         })
         .catch(error => console.error('Error fetching profile:', error));
@@ -45,12 +65,14 @@ function Header() {
 
     checkLoginStatus();
 
-    const handleLoginEvent = () => {
-      console.log('Login event received in Header');
+    const handleLoginEvent = (event) => {
+      console.log('Login event received in Header', event.detail);
+      setUserRole(event.detail.role);
+      setFirstName(event.detail.firstName);
+      setLastName(event.detail.lastName);
       checkLoginStatus();
     };
     window.addEventListener('storage', checkLoginStatus);
-
     window.addEventListener('login', handleLoginEvent);
     window.addEventListener('logout', checkLoginStatus);
 
@@ -60,7 +82,7 @@ function Header() {
       window.removeEventListener('logout', checkLoginStatus);
     };
 
-  }, [isLoggedIn]);
+  }, []);
 
   const handleLogout = () => {
     Modal.confirm({
@@ -70,8 +92,11 @@ function Header() {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
         setUserName('');
         setUsername('');
+        setUserRole(null);
+
         window.dispatchEvent(new Event('logout'));
         navigate('/home');
         message.success('Đăng xuất thành công');
@@ -82,7 +107,7 @@ function Header() {
     });
   };
 
-  const menu = (
+  const menu =  useMemo(() => (
     <Menu>
       <Menu.Item key="1" icon={<StarOutlined className="shine-point-icon" />}>
       <span className="shine-point-item">
@@ -95,11 +120,16 @@ function Header() {
       <Menu.Item key="3" icon={<KeyOutlined />}>
         Đổi mật khẩu
       </Menu.Item>
-      <Menu.Item key="4" onClick={handleLogout} icon={<LogoutOutlined />}>
+      {(userRole === 'ADMIN' || userRole === 'admin') && (
+        <Menu.Item key="4" icon={<UserOutlined />}>
+          <Link to="/admin">Cổng Admin</Link>
+        </Menu.Item>
+      )}
+      <Menu.Item key="5" onClick={handleLogout} icon={<LogoutOutlined />}>
         Đăng xuất
       </Menu.Item>
     </Menu>
-  );
+  ), [shinePoint, userRole]);
 
   return (
     <div className="header">

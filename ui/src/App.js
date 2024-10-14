@@ -4,9 +4,8 @@ import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
 
 
-import React from "react";
+import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import Layout from "../src/layouts/Component/layout";
 import Home from "../src/pages/Home";
 import Login from "./pages/login/Login";
@@ -70,6 +69,7 @@ function App() {
       ],
     },
   ]);
+
 
   return (
     <React.StrictMode>

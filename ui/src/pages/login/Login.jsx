@@ -10,11 +10,23 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const saveUserData = (token, username, userName) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('username', username);
-    localStorage.setItem('userName', userName);
-    window.dispatchEvent(new Event('login'));
+  const saveUserData = (token, username, userName, userRole, firstName, lastName) => {
+    console.log('Saving user data:', { token, username, userName, userRole, firstName, lastName });
+    localStorage.setItem('token', token || '');
+    localStorage.setItem('username', username || '');
+    localStorage.setItem('userName', userName || '');
+    localStorage.setItem('userRole', userRole || '');
+    localStorage.setItem('firstName', firstName || '');
+    localStorage.setItem('lastName', lastName || '');
+    
+    // Dispatch event với dữ liệu đã lưu
+    window.dispatchEvent(new CustomEvent('login', { 
+      detail: { 
+        role: userRole || '',
+        firstName: firstName || '',
+        lastName: lastName || ''
+      } 
+    }));
   };
 
   const handleLogin = async (values) => {
@@ -43,26 +55,42 @@ function Login() {
         console.log('Full login response:', data);
         if (data.result && data.result.token) {
           const userName = data.result.userName || username;
-          saveUserData(data.result.token, username, userName);
-          console.log('User data saved:', { token: data.result.token, username, userName });
           
-          window.dispatchEvent(new Event('login'));
-          console.log('Login event dispatched');
-          
-          message.success({
-            content: 'Đăng nhập thành công!',
-            icon: <CheckCircleOutlined />,
-            duration: 2,
-            style: {
-              marginTop: '20vh',
-            },
-          });
-          
-          setTimeout(() => {
-            navigate('/home');
-          }, 2000);
+          try {
+            const profileResponse = await fetch('http://localhost:8080/api/v1/profile/', {
+              headers: { 'Authorization': `Bearer ${data.result.token}` }
+            });
+            const profileData = await profileResponse.json();
+            
+            console.log('Profile data:', profileData);
+    
+            if (profileResponse.ok && profileData.result) {
+              const userRole = profileData.result.role || '';
+              const firstName = profileData.result.firstName || '';
+              const lastName = profileData.result.lastName || '';
+              
+              saveUserData(data.result.token, username, userName, userRole, firstName, lastName);
+              
+              message.success({
+                content: 'Đăng nhập thành công!',
+                icon: <CheckCircleOutlined />,
+                duration: 2,
+                style: { marginTop: '20vh' },
+              });
+              
+              setTimeout(() => {
+                navigate('/home');
+              }, 2000);
+            } else {
+              console.error('Failed to fetch profile data or invalid data structure');
+              message.error('Không thể lấy thông tin người dùng. Vui lòng thử lại.');
+            }
+          } catch (profileError) {
+            console.error('Error fetching profile:', profileError);
+            message.error('Có lỗi xảy ra khi lấy thông tin người dùng. Vui lòng thử lại sau.');
+          }
         } else {
-          console.error('Missing required data in response:', data);
+          console.error('Missing required data in login response:', data);
           message.error('Đăng nhập thất bại: Dữ liệu không hợp lệ từ server');
         }
       } else {
