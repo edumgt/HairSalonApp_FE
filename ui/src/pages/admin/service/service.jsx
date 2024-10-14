@@ -6,8 +6,9 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './service.module.css'
 import EditButton from '../../../layouts/admin/components/table/button/editButton'
+import { Modal } from 'antd'
 
-const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit }) => {
+const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit, onDelete }) => {
     const [imageError, setImageError] = useState(false);
 
     const handleImageError = () => {
@@ -48,7 +49,7 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
                 )}
             </td>
             <td className={styles.actionCell}>
-                <EditButton onClick={() => onEdit(serviceId)} />
+                <EditButton onEdit={() => onEdit(serviceId)} onDelete={() => onDelete(serviceId)}/>
             </td>
         </tr>
     )
@@ -63,25 +64,25 @@ const Service = () => {
     const [searchText, setSearchText] = useState('')
 
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/v1/service')
-                if (response.data && response.data.code === 0) {
-                    setServices(response.data.result)
-                    setFilteredServices(response.data.result)
-                } else {
-                    throw new Error('Failed to fetch services')
-                }
-            } catch (err) {
-                setError('An error occurred while fetching services')
-                console.error('Error fetching services:', err)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
         fetchServices()
     }, [])
+
+    const fetchServices = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/service')
+            if (response.data && response.data.code === 0) {
+                setServices(response.data.result)
+                setFilteredServices(response.data.result)
+            } else {
+                throw new Error('Failed to fetch services')
+            }
+        } catch (err) {
+            setError('An error occurred while fetching services')
+            console.error('Error fetching services:', err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     useEffect(() => {
         const filtered = services.filter(service => 
@@ -97,6 +98,27 @@ const Service = () => {
     const handleEditService = (serviceId) => {
         navigate(`/service/updateService/${serviceId}`)
     }
+
+    const handleDeleteService = (serviceId) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa dịch vụ này không?',
+            onOk: async () => {
+                try {
+                    await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`);
+                    Modal.success({
+                        content: 'Xóa dịch vụ thành công',
+                    });
+                    fetchServices(); // Cập nhật lại danh sách sau khi xóa
+                } catch (error) {
+                    console.error('Lỗi khi xóa dịch vụ:', error);
+                    Modal.error({
+                        content: 'Có lỗi xảy ra khi xóa dịch vụ',
+                    });
+                }
+            },
+        });
+    };
 
     const handleSearch = (value) => {
         setSearchText(value)
@@ -135,6 +157,7 @@ const Service = () => {
                                     key={service.serviceId} 
                                     {...service} 
                                     onEdit={handleEditService} 
+                                    onDelete={handleDeleteService}
                                 />
                             ))}
                         </tbody>
