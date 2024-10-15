@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal, Form, Input, Select, DatePicker, Button } from 'antd';
+import { Modal, Form, Input, Select, DatePicker, Button, InputNumber } from 'antd';
 import dayjs from 'dayjs';
 import styles from './staff.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink'
@@ -27,7 +27,7 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
         <img src={image} alt={`${firstName} ${lastName}`} className={styles.staffImage} />
       </td>
       <td className={styles.actionCell}>
-        <EditButton onEdit={() => onEdit(id)} onDelete={() => onDelete(code)}/>
+        <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
       </td>
     </tr>
   );
@@ -83,9 +83,9 @@ const Staff = () => {
     navigate('/staff/addStaff');
   };
 
-  const handleEditStaff = async (id) => {
+  const handleEditStaff = async (code) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/${id}`);
+      const response = await axios.get(`http://localhost:8080/api/v1/staff/${code}`);
       if (response.data && response.data.code === 200) {
         setEditingStaff(response.data.result);
         form.setFieldsValue({
@@ -106,11 +106,10 @@ const Staff = () => {
     try {
       const updatedStaff = {
         ...values,
-        id: editingStaff.id,
         yob: parseInt(values.yob),
         joinIn: values.joinIn.format('YYYY-MM-DD')
       };
-      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.id}`, updatedStaff);
+      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
       if (response.data && response.data.code === 200) {
         Modal.success({
           content: 'Staff updated successfully',
@@ -204,47 +203,55 @@ const Staff = () => {
         visible={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
-        className={styles.modalOverlay}
+        width={700} // Thu hẹp độ rộng của modal
+        centered
+        destroyOnClose={true}
       >
         <div className={styles.modalContent}>
           <Form
             form={form}
             onFinish={handleUpdateStaff}
             layout="vertical"
+            initialValues={editingStaff}
           >
-            <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-              <Select>
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
-                <Option value="other">Other</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="yob" label="Year of Birth" rules={[{ required: true }]}>
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="joinIn" label="Join Date" rules={[{ required: true }]}>
-              <DatePicker />
-            </Form.Item>
-            <Form.Item name="image" label="Image URL" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Update Staff
-              </Button>
-            </Form.Item>
+            <div className={styles.formGrid}>
+              <Form.Item name="code" label="Code" rules={[{ required: true }]} className={styles.formItem}>
+                <Input disabled />
+              </Form.Item>
+              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="gender" label="Gender" rules={[{ required: true }]} className={styles.formItem}>
+                <Select>
+                  <Option value="male">Male</Option>
+                  <Option value="female">Female</Option>
+                  <Option value="other">Other</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="yob" label="Year of Birth" rules={[{ required: true }]} className={styles.formItem}>
+                <InputNumber style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="phone" label="Phone" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="joinIn" label="Join Date" rules={[{ required: true }]} className={styles.formItem}>
+                <DatePicker style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="image" label="Image URL" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" className={styles.submitButton}>
+                  Update Staff
+                </Button>
+              </Form.Item>
+            </div>
           </Form>
         </div>
       </Modal>
