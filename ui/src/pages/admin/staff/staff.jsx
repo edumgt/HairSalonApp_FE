@@ -13,6 +13,25 @@ import { Outlet } from 'react-router-dom';
 const { Option } = Select;
 
 const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Hàm để chuyển đổi URL imgur thành URL trực tiếp của hình ảnh
+  const getImgurDirectUrl = (url) => {
+    if (!url) return '';
+    const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+    const match = url.match(imgurRegex);
+    if (match && match[1]) {
+      return `https://i.imgur.com/${match[1]}.jpg`;
+    }
+    return url;
+  };
+
+  const imageUrl = getImgurDirectUrl(image);
+
   return (
     <tr className={styles.row}>
       <td className={styles.info}>{code}</td>
@@ -24,7 +43,16 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
       <td className={styles.info}>{joinIn}</td>
       <td className={styles.info}>{role}</td>
       <td className={`${styles.info} ${styles.imageCell}`}>
-        <img src={image} alt={`${firstName} ${lastName}`} className={styles.staffImage} />
+        {!imageError ? (
+          <img 
+            src={imageUrl} 
+            alt={`${firstName} ${lastName}`} 
+            className={styles.staffImage} 
+            onError={handleImageError}
+          />
+        ) : (
+          <div className={styles.imagePlaceholder}>No Image</div>
+        )}
       </td>
       <td className={styles.actionCell}>
         <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
@@ -41,6 +69,7 @@ const Staff = () => {
   const [error, setError] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [refreshData, setRefreshData] = useState(false);
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,7 +95,7 @@ const Staff = () => {
 
   useEffect(() => {
     fetchStaff();
-  }, [fetchStaff]);
+  }, [fetchStaff, refreshData]);
 
   useEffect(() => {
     const filtered = staffList.filter(staff => 
@@ -148,6 +177,14 @@ const Staff = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (location.state?.refreshData) {
+      fetchStaff();
+      // Xóa state sau khi đã sử dụng
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, fetchStaff, navigate]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

@@ -53,6 +53,7 @@ tr:hover{
 .imageCell {
     width: 220px;
     padding: 10px;
+    height: 220px; /* Tăng chiều cao của cell */
 }
 
 .staffImage {
@@ -61,6 +62,8 @@ tr:hover{
     object-fit: cover;
     border-radius: 5px;
     transition: transform 0.3s ease;
+    display: block; /* Đảm bảo hình ảnh hiển thị như một block */
+    margin: 0 auto; /* Căn giữa hình ảnh */
 }
 
 .staffImage:hover {
@@ -77,6 +80,7 @@ tr:hover{
     border-radius: 5px;
     font-size: 14px;
     color: #666;
+    margin: 0 auto; /* Căn giữa placeholder */
 }
 
 .actionCell {
@@ -191,4 +195,10 @@ tr:hover{
 :global(.ant-picker) {
     display: flex;
     align-items: center;
+}
+
+/* Điều chỉnh kích thước của các ô khác để phù hợp với ô hình ảnh lớn hơn */
+.row td {
+    height: 220px; /* Đảm bảo tất cả các ô có cùng chiều cao */
+    vertical-align: middle;
 }

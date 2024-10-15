@@ -1,13 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Select, DatePicker, Button, message } from 'antd';
+import { Form, Input, Select, DatePicker, Button, message, InputNumber } from 'antd';
 import NavLink from "../../../../layouts/admin/components/link/navLink"
 import styles from './addStaff.module.css';
 
+
 const { Option } = Select;
 
-function AddStaff({ onStaffAdded }) {
+function AddStaff() {
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
@@ -17,34 +18,24 @@ function AddStaff({ onStaffAdded }) {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 gender: values.gender,
-                yob: parseInt(values.yob),
+                yob: values.yob,
                 phone: values.phone,
                 email: values.email,
                 joinIn: values.joinIn.format('YYYY-MM-DD'),
                 image: values.image
             };
 
-            console.log('Sending data:', formattedValues);
-
             const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues);
             
             if (response.data && response.data.code === 200) {
                 message.success('Staff added successfully');
-                if (onStaffAdded) {
-                    onStaffAdded();
-                }
-                navigate('/staff',3000);
+                navigate('/staff', { state: { refreshData: true } });
             } else {
                 throw new Error(response.data.message || 'Failed to add staff');
             }
         } catch (error) {
             console.error('Error adding staff:', error);
-            if (error.response) {
-                console.error('Server response:', error.response.data);
-                message.error(error.response.data.message || 'An error occurred while adding staff');
-            } else {
-                message.error(error.message || 'An error occurred while adding staff');
-            }
+            message.error(error.message || 'An error occurred while adding staff');
         }
     };
 
@@ -90,7 +81,7 @@ function AddStaff({ onStaffAdded }) {
                     label="Year of Birth"
                     rules={[{ required: true, message: 'Please input Year of Birth!' }]}
                 >
-                    <Input type="number" />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
 
                 <Form.Item
@@ -117,7 +108,7 @@ function AddStaff({ onStaffAdded }) {
                     label="Join Date"
                     rules={[{ required: true, message: 'Please select Join Date!' }]}
                 >
-                    <DatePicker />
+                    <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
 
                 <Form.Item
