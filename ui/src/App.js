@@ -19,6 +19,7 @@ import SpaServices from "./layouts/Component/spaservice";
 import SpaCombo from "./layouts/Component/spacombo";
 import SpaComboDetail from './layouts/Component/spaComboDetail';
 import BookingComponent from './layouts/Component/Booking/bookingcomponent';
+import BookingSuccess from './layouts/Component/Booking/bookingsuccess';
 
 // ... phần còn lại của code ...
 // ScrollToTop component
@@ -66,6 +67,7 @@ function App() {
         { path: "reset-password", element: <ResetPassword /> },
         // Thêm route mới để xử lý token từ email
         { path: "reset-password/:token", element: <ResetPassword /> },
+        { path: "booking/success", element: <BookingSuccess /> },
       ],
     },
   ]);

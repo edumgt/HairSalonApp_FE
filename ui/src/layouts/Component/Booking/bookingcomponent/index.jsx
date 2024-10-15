@@ -3,11 +3,20 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
 import { serviceDetails } from '../../../../data/serviceDetails';
 import { spaComboDetail } from '../../../../data/spaComboDetail';
-import { hairStylingDetail } from '../../../../data/hairStylingDetail'; 
-import { salonData} from '../../../../data/salonData';
+import { hairStylingDetail } from '../../../../data/hairStylingDetail';
+import { salonData } from '../../../../data/salonData';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { message } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
+import stylist1 from "../../../../assets/imageHome/Stylist/Stylist_1.jpg";
+import stylist2 from "../../../../assets/imageHome/Stylist/Stylist_2.jpg";
+import stylist3 from "../../../../assets/imageHome/Stylist/Stylist_3.jpg";
+import stylist4 from "../../../../assets/imageHome/Stylist/Stylist_4.jpg";
+import stylist5 from "../../../../assets/imageHome/Stylist/Stylist_5.jpg";
+import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
+
+
+
 
 const BookingComponent = () => {
 
@@ -18,6 +27,9 @@ const BookingComponent = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+  const [selectedStylist, setSelectedStylist] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => setIsModalVisible(true);
@@ -30,7 +42,7 @@ const BookingComponent = () => {
     setTotalPrice(prevTotal => prevTotal - parseInt(removedService.price.replace(/\D/g, '')));
   };
 
-  
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const stepParam = params.get('step');
@@ -69,6 +81,28 @@ const BookingComponent = () => {
     navigate('/booking?step=0');
   };
 
+  const handleSubmit = () => {
+    // Kiểm tra xem đã chọn đủ thông tin chưa
+    if (!selectedSalon || selectedServices.length === 0 || !selectedStylist || !selectedDate || !selectedTime) {
+      message.error("Vui lòng chọn đầy đủ thông tin trước khi đặt lịch.");
+      return;
+    }
+
+    // Lưu thông tin đã chọn vào localStorage
+    const bookingInfo = {
+      salon: selectedSalon,
+      services: selectedServices,
+      stylist: selectedStylist,
+      date: selectedDate,
+      time: selectedTime,
+      totalPrice: totalPrice
+    };
+    localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
+
+    // Chuyển hướng đến trang success
+    navigate('/booking/success');
+  };
+
   const renderStepContent = () => {
     switch (step) {
       case 0:
@@ -104,22 +138,39 @@ const BookingComponent = () => {
             </div>
             <div className="step">
               <h3>3. Chọn ngày, giờ & stylist</h3>
-              <DateTimeSelectionStep />
+
+              <DateTimeSelectionStep 
+              selectedStylist={selectedStylist} 
+              setSelectedStylist={setSelectedStylist}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              selectedTime={selectedTime}
+              setSelectedTime={setSelectedTime}
+             />
             </div>
           </div>
         );
       case 1:
         return <SalonSelectionStep onSalonSelect={handleSalonSelect} />;
-        case 2:
-          return selectedSalon ? (
-            <ServiceSelectionStep 
-              onServiceSelection={handleServiceSelection} 
-              initialServices={selectedServices}
-              initialTotalPrice={totalPrice}
-            />
-          ) : null;
+      case 2:
+        return selectedSalon ? (
+          <ServiceSelectionStep
+            onServiceSelection={handleServiceSelection}
+            initialServices={selectedServices}
+            initialTotalPrice={totalPrice}
+          />
+        ) : null;
       case 3:
-        return <DateTimeSelectionStep />;
+        return (
+          <DateTimeSelectionStep
+            selectedStylist={selectedStylist}
+            setSelectedStylist={setSelectedStylist}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedTime={selectedTime}
+            setSelectedTime={setSelectedTime}
+          />
+        );
       default:
         return null;
     }
@@ -135,8 +186,8 @@ const BookingComponent = () => {
       <h2>Đặt lịch giữ chỗ</h2>
       <div className="booking-container">
         {renderStepContent()}
-        {(step === 0 || step === 3) && <button className="submit-button">CHỐT GIỜ CẮT</button>}
-      </div>
+        {(step === 0 || step === 3) && <button className="submit-button" onClick={handleSubmit}>CHỐT GIỜ CẮT</button>}
+      </div>  
       <SelectedServicesModal
         visible={isModalVisible}
         onClose={hideModal}
@@ -157,14 +208,14 @@ const SalonSelectionStep = ({ onSalonSelect }) => {
   const [selectedSalon, setSelectedSalon] = useState(null);
 
   useEffect(() => {
-    const filtered = cities.filter(city => 
+    const filtered = cities.filter(city =>
       city.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCities(filtered);
 
     const filteredSalonData = {};
     Object.entries(salonData).forEach(([city, salons]) => {
-      const filteredCitySalons = salons.filter(salon => 
+      const filteredCitySalons = salons.filter(salon =>
         city.toLowerCase().includes(searchTerm.toLowerCase()) ||
         salon.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
         salon.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -198,20 +249,20 @@ const SalonSelectionStep = ({ onSalonSelect }) => {
     <div className="salon-selection">
       <div className="search-bar">
         <FaSearch className="search-icon" />
-        <input 
-          type="text" 
-          placeholder="Tìm kiếm salon theo tỉnh, thành phố, quận" 
+        <input
+          type="text"
+          placeholder="Tìm kiếm salon theo tỉnh, thành phố, quận"
           value={selectedSalon ? selectedSalon.address : searchTerm}
           onChange={handleSearchChange}
           readOnly={selectedSalon !== null}
-        />  
-          {searchTerm && (
-          <button 
-            className="clear-button" 
+        />
+        {searchTerm && (
+          <button
+            className="clear-button"
             onClick={() => {
               clearSearch();
               setSelectedSalon(null);
-            }} 
+            }}
             aria-label="Clear search"
           >
             <FaTimes />
@@ -221,62 +272,62 @@ const SalonSelectionStep = ({ onSalonSelect }) => {
 
 
       {searchTerm ? (
-      <div className="search-results">
-        <h3>Kết quả tìm kiếm:</h3>
-        {Object.entries(filteredSalons).map(([city, salons]) => (
-          <div key={city} className="city-salons">
-            <h4>{city}</h4>
-            {salons.map(salon => (
-              <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
-                <img src={salon.image} alt={salon.address} />
-                <div className="salon-info">
-                  <h5>{salon.address}</h5>
-                  <p>{salon.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-        {Object.keys(filteredSalons).length === 0 && (
-          <p>Không tìm thấy kết quả phù hợp.</p>
-        )}
-      </div>
-    ) : (
-      <>
-        <div className="city-list">
-          <h3>30Shine có mặt trên các tỉnh thành:</h3>
-          <div className="city-grid">
-            {filteredCities.map((city, index) => (
-              <button 
-                key={index} 
-                className={`city-button ${selectedCity === city ? 'selected' : ''}`}
-                onClick={() => handleCitySelect(city)}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
-        </div>
-        {selectedCity && salonData[selectedCity] && (
-          <div className="selected-city-salons">
-            <h3>Các salon tại {selectedCity}:</h3>
-            <div className="salon-list">
-              {salonData[selectedCity].map((salon) => (
+        <div className="search-results">
+          <h3>Kết quả tìm kiếm:</h3>
+          {Object.entries(filteredSalons).map(([city, salons]) => (
+            <div key={city} className="city-salons">
+              <h4>{city}</h4>
+              {salons.map(salon => (
                 <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
                   <img src={salon.image} alt={salon.address} />
                   <div className="salon-info">
-                    <h4>{salon.address}</h4>
+                    <h5>{salon.address}</h5>
                     <p>{salon.description}</p>
                   </div>
                 </div>
               ))}
             </div>
+          ))}
+          {Object.keys(filteredSalons).length === 0 && (
+            <p>Không tìm thấy kết quả phù hợp.</p>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="city-list">
+            <h3>30Shine có mặt trên các tỉnh thành:</h3>
+            <div className="city-grid">
+              {filteredCities.map((city, index) => (
+                <button
+                  key={index}
+                  className={`city-button ${selectedCity === city ? 'selected' : ''}`}
+                  onClick={() => handleCitySelect(city)}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-      </>
-    )}
-  </div>
-);
+          {selectedCity && salonData[selectedCity] && (
+            <div className="selected-city-salons">
+              <h3>Các salon tại {selectedCity}:</h3>
+              <div className="salon-list">
+                {salonData[selectedCity].map((salon) => (
+                  <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
+                    <img src={salon.image} alt={salon.address} />
+                    <div className="salon-info">
+                      <h4>{salon.address}</h4>
+                      <p>{salon.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 };
 
 const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
@@ -339,7 +390,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
 
   useEffect(() => {
     const filtered = Object.entries(allServices).filter(([key, service]) => {
-      const matchesSearch = 
+      const matchesSearch =
         service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || key.includes(selectedCategory);
@@ -351,9 +402,9 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   return (
     <div className="service-selection">
       <div className="search-bar">
-        <input 
-          type="text" 
-          placeholder="Tìm kiếm dịch vụ, nhóm dịch vụ hoặc giá" 
+        <input
+          type="text"
+          placeholder="Tìm kiếm dịch vụ, nhóm dịch vụ hoặc giá"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -366,45 +417,45 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
         <button onClick={() => setSelectedCategory('goi-combo')} className={selectedCategory === 'goi-combo' ? 'active' : ''}>Gội massage</button>
       </div>
       <div className="service-grid">
-  {filteredServices.map(([key, service]) => {
-    const isSelected = selectedServices.some(s => s.title === service.title);
-    return (
-      <div key={key} className="service-item">
-        <img src={service.steps[0].image} alt={service.title} />
-        <div className="service-content">
-          <h3>{service.title}</h3>
-          <p>{service.description}</p>
-          <p className="price">{service.price || 'Giá liên hệ'}</p>
-          <button 
-            className={`add-service ${isSelected ? 'selected' : ''}`} 
-            onClick={() => handleAddService(service)}
-          >
-            {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
-          </button>
-        </div>
+        {filteredServices.map(([key, service]) => {
+          const isSelected = selectedServices.some(s => s.title === service.title);
+          return (
+            <div key={key} className="service-item">
+              <img src={service.steps[0].image} alt={service.title} />
+              <div className="service-content">
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+                <p className="price">{service.price || 'Giá liên hệ'}</p>
+                <button
+                  className={`add-service ${isSelected ? 'selected' : ''}`}
+                  onClick={() => handleAddService(service)}
+                >
+                  {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
-    );
-  })}
-</div>
       {filteredServices.length === 0 && (
         <p className="no-results">Không tìm thấy dịch vụ phù hợp.</p>
       )}
-      
+
       <div className="service-summary">
         <div className="summary-content">
-          <span 
+          <span
             className="selected-services"
             onClick={showModal}
             style={{ cursor: 'pointer' }}
           >
-            {`Đã chọn ${selectedServices.length} dịch vụ`}
+           {`Đã chọn ${selectedServices.length} dịch vụ`}
           </span>
           <span className="total-amount">
             Tổng thanh toán: {formatPrice(totalPrice)}
           </span>
         </div>
-        <button 
-          className="done-button" 
+        <button
+          className="done-button"
           disabled={selectedServices.length === 0}
           onClick={handleDoneSelection}
         >
@@ -423,25 +474,29 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   );
 };
 
-const DateTimeSelectionStep = () => {
-  const [selectedStylist, setSelectedStylist] = useState(null);
+const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDate, setSelectedDate, selectedTime, setSelectedTime }) => {
   const [isStyleListOpen, setIsStyleListOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
   const [isDateListOpen, setIsDateListOpen] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(null);
-
+  const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
+  const [currentStylistIndex, setCurrentStylistIndex] = useState(0);
 
   const times = [
-    '7h00', '7h20', '7h40', '8h00', '8h20',
-    '8h40', '9h00', '9h20', '9h40', '10h00',
-    '10h20', '10h40', '11h00', '11h20', '11h40'
+ '8h00',
+    '8h40', '9h00', '9h40', '10h00',
+    '10h40', '11h00', '11h40', '12h00',
+    '12h40', '13h00', '13h40', '14h00',
+    '14h40', '15h00', '15h40', '16h00',
+    '16h40', '17h00', '17h40', '18h00',
+    '18h40', '19h00', '19h40', '20h00',
   ];
 
   const stylists = [
-    { id: 1, name: '30Shine Chọn Giúp Anh', image: '/path/to/default-image.png' },
-    { id: 2, name: 'Luận Triệu', image: '/path/to/luan-trieu-image.png' },
-    { id: 3, name: 'Bắc Lý', image: '/path/to/bac-ly-image.png' },
-    { id: 4, name: 'Huy Nguyễn', image: '/path/to/huy-nguyen-image.png' },
+    { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1 },
+    { id: 2, name: 'Luận Triệu', image: stylist2 },
+    { id: 3, name: 'Bắc Lý', image: stylist3 },
+    { id: 4, name: 'Huy Nguyễn', image: stylist4 },
+    { id: 5, name: 'Đạt Nguyễn', image: stylist5 },
+    { id: 6, name: 'Phúc Nguyễn', image: stylist6 },
   ];
 
   const handleStylistSelect = (stylist) => {
@@ -468,10 +523,8 @@ const DateTimeSelectionStep = () => {
     setSelectedDate(date);
     setIsDateListOpen(false);
   };
-
   const toggleStyleList = () => {
     setIsStyleListOpen(!isStyleListOpen);
-    setIsDateListOpen(false);
   };
 
   const toggleDateList = () => {
@@ -479,48 +532,89 @@ const DateTimeSelectionStep = () => {
     setIsStyleListOpen(false);
   };
 
+  const handlePrev = () => {
+    setCurrentStylistIndex(prevIndex => Math.max(0, prevIndex - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentStylistIndex(prevIndex => Math.min(stylists.length - 4, prevIndex + 1));
+  };
+
+  const handlePrevTime = () => {
+    setCurrentTimeIndex(prev => Math.max(0, prev - 1));
+  };
+
+  const handleNextTime = () => {
+    setCurrentTimeIndex(prev => Math.min(times.length - 3, prev + 1));
+  };
+
+  
+
   return (
     <div className="date-time-selection">
       <div className="stylist-selection">
-        <div 
-          className="stylist-dropdown"
-          onClick={toggleStyleList}
-        >
-          <FaUser className="icon" />
-          <span>{selectedStylist ? selectedStylist.name : 'Chọn Stylist'}</span>
-          <FaChevronRight className="arrow" />
-        </div>
+        <h3 onClick={toggleStyleList} className="stylist-header">
+          Chọn Stylist
+          <FaChevronRight className={`arrow ${isStyleListOpen ? 'open' : ''}`} />
+        </h3>
+        {selectedStylist && (
+          <div className="selected-stylist-summary">
+            <p>Lựa chọn của bạn: {selectedStylist.name}</p>
+            <img
+              src={selectedStylist.image}
+              alt={selectedStylist.name}
+              className="stylist-image"
+            />
+          </div>
+        )}
+        {/* Thêm thông tin bổ sung nếu có */}
+    {/* <p>Chuyên môn: {selectedStylist.specialty}</p> */}
+    {/* <p>Đánh giá: {selectedStylist.rating}</p> */}
         
         {isStyleListOpen && (
-          <div className="stylist-list">
-            {stylists.map((stylist) => (
-              <div 
-                key={stylist.id} 
-                className={`stylist-item ${selectedStylist && selectedStylist.id === stylist.id ? 'selected' : ''}`}
-                onClick={() => handleStylistSelect(stylist)}
-              >
-                {stylist.id === 1 ? (
-                  <div className="default-stylist">
-                    <FaUser className="icon" />
-                    <span>{stylist.name}</span>
-                  </div>
-                ) : (
-                  <>
-                    <img src={stylist.image} alt={stylist.name} />
-                    <span>{stylist.name}</span>
-                  </>
-                )}
-                {selectedStylist && selectedStylist.id === stylist.id && (
-                  <div className="check-icon">✓</div>
-                )}
-              </div>
-            ))}
+          <div className="stylist-carousel">
+            {currentStylistIndex > 0 && (
+              <button className="nav-button prev" onClick={handlePrev}>
+                <FaChevronLeft />
+              </button>
+            )}
+            <div className="stylist-list" style={{ transform: `translateX(-${currentStylistIndex * 25}%)` }}>
+              {stylists.map((stylist) => (
+                <div
+                  key={stylist.id}
+                  className={`stylist-item ${selectedStylist && selectedStylist.id === stylist.id ? 'selected' : ''}`}
+                  onClick={() => handleStylistSelect(stylist)}
+                >
+                  {stylist.id === 1 ? (
+                    <div className="default-stylist">
+                      <FaUser className="icon" />
+                      <span className="stylist-name">{stylist.name}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <img src={stylist.image} alt={stylist.name} />
+                      <div className="stylist-info">
+                        <p className="stylist-name">{stylist.name}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedStylist && selectedStylist.id === stylist.id && (
+                    <div className="check-icon">✓</div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {currentStylistIndex < stylists.length - 4 && (
+              <button className="nav-button next" onClick={handleNext}>
+                <FaChevronRight />
+              </button>
+            )}
           </div>
         )}
       </div>
 
       <div className="date-selection">
-        <div 
+        <div
           className="date-dropdown"
           onClick={toggleDateList}
         >
@@ -531,12 +625,12 @@ const DateTimeSelectionStep = () => {
           </span>
           <FaChevronRight className="arrow" />
         </div>
-        
+
         {isDateListOpen && (
           <div className="date-list">
             {dates.map((date, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`date-item ${selectedDate && selectedDate.label === date.label ? 'selected' : ''}`}
                 onClick={() => handleDateSelect(date)}
               >
@@ -554,22 +648,33 @@ const DateTimeSelectionStep = () => {
             <FaClock className="icon" />
             Chọn giờ
           </h4>
-          <div className="time-grid">
-            {times.map((time) => (
-              <button
-                key={time}
-                className={`time-button ${selectedTime === time ? 'selected' : ''}`}
-                onClick={() => setSelectedTime(time)}
-              >
-                {time}
-              </button>
-            ))}
+          <div className="time-carousel">
+            <button className="nav-button prev" onClick={handlePrevTime} disabled={currentTimeIndex === 0}>
+              <FaChevronLeft />
+            </button>
+            <div className="time-grid">
+              {[0, 1, 2].map((rowIndex) => (
+                <div key={rowIndex} className="time-row">
+                  {times.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((time) => (
+                    <button
+                      key={time}
+                      className={`time-button ${selectedTime === time ? 'selected' : ''}`}
+                      onClick={() => setSelectedTime(time)}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <button className="nav-button next" onClick={handleNextTime} disabled={currentTimeIndex >= times.length - 15}>
+              <FaChevronRight />
+            </button>
           </div>
         </div>
       )}
     </div>
   );
 };
-
 
 export default BookingComponent;
