@@ -33,7 +33,7 @@ function AddStaff({ onStaffAdded }) {
                 if (onStaffAdded) {
                     onStaffAdded();
                 }
-                navigate('/staff');
+                navigate('/staff',3000);
             } else {
                 throw new Error(response.data.message || 'Failed to add staff');
             }

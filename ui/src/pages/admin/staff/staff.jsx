@@ -27,7 +27,7 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
         <img src={image} alt={`${firstName} ${lastName}`} className={styles.staffImage} />
       </td>
       <td className={styles.actionCell}>
-        <EditButton onEdit={() => onEdit(id)} onDelete={() => onDelete(id)}/>
+        <EditButton onEdit={() => onEdit(id)} onDelete={() => onDelete(code)}/>
       </td>
     </tr>
   );
@@ -135,7 +135,10 @@ const Staff = () => {
       onOk: async () => {
         try {
           await axios.delete(`http://localhost:8080/api/v1/staff/${code}`);
-          fetchStaff();
+          Modal.success({
+            content: 'Staff member deleted successfully',
+          });
+          fetchStaff(); // Refresh the staff list after deletion
         } catch (error) {
           console.error('Error deleting staff:', error);
           Modal.error({
