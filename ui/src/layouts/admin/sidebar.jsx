@@ -53,11 +53,11 @@ const Sidebar = () => {
             						<div className={styles.itemContent}>Staff</div>
           					</div>
         				</div>
-        				<div className={`${styles.item} ${activeItem === 'wage' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/wage', 'wage')}>
+        				<div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
+                            onClick={() => handleItem('/combo', 'combo')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={wageIcon} />
-            						<div className={styles.itemContent}>Wage</div>
+            						<div className={styles.itemContent}>Combo</div>
           					</div>
         				</div>
         				<div className={`${styles.item} ${activeItem === 'booking' ? styles.active : ''}`} 
