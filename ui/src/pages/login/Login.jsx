@@ -10,11 +10,10 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const saveUserData = (token, username, userName, userRole, firstName, lastName) => {
-    console.log('Saving user data:', { token, username, userName, userRole, firstName, lastName });
+  const saveUserData = (token, username, userRole, firstName, lastName) => {
+    console.log('Saving user data:', { token, username, userRole, firstName, lastName });
     localStorage.setItem('token', token || '');
     localStorage.setItem('username', username || '');
-    localStorage.setItem('userNa  me', userName || '');
     localStorage.setItem('userRole', userRole || '');
     localStorage.setItem('firstName', firstName || '');
     localStorage.setItem('lastName', lastName || '');
@@ -54,8 +53,6 @@ function Login() {
       if (response.ok) {
         console.log('Full login response:', data);
         if (data.result && data.result.token) {
-          const userName = data.result.userName || username;
-          
           try {
             const profileResponse = await fetch('http://localhost:8080/api/v1/profile/', {
               headers: { 'Authorization': `Bearer ${data.result.token}` }
@@ -69,7 +66,7 @@ function Login() {
               const firstName = profileData.result.firstName || '';
               const lastName = profileData.result.lastName || '';
               
-              saveUserData(data.result.token, username, userName, userRole, firstName, lastName);
+              saveUserData(data.result.token, username, userRole, firstName, lastName);
               
               message.success({
                 content: 'Đăng nhập thành công!',
