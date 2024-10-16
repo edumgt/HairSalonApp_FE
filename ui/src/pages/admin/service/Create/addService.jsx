@@ -58,12 +58,12 @@ const AddService = () => {
 
     return (
         <div className={styles.addServiceContainer}>
-            <h2>Thêm Dịch Vụ Mới</h2>
+            <h2>Add New Service</h2>
             {error && <div className={styles.error}>{error}</div>}
             {success && <div className={styles.success}>{success}</div>}
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
-                    <label htmlFor="categoryId">Danh mục:</label>
+                    <label htmlFor="categoryId">Category:</label>
                     <select
                         id="categoryId"
                         name="categoryId"
@@ -71,7 +71,7 @@ const AddService = () => {
                         onChange={handleChange}
                         required
                     >
-                        <option value="">Chọn danh mục</option>
+                        <option value="">Select category</option>
                         {categories.map(category => (
                             <option key={category.categoryId} value={category.categoryId}>
                                 {category.categoryName}
@@ -80,7 +80,7 @@ const AddService = () => {
                     </select>
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="serviceName">Tên dịch vụ:</label>
+                    <label htmlFor="serviceName">Service Name:</label>
                     <input
                         type="text"
                         id="serviceName"
@@ -88,20 +88,22 @@ const AddService = () => {
                         value={formData.serviceName}
                         onChange={handleChange}
                         required
+                        placeholder="Enter service name"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="description">Mô tả:</label>
+                    <label htmlFor="description">Description:</label>
                     <textarea
                         id="description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
                         required
+                        placeholder="Enter service description"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="duration">Thời gian (phút):</label>
+                    <label htmlFor="duration">Duration (minutes):</label>
                     <input
                         type="text"
                         id="duration"
@@ -109,10 +111,11 @@ const AddService = () => {
                         value={formData.duration}
                         onChange={handleChange}
                         required
+                        placeholder="Enter duration in minutes"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="price">Giá (VNĐ):</label>
+                    <label htmlFor="price">Price (VND):</label>
                     <input
                         type="number"
                         id="price"
@@ -120,10 +123,11 @@ const AddService = () => {
                         value={formData.price}
                         onChange={handleChange}
                         required
+                        placeholder="Enter price in VND"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="image">Hình ảnh (URL Imgur):</label>
+                    <label htmlFor="image">Image (Imgur URL):</label>
                     <input
                         type="text"
                         id="image"
@@ -131,11 +135,12 @@ const AddService = () => {
                         value={formData.image}
                         onChange={handleChange}
                         required
+                        placeholder="Enter Imgur image URL"
                     />
                 </div>
                 <div className={styles.buttonGroup}>
-                    <button type="button" onClick={() => navigate('/service')} className={styles.cancelButton}>Hủy</button>
-                    <button type="submit" className={styles.saveButton}>Lưu</button>
+                    <button type="button" onClick={() => navigate('/service')} className={styles.cancelButton}>Cancel</button>
+                    <button type="submit" className={styles.saveButton}>Save</button>
                 </div>
             </form>
         </div>

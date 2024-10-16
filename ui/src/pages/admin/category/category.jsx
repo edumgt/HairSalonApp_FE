@@ -58,19 +58,19 @@ function Category() {
 
     const handleDeleteCategory = (categoryId) => {
         Modal.confirm({
-            title: 'Xác nhận xóa',
-            content: 'Bạn có chắc chắn muốn xóa danh mục này không?',
+            title: 'Confirm deletion',
+            content: 'Are you sure you want to delete this category?',
             onOk: async () => {
                 try {
                     await axios.delete(`http://localhost:8080/api/v1/category/${categoryId}`);
                     Modal.success({
-                        content: 'Xóa danh mục thành công',
+                        content: 'Category deleted successfully',
                     });
-                    fetchCategories(); // Cập nhật lại danh sách sau khi xóa
+                    fetchCategories(); // Update the list after deletion
                 } catch (error) {
-                    console.error('Lỗi khi xóa danh mục:', error);
+                    console.error('Error deleting category:', error);
                     Modal.error({
-                        content: 'Có lỗi xảy ra khi xóa danh mục',
+                        content: 'An error occurred while deleting the category',
                     });
                 }
             },
@@ -121,7 +121,7 @@ function Category() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4" style={{textAlign: 'center'}}>Không có danh mục nào phù hợp.</td>
+                                            <td colSpan="4" style={{textAlign: 'center'}}>No matching categories found.</td>
                                         </tr>
                                     )}
                                 </tbody>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import styles from './updateService.module.css'
 
 const UpdateService = () => {
@@ -10,6 +11,8 @@ const UpdateService = () => {
         duration: '',
         price: ''
     })
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -19,16 +22,29 @@ const UpdateService = () => {
         }))
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('Form data submitted:', formData)
-        // Xử lý cập nhật dịch vụ ở đây (gọi API, etc.)
-        navigate('/service')
+        setError('')
+        setSuccess('')
+        try {
+            const response = await axios.put('http://localhost:8080/api/v1/service', formData)
+            if (response.data && response.data.code === 0) {
+                setSuccess('Service updated successfully')
+                setTimeout(() => navigate('/service'), 2000)
+            } else {
+                setError('Failed to update service')
+            }
+        } catch (err) {
+            console.error('Error updating service:', err)
+            setError('An error occurred while updating the service. Please try again.')
+        }
     }
 
     return (
         <div className={styles.updateServiceContainer}>
             <h2>Update Service</h2>
+            {error && <div className={styles.error}>{error}</div>}
+            {success && <div className={styles.success}>{success}</div>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="serviceName">Service Name:</label>
@@ -38,6 +54,7 @@ const UpdateService = () => {
                         name="serviceName"
                         value={formData.serviceName}
                         onChange={handleChange}
+                        placeholder="Enter service name"
                     />
                 </div>
                 <div>
@@ -47,26 +64,29 @@ const UpdateService = () => {
                         name="serviceDescription"
                         value={formData.serviceDescription}
                         onChange={handleChange}
+                        placeholder="Enter service description"
                     ></textarea>
                 </div>
                 <div>
-                    <label htmlFor="duration">Duration:</label>
+                    <label htmlFor="duration">Duration (Minutes):</label>
                     <input 
-                        type="text" 
+                        type="number" 
                         id="duration"
                         name="duration"
                         value={formData.duration}
                         onChange={handleChange}
+                        placeholder="Enter duration in minutes"
                     />
                 </div>
                 <div>
-                    <label htmlFor="price">Price:</label>
+                    <label htmlFor="price">Price (VND):</label>
                     <input 
-                        type="text" 
+                        type="number" 
                         id="price"
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
+                        placeholder="Enter price in VND"
                     />
                 </div>
                 <div className={styles.buttonGroup}>
