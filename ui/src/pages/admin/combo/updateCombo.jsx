@@ -34,50 +34,49 @@ function UpdateCombo() {
     };
     const inputs = [
         {
-            label: 'Combo ID',
+            label: 'ID',
             name:'id',
             isInput: true,
             isDisabled: true,
-            rules: [{required: true, message: 'Please input ID!'}]
         },
         {
-            label: 'Combo name',
+            label: 'Tên Combo',
             name:'name',
             isInput: true,
-            rules: [{required: true, message: 'Please input Name!'}]
+            rules: [{required: true, message: 'Vui lòng nhập Tên!'}]
         },
         {
-            label: 'Services',
+            label: 'Các dịch vụ',
             name:'services',
             isSelect: true,
             mode: 'multiple',
             options: serviceOptions,
-            rules: [{required: true, message: 'Please input Services!'}]
+            rules: [{required: true, message: 'Vui lòng chọn dịch vụ!'}]
         },
         {
-            label: 'Price',
+            label: 'Giá',
             name:'price',
             isInput: true,
-            rules: [{required: true, message: 'Please input Price!'}]
+            rules: [{required: true, message: 'Vui lòng nhập giá!'}]
         },
         {
-            label: 'Description',
+            label: 'Mô tả',
             name:'description',
             isInput: true,
-            rules: [{required: true, message: 'Please input Description!'}]
+            rules: [{required: true, message: 'Vui lòng nhập mô tả!'}]
         }
     ]
     const back = useNavigate()
     const handleUpdate = async (values) => {
         Modal.confirm({
-            title: 'Confirm update',
-            content: 'Are you sure you want to update this combo ?',
+            title: 'Xác nhận',
+            content: 'Bạn có muốn cập nhật combo này ?',
             onOk: async () => {
                 try {
                     const response = await update(values)
                     notification.success({
-                        message: 'Update Successful',
-                        description: 'The combo has been updated successfully!',
+                        message: 'Thành công',
+                        description: 'Combo đã được cập nhật!',
                         duration: 2
                       });
                     setTimeout(() => {

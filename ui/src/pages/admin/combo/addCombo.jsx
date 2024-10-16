@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import { useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
+import { Modal, notification } from 'antd'
 import CUForm from '../../../layouts/admin/components/formv2/form'
 import { create, getServices } from '../services/comboService'
 
@@ -25,25 +25,25 @@ function AddCombo() {
       }, []); 
     const inputs = [
         {
-            label: 'Combo name',
+            label: 'Tên Combo',
             name:'name',
             isInput: true,
             rules: [{required: true, message: 'Please input Name!'}]
         },
         {
-            label: 'Price',
+            label: 'Giá',
             name:'price',
             isInput: true,
             rules: [{required: true, message: 'Please input Price!'}]
         },
         {
-            label: 'Description',
+            label: 'Mô tả',
             name:'description',
             isInput: true,
             rules: [{required: true, message: 'Please input Description!'}]
         },
         {
-            label: 'Services',
+            label: 'Các dịch vụ',
             name:'services',
             isSelect: true,
             mode: 'multiple',
@@ -54,12 +54,19 @@ function AddCombo() {
     const back = useNavigate()
     const handleCreate = async (values) => {
         Modal.confirm({
-            title: 'Confirm create',
-            content: 'Are you sure you want to create this combo ?',
+            title: 'Xác nhận',
+            content: 'Bạn có muốn thêm mới combo này ?',
             onOk: async () => {
                 try {
                     const response = await create(values)
+                    notification.success({
+                      message: 'Thành công',
+                      description: 'Combo đã được thêm mới!',
+                      duration: 2
+                    });
+                  setTimeout(() => {
                     back('/combo', { state: { shouldReload: true } })
+                  }, 1000)
                     return response
                 } catch (error) {
                     console.log(error);

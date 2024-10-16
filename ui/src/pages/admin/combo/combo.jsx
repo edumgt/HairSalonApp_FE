@@ -2,7 +2,7 @@ import styles from './combo.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink';
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn';
 import { Outlet, useLocation } from 'react-router-dom';
-import { deleteById, getAll, searchById } from '../services/comboService';
+import { deleteById, getAll } from '../services/comboService';
 import { useEffect, useState } from 'react';
 import { Modal, notification } from 'antd';
 import EditButton from '../../../layouts/admin/components/table/buttonv2/editButton';
@@ -13,6 +13,7 @@ const Combo = () => {
   const location = useLocation();
   const isRootPath = location.pathname === '/combo';
   const [combo, setCombo] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   // Load data
   const loadData = async () => {
@@ -30,29 +31,31 @@ const Combo = () => {
       loadData();
     }
   }, [location.state]);
-//search
-const handleSearch = async (id) => {
-    try {
-      const response = await searchById(id)
-      setCombo(response.data.result)
-    } catch (error) {
-      console.log(error);
-    }
-}
+// Hàm xử lý tìm kiếm khi người dùng nhập
+const handleSearch = (e) => {
+  setSearchText(e.target.value);
+};
+
+// Lọc kết quả tìm kiếm dựa trên searchText
+const filteredCombos = combo.filter((item) =>
+  item.name.toLowerCase().includes(searchText.toLowerCase())
+);
+
   // Delete
   const handleDelete = async (id) => {
     Modal.confirm({
-      title: 'Confirm delete',
-      content: 'Are you sure you want to delete this combo?',
+      title: 'Xác nhận',
+      content: 'Bạn có muốn xóa combo này ?',
       onOk: async () => {
         try {
           const response = await deleteById(id);
           notification.success({
-            message: 'Delete Successful',
-            description: response.message,
+            message: 'Thành công',
+            description: 'Combo đã được xóa',
             duration: 2
           });
           loadData();
+          return response
         } catch (error) {
           console.log(error);
         }
@@ -78,7 +81,7 @@ const handleSearch = async (id) => {
             <div key={service.serviceId}>{service.serviceName}</div>
           ))}
         </td>
-        <td className={styles.info}>{price}</td>
+        <td className={styles.info}>{price.toLocaleString()} VND</td>
         <td className={styles.info}>{description}</td>
         <td>
           <EditButton id={id} forPage='updateCombo' handleDelete={handleDelete} item={{ id, name, services, price, description }} />
@@ -94,31 +97,31 @@ const handleSearch = async (id) => {
           <NavLink currentPage="Combo" />
           <div className={styles.tableGroup}>
             <HeaderButton 
-              text="Add combo" 
+              text="Thêm combo" 
               add={true} 
               linkToAdd='addCombo'
               handleSearch={handleSearch}
-              loadData={loadData}
+              searchTarget='tên'
             />
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
                   <tr className={styles.columnHeaderParent}>
                     <HeaderColumn title="ID" />
-                    <HeaderColumn title="Name" />
-                    <HeaderColumn title="Services" />
-                    <HeaderColumn title="Price" />
-                    <HeaderColumn title="Description" />
+                    <HeaderColumn title="Tên" />
+                    <HeaderColumn title="Các dịch vụ" />
+                    <HeaderColumn title="Giá" />
+                    <HeaderColumn title="Mô tả" />
                     <HeaderColumn title="" />
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(combo) ? (
-                    combo.map((item, index) => (
+                  {Array.isArray(filteredCombos) ? (
+                    filteredCombos.map((item, index) => (
                       <ListItem key={index} {...item} />
                     ))
                   ) : (
-                    <ListItem key={combo.id} {...combo} />
+                    <ListItem key={filteredCombos.id} {...filteredCombos} />
                   )}
                 </tbody>
               </table>

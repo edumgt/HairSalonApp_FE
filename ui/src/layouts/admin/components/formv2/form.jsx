@@ -18,14 +18,13 @@ function CUForm({inputs, handleSave, initialValues}) {
   return (
     <div className="content">
         <Content>
-            <Form onFinish={handleSave} initialValues={initialValues}>
+            <Form onFinish={handleSave} initialValues={initialValues} layout="vertical">
                 {inputs.map((input, index) => (
                     <Form.Item
                         key={index}
                         label={input.label}
                         name={input.name}
                         rules={input.rules}
-                        
                     >
                         {input.isInput && <Input disabled={input.isDisabled} />}
                         {input.isTextArea && <TextArea rows={2} maxLength={3}/>}
@@ -73,7 +72,7 @@ function CUForm({inputs, handleSave, initialValues}) {
                     
                 ))}
                 <Form.Item>
-                  <Button type="primary" htmlType="submit">Save</Button>
+                  <Button type="primary" htmlType="submit" className="btn">Lưu</Button>
                 </Form.Item>
             </Form>
         </Content>
