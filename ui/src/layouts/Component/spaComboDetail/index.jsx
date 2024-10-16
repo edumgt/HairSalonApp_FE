@@ -1,12 +1,26 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { spaComboDetail } from '../../../data/spaComboDetail';
 import './index.scss';
+import { message } from 'antd';
 
 const SpaComboDetail = () => {
   const { comboId } = useParams();
   const combo = spaComboDetail[comboId];
-
+  const navigate = useNavigate();
+  const handleBookingClick = () => {
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
+      navigate('/booking');
+    } else {
+      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+      message.info('Vui lòng đăng nhập để đặt lịch');
+      navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+    }
+  };  
+  
   if (!combo) {
     return <div>Không tìm thấy dịch vụ spa</div>;
   }
@@ -25,7 +39,7 @@ const SpaComboDetail = () => {
           </div>
         ))}
       </div>
-      <button className="spa-combo-detail__book-button">ĐẶT LỊCH NGAY</button>
+      <button className="spa-combo-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
     </div>
   );
 };

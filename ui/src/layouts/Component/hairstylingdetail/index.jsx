@@ -1,13 +1,29 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { hairStylingDetail } from '../../../data/hairStylingDetail';
+import { message } from 'antd';
 import './index.scss';
 
 const HairStylingDetail = () => {
+  const navigate = useNavigate();
   const { serviceId } = useParams();
   console.log("Current serviceId:", serviceId);
   console.log("Available services:", Object.keys(hairStylingDetail));
   console.log("Service data:", hairStylingDetail[serviceId]);
+
+   const handleBookingClick = () => {
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
+      navigate('/booking');
+    } else {
+      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+      message.info('Vui lòng đăng nhập để đặt lịch');
+      navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+    }
+  };
+
 
   const service = hairStylingDetail[serviceId];
 
@@ -44,7 +60,7 @@ const HairStylingDetail = () => {
           </ul>
         </div>
       </div>
-      <button className="hair-styling-detail__book-button">ĐẶT LỊCH NGAY</button>
+      <button className="hair-styling-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
     </div>
     
   );

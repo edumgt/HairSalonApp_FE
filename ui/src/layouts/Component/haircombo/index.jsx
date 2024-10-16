@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { message } from 'antd'; 
 import './index.scss';
 import thuongGia1 from '../../../assets/imageHome/Service/cat-goi-combo-thuong-gia-1.jpg';
 import thuongGia2 from '../../../assets/imageHome/Service/cat-goi-combo-thuong-gia-2.jpg';
@@ -21,6 +22,20 @@ import catgoicombo14 from '../../../assets/imageHome/Service/cat-goi-combo-5-2.j
 import catgoicombo15 from '../../../assets/imageHome/Service/cat-goi-combo-5-3.jpg';
 
 const HairCutServices = () => {
+  const navigate = useNavigate();
+
+  const handleBookingClick = () => {
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
+      navigate('/booking');
+    } else {
+      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+      message.info('Vui lòng đăng nhập để đặt lịch');
+      navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+    }
+  };
 
   const services = [
     {
@@ -118,7 +133,7 @@ const HairCutServices = () => {
           </Link>
         ))}
       </div>
-      <button className="hair-cut-services__book-button">ĐẶT LỊCH NGAY</button>
+      <button className="hair-cut-services__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
     </div>
   );
 };
