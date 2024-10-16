@@ -14,7 +14,7 @@ function CreateCategory() {
         setNotification({ message: '', type: '' });
 
         if (!categoryName.trim() || !categoryDescription.trim()) {
-            setNotification({ message: 'Vui lòng điền đầy đủ thông tin.', type: 'error' });
+            setNotification({ message: 'Please fill in all information.', type: 'error' });
             return;
         }
 
@@ -25,20 +25,20 @@ function CreateCategory() {
             });
 
             if (response.data.code === 0) {
-                setNotification({ message: 'Thêm danh mục thành công!', type: 'success' });
-                setTimeout(() => navigate('/category'), 2000); // Chuyển hướng sau 2 giây
+                setNotification({ message: 'Category added successfully!', type: 'success' });
+                setTimeout(() => navigate('/category'), 2000); // Redirect after 2 seconds
             } else {
-                setNotification({ message: 'Có lỗi xảy ra khi thêm danh mục.', type: 'error' });
+                setNotification({ message: 'An error occurred while adding the category.', type: 'error' });
             }
         } catch (error) {
-            console.error('Lỗi khi thêm danh mục:', error);
-            setNotification({ message: 'Có lỗi xảy ra khi thêm danh mục. Vui lòng thử lại sau.', type: 'error' });
+            console.error('Error adding category:', error);
+            setNotification({ message: 'An error occurred while adding the category. Please try again later.', type: 'error' });
         }
     };
 
     return (
         <div className={styles.createCategoryContainer}>
-            <h2>Thêm Danh Mục Mới</h2>
+            <h2>Add New Category</h2>
             {notification.message && (
                 <div className={`${styles.notification} ${styles[notification.type]}`}>
                     {notification.message}
@@ -46,7 +46,7 @@ function CreateCategory() {
             )}
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formGroup}>
-                    <label htmlFor="categoryName">Tên Danh Mục:</label>
+                    <label htmlFor="categoryName">Category Name:</label>
                     <input
                         type="text"
                         id="categoryName"
@@ -56,7 +56,7 @@ function CreateCategory() {
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="categoryDescription">Mô Tả Danh Mục:</label>
+                    <label htmlFor="categoryDescription">Category Description:</label>
                     <textarea
                         id="categoryDescription"
                         value={categoryDescription}
@@ -65,8 +65,8 @@ function CreateCategory() {
                     />
                 </div>
                 <div className={styles.buttonGroup}>
-                    <button type="submit" className={styles.submitButton}>Thêm Danh Mục</button>
-                    <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Hủy</button>
+                    <button type="submit" className={styles.submitButton}>Add Category</button>
+                    <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Cancel</button>
                 </div>
             </form>
         </div>

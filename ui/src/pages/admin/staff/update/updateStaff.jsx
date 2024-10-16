@@ -29,7 +29,7 @@ function UpdateStaff() {
     }, [id]);
 
     const inputs = [
-        // ... (giống như trong addStaff.jsx)
+        // ... (same as in addStaff.jsx)
     ];
 
     const handleSubmit = async (values) => {

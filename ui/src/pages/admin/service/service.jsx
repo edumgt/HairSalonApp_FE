@@ -36,7 +36,7 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
             <td className={styles.info}>{categories.categoryId}</td>
             <td className={styles.info}>{serviceName}</td>
             <td className={styles.info}>{description}</td>
-            <td className={styles.info}>{duration}</td>
+            <td className={styles.info}>{duration} Minutes</td>
             <td className={styles.info}>{price.toLocaleString()} VND</td>
             <td className={`${styles.info} ${styles.imageCell}`}>
                 {!imageError ? (
@@ -165,19 +165,19 @@ const Service = () => {
 
     const handleDeleteService = (serviceId) => {
         Modal.confirm({
-            title: 'Xác nhận xóa',
-            content: 'Bạn có chắc chắn muốn xóa dịch vụ này không?',
+            title: 'Confirm deletion',
+            content: 'Are you sure you want to delete this service?',
             onOk: async () => {
                 try {
                     await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`);
                     Modal.success({
-                        content: 'Xóa dịch vụ thành công',
+                        content: 'Service deleted successfully',
                     });
-                    fetchServices(); // Cập nhật lại danh sách sau khi xóa
+                    fetchServices(); // Update the list after deletion
                 } catch (error) {
-                    console.error('Lỗi khi xóa dịch vụ:', error);
+                    console.error('Error deleting service:', error);
                     Modal.error({
-                        content: 'Có lỗi xảy ra khi xóa dịch vụ',
+                        content: 'An error occurred while deleting the service',
                     });
                 }
             },
@@ -209,8 +209,8 @@ const Service = () => {
                                 <HeaderColumn title="Category ID" sortable />
                                 <HeaderColumn title="Service Name" sortable />
                                 <HeaderColumn title="Description" />
-                                <HeaderColumn title="Duration" />
-                                <HeaderColumn title="Price" sortable />
+                                <HeaderColumn title="Duration (Minutes)" />
+                                <HeaderColumn title="Price (VND)" sortable />
                                 <HeaderColumn title="Image" className={styles.imageHeader} />
                                 <HeaderColumn title="" />
                             </tr>
