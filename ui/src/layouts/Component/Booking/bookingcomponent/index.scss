@@ -816,6 +816,11 @@
     }
   }
 
+  .time-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   
 
   .ant-message-notice-content {

@@ -479,6 +479,39 @@ const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDa
   const [isDateListOpen, setIsDateListOpen] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
   const [currentStylistIndex, setCurrentStylistIndex] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    //updat current time every minute
+    const updateCurrentTime = () => setCurrentTime(new Date());
+    updateCurrentTime(); //  set initial time imediately
+    const timer = setInterval(updateCurrentTime, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const isTimeDisabled = (time) => {
+    if (!selectedDate) return false;
+    
+    const [hours, minutes] = time.split('h').map(Number);
+    const selectedDateTime = new Date(selectedDate.date);
+    selectedDateTime.setHours(hours, minutes, 0, 0);
+
+    // If selected date is today, disable times before or equal to current time
+    if (selectedDate.date.toDateString() === currentTime.toDateString()) {
+      const currentHours = currentTime.getHours();
+      const currentMinutes = currentTime.getMinutes();
+      
+      // If the time is earlier than or equal to current time, disable it
+      if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
+        return true;
+      }
+      
+      // Disable slots within the next 30 minutes from now
+      const thirtyMinutesLater = new Date(currentTime.getTime() + 30 * 60000);
+      return selectedDateTime <= thirtyMinutesLater;
+    }
+    return false;
+  };
 
   const times = [
  '8h00',
@@ -658,8 +691,9 @@ const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDa
                   {times.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((time) => (
                     <button
                       key={time}
-                      className={`time-button ${selectedTime === time ? 'selected' : ''}`}
-                      onClick={() => setSelectedTime(time)}
+                      className={`time-button ${selectedTime === time ? 'selected' : ''} ${isTimeDisabled(time) ? 'disabled' : ''}`}
+                      onClick={() => !isTimeDisabled(time) && setSelectedTime(time)}
+                      disabled={isTimeDisabled(time)}
                     >
                       {time}
                     </button>
