@@ -1,0 +1,18 @@
+.change-password-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .ant-form-item-label {
+      font-weight: bold;
+    }
+  
+    .ant-btn-primary {
+      width: 100%;
+    }
+  }
