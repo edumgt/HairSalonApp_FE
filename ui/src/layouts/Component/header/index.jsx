@@ -115,7 +115,7 @@ function Header() {
       </span>
     </Menu.Item>
       <Menu.Item key="2" icon={<UserOutlined />}>
-        Thông tin người dùng
+        <Link to="/profile">Thông tin người dùng</Link>
       </Menu.Item>
       <Menu.Item key="3" icon={<KeyOutlined />}>
         Đổi mật khẩu

@@ -20,7 +20,7 @@ import SpaCombo from "./layouts/Component/spacombo";
 import SpaComboDetail from './layouts/Component/spaComboDetail';
 import BookingComponent from './layouts/Component/Booking/bookingcomponent';
 import BookingSuccess from './layouts/Component/Booking/bookingsuccess';
-
+import UserProfile from './pages/UserProfile';
 // ... phần còn lại của code ...
 // ScrollToTop component
 function ScrollToTop() {
@@ -64,7 +64,8 @@ function App() {
         { path: "/dich-vu-goi-massage-spa-relax", element: <SpaCombo  /> },
         { path: "/dich-vu/spa/:comboId", element: <SpaComboDetail /> },
         { path: "booking", element: <BookingComponent /> },
-        { path: "reset-password", element: <ResetPassword /> },
+        { path: "user-profile", element: <UserProfile /> },
+        { path: "/profile", element: <UserProfile /> },
         // Thêm route mới để xử lý token từ email
         { path: "reset-password/:token", element: <ResetPassword /> },
         { path: "booking/success", element: <BookingSuccess /> },
