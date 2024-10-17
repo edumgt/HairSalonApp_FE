@@ -1,4 +1,4 @@
-import { Button,Form,Input,Layout,Select,Modal } from 'antd';
+import { Button,Form,Input,Layout,Select,Modal, Space } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import styles from './editProfile.module.css'
 import { useContext, useState } from 'react';
@@ -73,6 +73,7 @@ const EditProfile = () => {
         {...formItemLayout} 
         style={{maxWidth: 800, padding: '10px'}}
     >
+      <Space direction="vertical" style={{ width: '100%' }}>
       <Form.Item
         label="ID"
         name="ID"
@@ -164,6 +165,7 @@ const EditProfile = () => {
           Lưu
         </Button>
       </Form.Item>
+      </Space>
     </Form>
     </Content>
     </div>

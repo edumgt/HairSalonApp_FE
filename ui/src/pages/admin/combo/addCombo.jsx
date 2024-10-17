@@ -65,7 +65,7 @@ function AddCombo() {
                       duration: 2
                     });
                   setTimeout(() => {
-                    back('/combo', { state: { shouldReload: true } })
+                    back('/admin/combo', { state: { shouldReload: true } })
                   }, 1000)
                     return response
                 } catch (error) {

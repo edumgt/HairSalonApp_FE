@@ -109,7 +109,7 @@ function LayoutWithScrollToTop() {
         { path: "category/updateCategory/:categoryId", element: <UpdateCategory /> },
         { path: "combo", element: <Combo /> },
         { path: "combo/addCombo", element: <AddCombo /> },
-        { path: "combo/updateCombo/:id", element: <UpdateCombo /> },
+        { path: "combo/updateCombo", element: <UpdateCombo /> },
       ],
     },
     {

@@ -116,7 +116,7 @@ function UpdateCategory() {
                     </div>
                     <div className={styles.buttonGroup}>
                         <button type="submit" className={styles.submitButton}>Cập nhật danh mục</button>
-                        <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Hủy</button>
+                        <button type="button" className={styles.cancelButton} onClick={() => navigate('/admin/category')}>Hủy</button>
                     </div>
                 </form>
             )}

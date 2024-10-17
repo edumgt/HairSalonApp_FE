@@ -26,7 +26,7 @@ function CreateCategory() {
 
             if (response.data.code === 0) {
                 setNotification({ message: 'Thêm danh mục thành công!', type: 'success' });
-                setTimeout(() => navigate('/category'), 2000); // Redirect after 2 seconds
+                setTimeout(() => navigate('/admin/category'), 2000); // Redirect after 2 seconds
             } else {
                 setNotification({ message: 'Có lỗi xảy ra khi thêm danh mục.', type: 'error' });
             }
@@ -66,7 +66,7 @@ function CreateCategory() {
                 </div>
                 <div className={styles.buttonGroup}>
                     <button type="submit" className={styles.submitButton}>Thêm danh mục</button>
-                    <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Hủy</button>
+                    <button type="button" className={styles.cancelButton} onClick={() => navigate('/admin/category')}>Hủy</button>
                 </div>
             </form>
         </div>

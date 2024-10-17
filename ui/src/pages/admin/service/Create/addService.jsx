@@ -46,7 +46,7 @@ const AddService = () => {
             const response = await axios.post('http://localhost:8080/api/v1/service', formData)
             if (response.data && response.data.code === 0) {
                 setSuccess('Thêm dịch vụ thành công')
-                setTimeout(() => navigate('/service'), 2000)
+                setTimeout(() => navigate('/admin/service'), 2000)
             } else {
                 setError('Thêm dịch vụ thất bại')
             }
@@ -139,7 +139,7 @@ const AddService = () => {
                     />
                 </div>
                 <div className={styles.buttonGroup}>
-                    <button type="button" onClick={() => navigate('/service')} className={styles.cancelButton}>Hủy</button>
+                    <button type="button" onClick={() => navigate('/admin/service')} className={styles.cancelButton}>Hủy</button>
                     <button type="submit" className={styles.saveButton}>Lưu</button>
                 </div>
             </form>

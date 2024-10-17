@@ -263,9 +263,9 @@ const Staff = () => {
               </Form.Item>
               <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
                 <Select>
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                  <Option value="other">Other</Option>
+                  <Option value="male">Nam</Option>
+                  <Option value="female">Nữ</Option>
+                  <Option value="other">Khác</Option>
                 </Select>
               </Form.Item>
               <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
