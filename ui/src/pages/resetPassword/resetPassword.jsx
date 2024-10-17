@@ -32,7 +32,7 @@ const ResetPassword = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:8080/api/v1/auth/reset-password', 
+        'http://localhost:8080/api/v1/auth/password/reset', 
         {
           newPassword: values.newPassword,
         },

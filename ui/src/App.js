@@ -6,7 +6,7 @@ import ScrollToTopButton from './layouts/Component/scrollButton';
 
 // User pages
 import Home from "./pages/Home";
-import Login from "./pages/Login/Login";
+import Login from "./pages/login/login";
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
@@ -71,6 +71,8 @@ function LayoutWithScrollToTop() {
         { path: "login", element: <Login /> },
         { path: "register", element: <SignUp /> },
         { path: "forgot-password", element: <ForgotPassword /> },
+        { path: "reset-password", element: <ResetPassword /> },
+        // Thêm route mới để xử lý token từ email
         { path: "reset-password/:token", element: <ResetPassword /> },
         { path: "about", element: <About /> },
         { path: "dich-vu-cat-toc", element: <HairCutServices /> },
