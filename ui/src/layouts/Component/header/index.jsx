@@ -120,12 +120,15 @@ function Header() {
       <Menu.Item key="3" icon={<KeyOutlined />}>
         Đổi mật khẩu
       </Menu.Item>
+      <Menu.Item key="4" icon={<KeyOutlined />}>
+      <Link to="/shine-history">Lịch sử tỏa sáng</Link>
+      </Menu.Item>
       {(userRole === 'ADMIN' || userRole === 'admin') && (
-        <Menu.Item key="4" icon={<UserOutlined />}>
+        <Menu.Item key="5" icon={<UserOutlined />}>
           <Link to="/admin">Cổng Admin</Link>
         </Menu.Item>
       )}
-      <Menu.Item key="5" onClick={handleLogout} icon={<LogoutOutlined />}>
+      <Menu.Item key="6" onClick={handleLogout} icon={<LogoutOutlined />}>
         Đăng xuất
       </Menu.Item>
     </Menu>

@@ -21,6 +21,7 @@ import SpaComboDetail from './layouts/Component/spaComboDetail';
 import BookingComponent from './layouts/Component/Booking/bookingcomponent';
 import BookingSuccess from './layouts/Component/Booking/bookingsuccess';
 import UserProfile from './pages/UserProfile';
+import ShineHistory from './pages/ShineHistory';
 // ... phần còn lại của code ...
 // ScrollToTop component
 function ScrollToTop() {
@@ -66,6 +67,7 @@ function App() {
         { path: "booking", element: <BookingComponent /> },
         { path: "user-profile", element: <UserProfile /> },
         { path: "/profile", element: <UserProfile /> },
+        { path: "/shine-history", element: <ShineHistory /> },
         // Thêm route mới để xử lý token từ email
         { path: "reset-password/:token", element: <ResetPassword /> },
         { path: "booking/success", element: <BookingSuccess /> },
