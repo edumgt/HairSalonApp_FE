@@ -26,7 +26,7 @@ const AddService = () => {
                 }
             } catch (err) {
                 console.error('Error fetching categories:', err)
-                setError('Failed to fetch categories')
+                setError('Lấy dữ liệu dịch vụ thất bại')
             }
         }
         fetchCategories()
@@ -45,25 +45,25 @@ const AddService = () => {
         try {
             const response = await axios.post('http://localhost:8080/api/v1/service', formData)
             if (response.data && response.data.code === 0) {
-                setSuccess('Service added successfully')
+                setSuccess('Thêm dịch vụ thành công')
                 setTimeout(() => navigate('/service'), 2000)
             } else {
-                setError('Failed to add service')
+                setError('Thêm dịch vụ thất bại')
             }
         } catch (err) {
             console.error('Error adding service:', err)
-            setError('Failed to add service')
+            setError('Thêm dịch vụ thất bại')
         }
     }
 
     return (
         <div className={styles.addServiceContainer}>
-            <h2>Add New Service</h2>
+            <h2>Thêm danh mục</h2>
             {error && <div className={styles.error}>{error}</div>}
             {success && <div className={styles.success}>{success}</div>}
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
-                    <label htmlFor="categoryId">Category:</label>
+                    <label htmlFor="categoryId">Danh mục:</label>
                     <select
                         id="categoryId"
                         name="categoryId"
@@ -71,7 +71,7 @@ const AddService = () => {
                         onChange={handleChange}
                         required
                     >
-                        <option value="">Select category</option>
+                        <option value="">Chọn danh mục</option>
                         {categories.map(category => (
                             <option key={category.categoryId} value={category.categoryId}>
                                 {category.categoryName}
@@ -80,7 +80,7 @@ const AddService = () => {
                     </select>
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="serviceName">Service Name:</label>
+                    <label htmlFor="serviceName">Tên dịch vụ:</label>
                     <input
                         type="text"
                         id="serviceName"
@@ -88,22 +88,22 @@ const AddService = () => {
                         value={formData.serviceName}
                         onChange={handleChange}
                         required
-                        placeholder="Enter service name"
+                        placeholder="Nhập tên dịch vụ"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="description">Description:</label>
+                    <label htmlFor="description">Mô tả:</label>
                     <textarea
                         id="description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
                         required
-                        placeholder="Enter service description"
+                        placeholder="Nhập mô tả"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="duration">Duration (minutes):</label>
+                    <label htmlFor="duration">Thời gian (phút):</label>
                     <input
                         type="text"
                         id="duration"
@@ -111,11 +111,11 @@ const AddService = () => {
                         value={formData.duration}
                         onChange={handleChange}
                         required
-                        placeholder="Enter duration in minutes"
+                        placeholder="Nhập thời gian theo phút"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="price">Price (VND):</label>
+                    <label htmlFor="price">Giá (VND):</label>
                     <input
                         type="number"
                         id="price"
@@ -123,11 +123,11 @@ const AddService = () => {
                         value={formData.price}
                         onChange={handleChange}
                         required
-                        placeholder="Enter price in VND"
+                        placeholder="Nhập giá theo VND"
                     />
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="image">Image (Imgur URL):</label>
+                    <label htmlFor="image">Hình ảnh (Imgur URL):</label>
                     <input
                         type="text"
                         id="image"
@@ -135,12 +135,12 @@ const AddService = () => {
                         value={formData.image}
                         onChange={handleChange}
                         required
-                        placeholder="Enter Imgur image URL"
+                        placeholder="Nhập URL Imgur"
                     />
                 </div>
                 <div className={styles.buttonGroup}>
-                    <button type="button" onClick={() => navigate('/service')} className={styles.cancelButton}>Cancel</button>
-                    <button type="submit" className={styles.saveButton}>Save</button>
+                    <button type="button" onClick={() => navigate('/service')} className={styles.cancelButton}>Hủy</button>
+                    <button type="submit" className={styles.saveButton}>Lưu</button>
                 </div>
             </form>
         </div>

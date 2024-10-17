@@ -28,20 +28,20 @@ function AddStaff() {
             const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues);
             
             if (response.data && response.data.code === 200) {
-                message.success('Staff added successfully');
+                message.success('Thêm nhân viên thành công');
                 navigate('/staff', { state: { refreshData: true } });
             } else {
-                throw new Error(response.data.message || 'Failed to add staff');
+                throw new Error(response.data.message || 'Thêm nhân viên thất bại');
             }
         } catch (error) {
-            console.error('Error adding staff:', error);
-            message.error(error.message || 'An error occurred while adding staff');
+            console.error('Lỗi thêm nhân viên:', error);
+            message.error(error.message || 'Có lỗi xảy ra khi thêm nhân viên');
         }
     };
 
     return (
         <div className={styles.addStaffContainer}>
-            <NavLink currentPage='Staff' hasChild={true} nextPage='Add staff' />
+            <NavLink currentPage='Thêm nhân viên' hasChild={true} nextPage='Add staff' />
             <Form
                 form={form}
                 layout="vertical"
@@ -50,44 +50,44 @@ function AddStaff() {
             >
                 <Form.Item
                     name="firstName"
-                    label="First Name"
-                    rules={[{ required: true, message: 'Please input First Name!' }]}
+                    label="Họ"
+                    rules={[{ required: true, message: 'Vui lòng nhập Họ!' }]}
                 >
                     <Input />
                 </Form.Item>
 
                 <Form.Item
                     name="lastName"
-                    label="Last Name"
-                    rules={[{ required: true, message: 'Please input Last Name!' }]}
+                    label="Tên"
+                    rules={[{ required: true, message: 'Vui lòng nhập Tên!' }]}
                 >
                     <Input />
                 </Form.Item>
 
                 <Form.Item
                     name="gender"
-                    label="Gender"
-                    rules={[{ required: true, message: 'Please select Gender!' }]}
+                    label="Giới tính"
+                    rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
                 >
                     <Select>
-                        <Option value="male">Male</Option>
-                        <Option value="female">Female</Option>
-                        <Option value="other">Other</Option>
+                        <Option value="male">Nam</Option>
+                        <Option value="female">Nữ</Option>
+                        <Option value="other">Khác</Option>
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     name="yob"
-                    label="Year of Birth"
-                    rules={[{ required: true, message: 'Please input Year of Birth!' }]}
+                    label="Năm sinh"
+                    rules={[{ required: true, message: 'Vui lòng nhập năm sinh!' }]}
                 >
                     <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
 
                 <Form.Item
                     name="phone"
-                    label="Phone"
-                    rules={[{ required: true, message: 'Please input Phone number!' }]}
+                    label="Số điện thoại"
+                    rules={[{ required: true, message: 'Vui lòng nhập Số điện thoại!' }]}
                 >
                     <Input />
                 </Form.Item>
@@ -96,8 +96,8 @@ function AddStaff() {
                     name="email"
                     label="Email"
                     rules={[
-                        { required: true, message: 'Please input Email!' },
-                        { type: 'email', message: 'Please enter a valid email!' }
+                        { required: true, message: 'Vui lòng nhập Email!' },
+                        { type: 'email', message: 'Vui lòng nhập email hợp lệ!' }
                     ]}
                 >
                     <Input />
@@ -105,23 +105,23 @@ function AddStaff() {
 
                 <Form.Item
                     name="joinIn"
-                    label="Join Date"
-                    rules={[{ required: true, message: 'Please select Join Date!' }]}
+                    label="Ngày bắt đầu làm"
+                    rules={[{ required: true, message: 'Vui lòng chọn Ngày bắt đầu làm!' }]}
                 >
                     <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
 
                 <Form.Item
                     name="image"
-                    label="Image URL"
-                    rules={[{ required: true, message: 'Please input Image URL!' }]}
+                    label="Liên kết hình ảnh (URL)"
+                    rules={[{ required: true, message: 'Vui lòng nhập URL!' }]}
                 >
                     <Input />
                 </Form.Item>
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Add Staff
+                        Thêm nhân viên
                     </Button>
                 </Form.Item>
             </Form>

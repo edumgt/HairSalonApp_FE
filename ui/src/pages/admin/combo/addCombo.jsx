@@ -28,19 +28,19 @@ function AddCombo() {
             label: 'Tên Combo',
             name:'name',
             isInput: true,
-            rules: [{required: true, message: 'Please input Name!'}]
+            rules: [{required: true, message: 'Vui lòng nhập Tên!'}]
         },
         {
             label: 'Giá',
             name:'price',
             isInput: true,
-            rules: [{required: true, message: 'Please input Price!'}]
+            rules: [{required: true, message: 'Vui lòng nhập Giá!'}]
         },
         {
             label: 'Mô tả',
             name:'description',
             isInput: true,
-            rules: [{required: true, message: 'Please input Description!'}]
+            rules: [{required: true, message: 'Vui lòng nhập Mô tả!'}]
         },
         {
             label: 'Các dịch vụ',
@@ -48,7 +48,7 @@ function AddCombo() {
             isSelect: true,
             mode: 'multiple',
             options: serviceOptions,
-            rules: [{required: true, message: 'Please input Services!'}]
+            rules: [{required: true, message: 'Vui lòng nhập Các dịch vụ!'}]
         }
     ]
     const back = useNavigate()

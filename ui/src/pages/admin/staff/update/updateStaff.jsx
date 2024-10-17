@@ -17,11 +17,11 @@ function UpdateStaff() {
                 if (response.data && response.data.code === 200) {
                     setStaffData(response.data.result);
                 } else {
-                    throw new Error('Failed to fetch staff data');
+                    throw new Error('Lấy dữ liệu thất bại');
                 }
             } catch (error) {
                 console.error('Error fetching staff data:', error);
-                setError('Failed to fetch staff data. Please try again.');
+                setError('Lấy dữ liệu nhân viên thất bại. Vui lòng thử lại');
             }
         };
 
@@ -38,15 +38,15 @@ function UpdateStaff() {
             if (response.data && response.data.code === 200) {
                 navigate('/staff');
             } else {
-                setError('Failed to update staff. Please try again.');
+                setError('Cập nhật nhân viên thất bại. Vui lòng thử lại');
             }
         } catch (error) {
-            console.error('Error updating staff:', error);
-            setError('An error occurred while updating staff. Please try again.');
+            console.error('Lỗi cập nhật nhân viên:', error);
+            setError('Có lỗi xảy ra khi cập nhật nhân viên. Vui lòng thử lại.');
         }
     };
 
-    if (!staffData) return <div>Loading...</div>;
+    if (!staffData) return <div>Đang tải...</div>;
 
     return (
         <>

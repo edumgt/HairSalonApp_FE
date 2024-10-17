@@ -58,19 +58,19 @@ function Category() {
 
     const handleDeleteCategory = (categoryId) => {
         Modal.confirm({
-            title: 'Confirm deletion',
-            content: 'Are you sure you want to delete this category?',
+            title: 'Xác nhận',
+            content: 'Bạn có muốn xóa danh mục này ?',
             onOk: async () => {
                 try {
                     await axios.delete(`http://localhost:8080/api/v1/category/${categoryId}`);
                     Modal.success({
-                        content: 'Category deleted successfully',
+                        content: 'Xóa danh mục thành công',
                     });
                     fetchCategories(); // Update the list after deletion
                 } catch (error) {
                     console.error('Error deleting category:', error);
                     Modal.error({
-                        content: 'An error occurred while deleting the category',
+                        content: 'Có lỗi xảy ra khi xóa danh mục',
                     });
                 }
             },
@@ -89,10 +89,10 @@ function Category() {
         <div className={styles.main}>
             {isRootPath 
                 ? (
-                    <><NavLink currentPage="Category" />
+                    <><NavLink currentPage="Danh mục" />
                     <div className={styles.tableGroup}>
                         <HeaderButton 
-                            text="Add category" 
+                            text="Thêm danh mục" 
                             add={true} 
                             onClick={handleAddCategory} 
                             onSearch={handleSearch}
@@ -101,9 +101,9 @@ function Category() {
                             <table className={styles.table}>
                                 <thead>
                                     <tr className={styles.columnHeaderParent}>
-                                        <HeaderColumn title="Category ID" sortable />
-                                        <HeaderColumn title="Category Name" sortable />
-                                        <HeaderColumn title="Category Description" />
+                                        <HeaderColumn title="ID danh mục" sortable />
+                                        <HeaderColumn title="Tên danh mục" sortable />
+                                        <HeaderColumn title="Mô tả" />
                                         <HeaderColumn title="" align="center" />
                                     </tr>
                                 </thead>
@@ -121,7 +121,7 @@ function Category() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4" style={{textAlign: 'center'}}>No matching categories found.</td>
+                                            <td colSpan="4" style={{textAlign: 'center'}}>Không tìm thấy danh mục.</td>
                                         </tr>
                                     )}
                                 </tbody>

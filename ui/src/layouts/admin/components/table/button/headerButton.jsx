@@ -21,7 +21,7 @@ const HeaderButton = ({text, add, onClick, onSearch}) => {
         <input 
           className="searchInput" 
           type="text" 
-          placeholder="Search"
+          placeholder="Tìm"
           onChange={handleSearchChange}
         />
       </div>

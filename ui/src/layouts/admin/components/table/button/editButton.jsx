@@ -7,11 +7,11 @@ const EditButton = ({ onEdit, onDelete }) => {
   return (
     <div className='editGroup'>
       <Button color="primary" variant="outlined" size='small' onClick={onEdit}>
-        Edit
+        Cập nhật
         <img src={editIcon} alt="" />
       </Button>
       <Button color="danger" variant="outlined" size='small' onClick={onDelete}>
-        Delete
+        Xóa
         <img src={deleteIcon} alt="" />
       </Button>
     </div>

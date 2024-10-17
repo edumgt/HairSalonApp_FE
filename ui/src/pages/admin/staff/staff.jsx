@@ -83,11 +83,11 @@ const Staff = () => {
         setStaffList(response.data.result);
         setFilteredStaff(response.data.result);
       } else {
-        throw new Error('Invalid data format received from server');
+        throw new Error('Định dạng dữ liệu server nhận được không hợp lệ');
       }
     } catch (error) {
-      console.error('Error fetching staff:', error);
-      setError('Failed to fetch staff data. Please try again later.');
+      console.error('Lỗi hiển thị:', error);
+      setError('Lấy dữ liệu thất bại. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
     }
@@ -124,9 +124,9 @@ const Staff = () => {
         setIsEditModalVisible(true);
       }
     } catch (error) {
-      console.error('Error fetching staff details:', error);
+      console.error('Lỗi hiển thị:', error);
       Modal.error({
-        content: 'Failed to fetch staff details',
+        content: 'Lấy dữ liệu chi tiết nhân viên thất bại',
       });
     }
   };
@@ -141,37 +141,37 @@ const Staff = () => {
       const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
       if (response.data && response.data.code === 200) {
         Modal.success({
-          content: 'Staff updated successfully',
+          content: 'Cập nhật nhân viên thành công',
         });
         setIsEditModalVisible(false);
         fetchStaff();
       } else {
-        throw new Error('Failed to update staff');
+        throw new Error('Cập nhật nhân viên thất bại');
       }
     } catch (error) {
-      console.error('Error updating staff:', error);
+      console.error('Lỗi cập nhật nhân viên:', error);
       Modal.error({
-        content: 'Failed to update staff: ' + (error.response?.data?.message || error.message),
+        content: 'Cập nhật nhân viên thất bại: ' + (error.response?.data?.message || error.message),
       });
     }
   };
 
   const handleDeleteStaff = (code) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this staff member?',
-      content: 'This action cannot be undone.',
+      title: 'Bạn có muốn xóa nhân  viên này ?',
+      content: 'Bạn sẽ không thể khôi phục lại sau khi xóa.',
       onOk: async () => {
         try {
           await axios.delete(`http://localhost:8080/api/v1/staff/${code}`);
           Modal.success({
-            content: 'Staff member deleted successfully',
+            content: 'Xóa nhân viên thành công',
           });
           fetchStaff(); // Refresh the staff list after deletion
         } catch (error) {
-          console.error('Error deleting staff:', error);
+          console.error('Lỗi xóa nhân viên:', error);
           Modal.error({
-            title: 'Error',
-            content: 'Failed to delete staff member. Please try again.',
+            title: 'Lỗi',
+            content: 'Xóa nhân viên thất bại. Vui lòng thử lại',
           });
         }
       },
@@ -193,10 +193,10 @@ const Staff = () => {
     <div className={styles.main}>
       {isRootPath ? (
         <>
-          <NavLink currentPage="Staff" />
+          <NavLink currentPage="Nhân viên" />
           <div className={styles.tableGroup}>
             <HeaderButton 
-              text="Add staff" 
+              text="Thêm nhân viên" 
               add={true} 
               onClick={handleAddStaff}
               onSearch={handleSearch}
@@ -205,15 +205,15 @@ const Staff = () => {
               <table className={styles.table}>
                 <thead>
                   <tr className={styles.columnHeaderParent}>
-                    <HeaderColumn title="Code" sortable />
-                    <HeaderColumn title="Name" sortable />
-                    <HeaderColumn title="Gender" sortable />
-                    <HeaderColumn title="Year of Birth" sortable />
-                    <HeaderColumn title="Phone" sortable />
-                    <HeaderColumn title="Email" sortable />
-                    <HeaderColumn title="Join Date" sortable />
-                    <HeaderColumn title="Role" sortable />
-                    <HeaderColumn title="Image" />
+                    <HeaderColumn title="Mã"  />
+                    <HeaderColumn title="Tên"  />
+                    <HeaderColumn title="Giới tính"  />
+                    <HeaderColumn title="Ngày sinh"  />
+                    <HeaderColumn title="Số điện thoại"  />
+                    <HeaderColumn title="Email"  />
+                    <HeaderColumn title="Ngày bắt đầu làm"  />
+                    <HeaderColumn title="Vai trò"  />
+                    <HeaderColumn title="Hình ảnh" />
                     <HeaderColumn title="" />
                   </tr>
                 </thead>
@@ -236,7 +236,7 @@ const Staff = () => {
       )}
       {/* Modal for editing staff */}
       <Modal
-        title="Edit Staff"
+        title="Cập nhật nhân viên"
         visible={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
@@ -252,40 +252,40 @@ const Staff = () => {
             initialValues={editingStaff}
           >
             <div className={styles.formGrid}>
-              <Form.Item name="code" label="Code" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
                 <Input disabled />
               </Form.Item>
-              <Form.Item name="firstName" label="First Name" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
-              <Form.Item name="lastName" label="Last Name" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="lastName" label="Tên" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
-              <Form.Item name="gender" label="Gender" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
                 <Select>
                   <Option value="male">Male</Option>
                   <Option value="female">Female</Option>
                   <Option value="other">Other</Option>
                 </Select>
               </Form.Item>
-              <Form.Item name="yob" label="Year of Birth" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
-              <Form.Item name="phone" label="Phone" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
               <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
-              <Form.Item name="joinIn" label="Join Date" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
-              <Form.Item name="image" label="Image URL" rules={[{ required: true }]} className={styles.formItem}>
+              <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                  Update Staff
+                  Cập nhật nhân viên
                 </Button>
               </Form.Item>
             </div>

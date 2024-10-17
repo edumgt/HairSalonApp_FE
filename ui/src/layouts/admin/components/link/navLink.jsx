@@ -7,7 +7,7 @@ const NavLink = ({ currentPage, onBack }) => {
 
     return (
         <div className={styles.navLink}>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard">Trang chủ</Link>
             {pages.map((page, index) => (
                 <React.Fragment key={index}>
                     <span> / </span>

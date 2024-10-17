@@ -36,20 +36,20 @@ import EditButton from '../../../layouts/admin/components/table/button/editButto
 
     return (
       <div className={styles.main}>
-            <NavLink currentPage="Booking" />
+            <NavLink currentPage="Đặt lịch" />
             <div className={styles.tableGroup}>
                 <HeaderButton add={false} />
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                     <thead>
                         <tr className={styles.columnHeaderParent}>
-                          <HeaderColumn title="ID" sortable />
-                          <HeaderColumn title="Customer name" sortable />
-                          <HeaderColumn title="Customer ID" />
-                          <HeaderColumn title="Service name" sortable />
-                          <HeaderColumn title="Booked date" sortable />
-                          <HeaderColumn title="Payment status" sortable />
-                          <HeaderColumn title="Booking Status" sortable />
+                          <HeaderColumn title="ID đặt lịch" sortable />
+                          <HeaderColumn title="Tên khách hàng" sortable />
+                          <HeaderColumn title="ID khách hàng" />
+                          <HeaderColumn title="Tên dịch vụ" sortable />
+                          <HeaderColumn title="Ngày đặt lịch" sortable />
+                          <HeaderColumn title="Trạng thái thanh toán" sortable />
+                          <HeaderColumn title="Trạng thái đặt lịch" sortable />
                           <HeaderColumn title="" />
                         </tr>
                     </thead>

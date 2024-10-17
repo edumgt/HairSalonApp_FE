@@ -33,8 +33,8 @@ const EditProfile = () => {
     }
     const editProfile = async () => {
         Modal.confirm({
-          title: 'Confirm change password',
-          content: 'Are you sure you want to update your profile ?',
+          title: 'Xác nhận',
+          content: 'Bạn có muốn thay đổi thông tin của bạn ?',
           onOk: async () => {
             try {
               // Update user data on server using API call
@@ -67,7 +67,7 @@ const EditProfile = () => {
   return (
     <Layout style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className={styles.bg}>
-        <div className={styles.header}>Edit profile</div>
+        <div className={styles.header}>Chỉnh sửa thông tin</div>
       <Content style={{ width: 800, maxHeight: 'fit-content'}}>
     <Form
         {...formItemLayout} 
@@ -79,7 +79,7 @@ const EditProfile = () => {
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
@@ -87,36 +87,36 @@ const EditProfile = () => {
       </Form.Item>
 
       <Form.Item
-        label="First Name"
+        label="Họ"
         name="First Name"
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
         <Input defaultValue={info.fullName} onChange={handleChange}/>
       </Form.Item>
       <Form.Item
-        label="Last Name"
+        label="Tên"
         name="Last Name"
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
         <Input defaultValue={info.userName}  onChange={handleChange}/>
       </Form.Item>
       <Form.Item
-        label="Role"
+        label="Vai trò"
         name="Role"
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
@@ -133,7 +133,7 @@ const EditProfile = () => {
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
@@ -141,12 +141,12 @@ const EditProfile = () => {
       </Form.Item>
 
       <Form.Item
-        label="Phone number"
+        label="Số điện thoại"
         name="Phone number"
         rules={[
           {
             required: true,
-            message: 'Please input!',
+            message: 'Vui lòng nhập!',
           },
         ]}
       >
@@ -161,7 +161,7 @@ const EditProfile = () => {
         }}
       >
         <Button type="primary" htmlType="submit" onClick={editProfile}>
-          Update profile
+          Lưu
         </Button>
       </Form.Item>
     </Form>

@@ -36,7 +36,7 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
             <td className={styles.info}>{categories.categoryId}</td>
             <td className={styles.info}>{serviceName}</td>
             <td className={styles.info}>{description}</td>
-            <td className={styles.info}>{duration} Minutes</td>
+            <td className={styles.info}>{duration} phút</td>
             <td className={styles.info}>{price.toLocaleString()} VND</td>
             <td className={`${styles.info} ${styles.imageCell}`}>
                 {!imageError ? (
@@ -81,10 +81,10 @@ const Service = () => {
                 setServices(response.data.result)
                 setFilteredServices(response.data.result)
             } else {
-                throw new Error('Failed to fetch services')
+                throw new Error('Lấy dữ liệu thất bại')
             }
         } catch (err) {
-            setError('An error occurred while fetching services')
+            setError('Có lỗi xảy ra khi lấy dữ liệu dịch vụ')
             console.error('Error fetching services:', err)
         } finally {
             setIsLoading(false)
@@ -128,7 +128,7 @@ const Service = () => {
         } catch (error) {
             console.error('Error fetching service details:', error)
             Modal.error({
-                content: 'Failed to fetch service details',
+                content: 'Lấy dữ liệu dịch vụ thất bại',
             })
         }
     }
@@ -148,36 +148,36 @@ const Service = () => {
             const response = await axios.put('http://localhost:8080/api/v1/service', updatedService);
             if (response.data && response.data.code === 0) {
                 Modal.success({
-                    content: 'Service updated successfully',
+                    content: 'Cập nhật dịch vụ thành công',
                 });
                 setIsEditModalVisible(false);
                 fetchServices();
             } else {
-                throw new Error('Failed to update service');
+                throw new Error('Cập nhật dịch vụ thất bại');
             }
         } catch (error) {
             console.error('Error updating service:', error);
             Modal.error({
-                content: 'Failed to update service: ' + (error.response?.data?.message || error.message),
+                content: 'Cập nhật dịch vụ thất bại: ' + (error.response?.data?.message || error.message),
             });
         }
     };
 
     const handleDeleteService = (serviceId) => {
         Modal.confirm({
-            title: 'Confirm deletion',
-            content: 'Are you sure you want to delete this service?',
+            title: 'Xác nhận xóa dịch vụ',
+            content: 'Bạn có muốn xóa dịch vụ này ?',
             onOk: async () => {
                 try {
                     await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`);
                     Modal.success({
-                        content: 'Service deleted successfully',
+                        content: 'Xóa dịch vụ thành công',
                     });
                     fetchServices(); // Update the list after deletion
                 } catch (error) {
                     console.error('Error deleting service:', error);
                     Modal.error({
-                        content: 'An error occurred while deleting the service',
+                        content: 'Có lỗi xảy ra khi xóa dịch vụ',
                     });
                 }
             },
@@ -193,10 +193,10 @@ const Service = () => {
 
     return (
         <div className={styles.main}>
-            <NavLink currentPage="Service" />
+            <NavLink currentPage="Dịch vụ" />
             <div className={styles.tableGroup}>
                 <HeaderButton 
-                    text="Add service" 
+                    text="Thêm dịch vụ" 
                     add={true} 
                     onClick={handleAddService} 
                     onSearch={handleSearch}
@@ -205,13 +205,13 @@ const Service = () => {
                     <table className={styles.table}>
                         <thead>
                             <tr className={styles.columnHeaderParent}>
-                                <HeaderColumn title="Service ID" sortable />
-                                <HeaderColumn title="Category ID" sortable />
-                                <HeaderColumn title="Service Name" sortable />
-                                <HeaderColumn title="Description" />
-                                <HeaderColumn title="Duration (Minutes)" />
-                                <HeaderColumn title="Price (VND)" sortable />
-                                <HeaderColumn title="Image" className={styles.imageHeader} />
+                                <HeaderColumn title="ID dịch vụ" sortable />
+                                <HeaderColumn title="ID danh mục" sortable />
+                                <HeaderColumn title="Tên dịch vụ" sortable />
+                                <HeaderColumn title="Mô tả" />
+                                <HeaderColumn title="Thời gian (Phút)" />
+                                <HeaderColumn title="Giá (VND)" sortable />
+                                <HeaderColumn title="Hình ảnh" className={styles.imageHeader} />
                                 <HeaderColumn title="" />
                             </tr>
                         </thead>
@@ -229,7 +229,7 @@ const Service = () => {
                 </div>
             </div>
             <Modal
-                title="Edit Service"
+                title="Cập nhật dịch vụ"
                 visible={isEditModalVisible}
                 onCancel={() => setIsEditModalVisible(false)}
                 footer={null}
@@ -240,7 +240,7 @@ const Service = () => {
                     layout="vertical"
                     initialValues={editingService}
                 >
-                    <Form.Item name={["categories", "categoryId"]} label="Category">
+                    <Form.Item name={["categories", "categoryId"]} label="Danh mục">
                         <Select>
                             {categories.map(category => (
                                 <Option key={category.categoryId} value={category.categoryId}>
@@ -249,27 +249,27 @@ const Service = () => {
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item name="serviceId" label="Service ID">
+                    <Form.Item name="serviceId" label="ID dịch vụ">
                         <Input disabled />
                     </Form.Item>
-                    <Form.Item name="serviceName" label="Service Name" rules={[{ required: true }]}>
+                    <Form.Item name="serviceName" label="Tên dịch vụ" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+                    <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
                         <Input.TextArea />
                     </Form.Item>
-                    <Form.Item name="duration" label="Duration" rules={[{ required: true }]}>
+                    <Form.Item name="duration" label="Thời gian" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+                    <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
                         <InputNumber min={0} />
                     </Form.Item>
-                    <Form.Item name="image" label="Image URL" rules={[{ required: true }]}>
+                    <Form.Item name="image" label="Đường dẫn hình ảnh (URL)" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Update Service
+                            Cập nhật dịch vụ
                         </Button>
                     </Form.Item>
                 </Form>

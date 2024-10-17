@@ -37,20 +37,20 @@ const ChangePassword = () => {
     }
     const handleSubmit = () => {
         if(!inputs.password || !inputs.newPassword || !inputs.confirmPassword){
-            setError('All fields must not be blank.')
+            setError('Các ô nhập không được bỏ trống')
             return;
         }
         if(inputs.newPassword !== inputs.confirmPassword){
-            setError('New passwords do not match.')
+            setError('Mật khẩu mới không khớp')
             return;
         }
         if(inputs.password === inputs.newPassword){
-            setError('New password do not match with current password.')
+            setError('Mật khẩu mới không được trùng với mật khẩu hiện tại')
             return;
         }
         Modal.confirm({
-            title: 'Confirm change password',
-            content: 'Are you sure you want to change your password ?',
+            title: 'Xác nhận',
+            content: 'Bạn có muốn thay đổi mật khẩu ?',
             onOk: () => navigate('/profile'),
             footer: (_, { OkBtn, CancelBtn }) => (
                 <>
@@ -65,19 +65,19 @@ const ChangePassword = () => {
   return (
     <Layout style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className={styles.bg}>
-        <div className={styles.header}>Change password</div>
+        <div className={styles.header}>Đổi mật khẩu</div>
         <Content style={{ width: 800, maxHeight: 'fit-content'}}>
         <Form
         {...formItemLayout} 
         style={{maxWidth: 800, padding: '10px'}}
         >
             <Form.Item
-                label="Current password"
+                label="Mật khẩu hiện tại"
                 name="password"
                 rules={[
                 {
                     required: true,
-                    message: 'Please input!',
+                    message: 'Vui lòng nhập',
                 },
                 ]}
             >
@@ -92,12 +92,12 @@ const ChangePassword = () => {
                 />
             </Form.Item>
             <Form.Item
-                label="New password"
+                label="Mật khẩu mới"
                 name="newPassword"
                 rules={[
                 {
                     required: true,
-                    message: 'Please input!',
+                    message: 'Vui lòng nhập',
                 },
                 ]}
             >
@@ -112,12 +112,12 @@ const ChangePassword = () => {
                 />
             </Form.Item>
             <Form.Item
-                label="Confirm Password"
+                label="Xác nhận mật khẩu mới"
                 name="confirmPassword"
                 rules={[
                 {
                     required: true,
-                    message: 'Please input!',
+                    message: 'Vui lòng nhập',
                 },
                 ]}
             >
@@ -139,7 +139,7 @@ const ChangePassword = () => {
                 }}
             >
                 <Button type="primary" htmlType="submit" onClick={handleSubmit}>
-                    Save
+                    Lưu
                 </Button>
             </Form.Item>
         </Form>

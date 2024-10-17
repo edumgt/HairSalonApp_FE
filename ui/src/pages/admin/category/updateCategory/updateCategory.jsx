@@ -22,11 +22,11 @@ function UpdateCategory() {
                 if (response.data && response.data.code === 0 && response.data.result) {
                     setCategory(response.data.result);
                 } else {
-                    throw new Error('Unable to fetch category information');
+                    throw new Error('Lấy dữ liệu danh mục thất bại');
                 }
             } catch (error) {
                 console.error('Error fetching category information:', error);
-                setNotification({ message: 'Unable to fetch category information. Please try again later.', type: 'error' });
+                setNotification({ message: 'Lấy dữ liệu danh mục thất bại. Vui lòng thử lại', type: 'error' });
             } finally {
                 setIsLoading(false);
             }
@@ -48,7 +48,7 @@ function UpdateCategory() {
         setNotification({ message: '', type: '' });
 
         if (!category.categoryName.trim() || !category.categoryDescription.trim()) {
-            setNotification({ message: 'Please fill in all information.', type: 'error' });
+            setNotification({ message: 'Vui lòng điền đủ các thông tin.', type: 'error' });
             return;
         }
 
@@ -60,31 +60,31 @@ function UpdateCategory() {
             });
 
             if (response.data && response.data.code === 0) {
-                setNotification({ message: 'Category updated successfully!', type: 'success' });
+                setNotification({ message: 'Cập nhật danh mục thành công!', type: 'success' });
                 setTimeout(() => navigate('/category'), 2000);
             } else {
-                throw new Error('An error occurred while updating the category');
+                throw new Error('Có lỗi xảy ra khi cập nhật danh mục');
             }
         } catch (error) {
             console.error('Error updating category:', error);
-            setNotification({ message: 'An error occurred while updating the category. Please try again later.', type: 'error' });
+            setNotification({ message: 'Có lỗi xảy ra khi cập nhật danh mục. Vui lòng thử lại', type: 'error' });
         }
     };
 
     return (
         <div className={styles.updateCategoryContainer}>
-            <h2>Update Category</h2>
+            <h2>Cập nhật Danh mục</h2>
             {notification.message && (
                 <div className={`${styles.notification} ${styles[notification.type]}`}>
                     {notification.message}
                 </div>
             )}
             {isLoading ? (
-                <div>Loading category information...</div>
+                <div>Đang tải thông tin danh mục...</div>
             ) : (
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
-                        <label htmlFor="categoryId">Category ID:</label>
+                        <label htmlFor="categoryId">ID danh mục:</label>
                         <input
                             type="text"
                             id="categoryId"
@@ -94,7 +94,7 @@ function UpdateCategory() {
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label htmlFor="categoryName">Category Name:</label>
+                        <label htmlFor="categoryName">Tên danh mục:</label>
                         <input
                             type="text"
                             id="categoryName"
@@ -105,7 +105,7 @@ function UpdateCategory() {
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label htmlFor="categoryDescription">Category Description:</label>
+                        <label htmlFor="categoryDescription">Mô tả:</label>
                         <textarea
                             id="categoryDescription"
                             name="categoryDescription"
@@ -115,8 +115,8 @@ function UpdateCategory() {
                         />
                     </div>
                     <div className={styles.buttonGroup}>
-                        <button type="submit" className={styles.submitButton}>Update Category</button>
-                        <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Cancel</button>
+                        <button type="submit" className={styles.submitButton}>Cập nhật danh mục</button>
+                        <button type="button" className={styles.cancelButton} onClick={() => navigate('/category')}>Hủy</button>
                     </div>
                 </form>
             )}
