@@ -4,9 +4,8 @@ import './index.scss';
 import { serviceDetails } from '../../../../data/serviceDetails';
 import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail';
-import { salonData } from '../../../../data/salonData';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { message } from 'antd';
+import { message, Radio, Typography, Select } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
 import stylist1 from "../../../../assets/imageHome/Stylist/Stylist_1.jpg";
 import stylist2 from "../../../../assets/imageHome/Stylist/Stylist_2.jpg";
@@ -14,9 +13,10 @@ import stylist3 from "../../../../assets/imageHome/Stylist/Stylist_3.jpg";
 import stylist4 from "../../../../assets/imageHome/Stylist/Stylist_4.jpg";
 import stylist5 from "../../../../assets/imageHome/Stylist/Stylist_5.jpg";
 import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
+import { DownOutlined } from '@ant-design/icons';
 
-
-
+const { Title, Paragraph } = Typography;
+const { Option } = Select;
 
 const BookingComponent = () => {
 
@@ -30,6 +30,7 @@ const BookingComponent = () => {
   const [selectedStylist, setSelectedStylist] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [recurringBooking, setRecurringBooking] = useState(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => setIsModalVisible(true);
@@ -42,6 +43,17 @@ const BookingComponent = () => {
     setTotalPrice(prevTotal => prevTotal - parseInt(removedService.price.replace(/\D/g, '')));
   };
 
+  // Set fixed salon address
+  const fixedSalon = {
+    id: 1,
+    address: "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000",
+    description: "Chi nhánh duy nhất của chúng tôi",
+    image: "path/to/salon/image.jpg" // Add an appropriate image path
+  };
+
+  useEffect(() => {
+    setSelectedSalon(fixedSalon);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -53,10 +65,6 @@ const BookingComponent = () => {
     }
   }, [location]);
 
-  const handleViewAllSalons = () => {
-    navigate('/booking?step=1');
-  };
-
   const handleViewAllServices = () => {
     if (selectedSalon) {
       navigate('/booking?step=2');
@@ -67,11 +75,6 @@ const BookingComponent = () => {
   };
 
   const handleBack = () => {
-    navigate('/booking?step=0');
-  };
-
-  const handleSalonSelect = (salon) => {
-    setSelectedSalon(salon);
     navigate('/booking?step=0');
   };
 
@@ -88,16 +91,42 @@ const BookingComponent = () => {
       return;
     }
 
-    // Lưu thông tin đã chọn vào localStorage
+    // Lưu thông tin đã chọn vào localStorage, object chua thong tin dat lich 
     const bookingInfo = {
       salon: selectedSalon,
       services: selectedServices,
       stylist: selectedStylist,
       date: selectedDate,
       time: selectedTime,
-      totalPrice: totalPrice
+      totalPrice: totalPrice,
+      recurringBooking: recurringBooking
     };
     localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
+    console.log(bookingInfo);
+
+  //   try {
+  //     // Gửi dữ liệu đến server
+  //     const response = await axios.post('https://your-api-endpoint.com/bookings', bookingInfo);
+      
+  //     if (response.status === 200) {
+  //       // Nếu đặt lịch thành công
+  //       message.success("Đặt lịch thành công!");
+        
+  //       // Lưu thông tin đã chọn vào localStorage (nếu cần)
+  //       localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
+
+  //       // Chuyển hướng đến trang success
+  //       navigate('/booking/success');
+  //     } else {
+  //       // Nếu có lỗi từ server
+  //       message.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting booking:", error);
+  //     message.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
+  //   }
+  // };
+
 
     // Chuyển hướng đến trang success
     navigate('/booking/success');
@@ -109,11 +138,10 @@ const BookingComponent = () => {
         return (
           <div className="booking-steps">
             <div className="step">
-              <h3>1. Chọn salon</h3>
-              <div className="option" onClick={handleViewAllSalons}>
+              <h3>1. Địa chỉ salon</h3>
+              <div className="option">
                 <span className="icon">🏠</span>
-                <span>{selectedSalon ? selectedSalon.address : "Xem tất cả salon"}</span>
-                <span className="arrow">›</span>
+                <span>{fixedSalon.address}</span>
               </div>
             </div>
             <div className="step">
@@ -146,12 +174,12 @@ const BookingComponent = () => {
               setSelectedDate={setSelectedDate}
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}
+              recurringBooking={recurringBooking}
+              setRecurringBooking={setRecurringBooking}
              />
             </div>
           </div>
         );
-      case 1:
-        return <SalonSelectionStep onSalonSelect={handleSalonSelect} />;
       case 2:
         return selectedSalon ? (
           <ServiceSelectionStep
@@ -169,6 +197,8 @@ const BookingComponent = () => {
             setSelectedDate={setSelectedDate}
             selectedTime={selectedTime}
             setSelectedTime={setSelectedTime}
+            recurringBooking={recurringBooking}
+            setRecurringBooking={setRecurringBooking}
           />
         );
       default:
@@ -186,7 +216,11 @@ const BookingComponent = () => {
       <h2>Đặt lịch giữ chỗ</h2>
       <div className="booking-container">
         {renderStepContent()}
-        {(step === 0 || step === 3) && <button className="submit-button" onClick={handleSubmit}>CHỐT GIỜ CẮT</button>}
+        {(step === 0 || step === 3) && (
+          <button className="submit-button" onClick={handleSubmit}>
+            CHỐT GIỜ CẮT
+          </button>
+        )}
       </div>  
       <SelectedServicesModal
         visible={isModalVisible}
@@ -195,137 +229,6 @@ const BookingComponent = () => {
         onRemoveService={handleRemoveService}
         totalPrice={totalPrice}
       />
-    </div>
-  );
-};
-
-const SalonSelectionStep = ({ onSalonSelect }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [filteredCities, setFilteredCities] = useState([]);
-  const [filteredSalons, setFilteredSalons] = useState({});
-  const cities = Object.keys(salonData).sort((a, b) => a.localeCompare(b, 'vi'));
-  const [selectedSalon, setSelectedSalon] = useState(null);
-
-  useEffect(() => {
-    const filtered = cities.filter(city =>
-      city.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCities(filtered);
-
-    const filteredSalonData = {};
-    Object.entries(salonData).forEach(([city, salons]) => {
-      const filteredCitySalons = salons.filter(salon =>
-        city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        salon.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        salon.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      if (filteredCitySalons.length > 0) {
-        filteredSalonData[city] = filteredCitySalons;
-      }
-    });
-    setFilteredSalons(filteredSalonData);
-  }, [searchTerm, cities]);
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setSelectedCity(''); // Reset selected city when searching
-  };
-
-  const handleCitySelect = (city) => {
-    setSelectedCity(city);
-  };
-
-  const handleSalonSelect = (salon) => {
-    setSelectedSalon(salon);
-    onSalonSelect(salon);
-  };
-
-  const clearSearch = () => {
-    setSearchTerm('');
-  };
-
-  return (
-    <div className="salon-selection">
-      <div className="search-bar">
-        <FaSearch className="search-icon" />
-        <input
-          type="text"
-          placeholder="Tìm kiếm salon theo tỉnh, thành phố, quận"
-          value={selectedSalon ? selectedSalon.address : searchTerm}
-          onChange={handleSearchChange}
-          readOnly={selectedSalon !== null}
-        />
-        {searchTerm && (
-          <button
-            className="clear-button"
-            onClick={() => {
-              clearSearch();
-              setSelectedSalon(null);
-            }}
-            aria-label="Clear search"
-          >
-            <FaTimes />
-          </button>
-        )}
-      </div>
-
-
-      {searchTerm ? (
-        <div className="search-results">
-          <h3>Kết quả tìm kiếm:</h3>
-          {Object.entries(filteredSalons).map(([city, salons]) => (
-            <div key={city} className="city-salons">
-              <h4>{city}</h4>
-              {salons.map(salon => (
-                <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
-                  <img src={salon.image} alt={salon.address} />
-                  <div className="salon-info">
-                    <h5>{salon.address}</h5>
-                    <p>{salon.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-          {Object.keys(filteredSalons).length === 0 && (
-            <p>Không tìm thấy kết quả phù hợp.</p>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="city-list">
-            <h3>30Shine có mặt trên các tỉnh thành:</h3>
-            <div className="city-grid">
-              {filteredCities.map((city, index) => (
-                <button
-                  key={index}
-                  className={`city-button ${selectedCity === city ? 'selected' : ''}`}
-                  onClick={() => handleCitySelect(city)}
-                >
-                  {city}
-                </button>
-              ))}
-            </div>
-          </div>
-          {selectedCity && salonData[selectedCity] && (
-            <div className="selected-city-salons">
-              <h3>Các salon tại {selectedCity}:</h3>
-              <div className="salon-list">
-                {salonData[selectedCity].map((salon) => (
-                  <div key={salon.id} className="salon-item" onClick={() => handleSalonSelect(salon)}>
-                    <img src={salon.image} alt={salon.address} />
-                    <div className="salon-info">
-                      <h4>{salon.address}</h4>
-                      <p>{salon.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 };
@@ -474,7 +377,16 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   );
 };
 
-const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDate, setSelectedDate, selectedTime, setSelectedTime }) => {
+const DateTimeSelectionStep = ({ 
+  selectedStylist, 
+  setSelectedStylist, 
+  selectedDate, 
+  setSelectedDate, 
+  selectedTime, 
+  setSelectedTime,
+  recurringBooking,
+  setRecurringBooking
+}) => {
   const [isStyleListOpen, setIsStyleListOpen] = useState(false);
   const [isDateListOpen, setIsDateListOpen] = useState(false);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
@@ -581,7 +493,17 @@ const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDa
     setCurrentTimeIndex(prev => Math.min(times.length - 3, prev + 1));
   };
 
-  
+  const handleRecurringChange = (value) => {
+    setRecurringBooking(value);
+  };
+
+  const recurringOptions = [
+    { value: null, label: 'Không đặt lịch định kỳ hàng tuần' },
+    { value: 1, label: 'Mỗi tuần' },
+    { value: 2, label: 'Mỗi 2 tuần' },
+    { value: 3, label: 'Mỗi 3 tuần' },
+    { value: 4, label: 'Mỗi 4 tuần' },
+  ];
 
   return (
     <div className="date-time-selection">
@@ -707,6 +629,24 @@ const DateTimeSelectionStep = ({ selectedStylist, setSelectedStylist, selectedDa
           </div>
         </div>
       )}
+
+      <div className="recurring-booking">
+        <Title level={4}>Đặt lịch định kỳ (Không bắt buộc)</Title>
+        <Paragraph>
+          Bạn có muốn đặt lịch định kỳ không? Điều này sẽ giúp bạn tiết kiệm thời gian cho những lần đặt lịch tiếp theo.
+        </Paragraph>
+        <Select
+          style={{ width: '100%' }}
+          placeholder="Chọn tần suất đặt lịch"
+          onChange={handleRecurringChange}
+          value={recurringBooking}
+          suffixIcon={<DownOutlined />}
+        >
+          {recurringOptions.map(option => (
+            <Option key={option.value} value={option.value}>{option.label}</Option>
+          ))}
+        </Select>
+      </div>
     </div>
   );
 };

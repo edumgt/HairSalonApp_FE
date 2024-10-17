@@ -22,6 +22,7 @@ const BookingSuccess = () => {
         <p><strong>Ngày:</strong> {bookingInfo.date.label}</p>
         <p><strong>Giờ:</strong> {bookingInfo.time}</p>
         <p><strong>Tổng giá:</strong> {bookingInfo.totalPrice.toLocaleString()} VND</p>
+        <p><strong>Đặt lịch định kỳ:</strong> {bookingInfo.recurringBooking ? bookingInfo.recurringBooking : 'Không đặt lịch định kỳ'} Tuần </p>
       </div>
       <Link to="/" className="home-link">Quay về trang chủ</Link>
     </div>
