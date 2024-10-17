@@ -1,7 +1,16 @@
-import React from 'react'
-
-export default function layout() {
+import { Outlet } from 'react-router-dom';
+import Sidebar from "./sidebar"
+import './layout.css'
+const Layout = () => {
   return (
-    <div>layout</div>
-  )
-}
+    <div className="app-container">
+      <Sidebar />
+      
+      <div className="main">
+        <Outlet /> {/* Đây là nơi các trang con sẽ được render */}
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

@@ -1,0 +1,204 @@
+.tableGroup{
+    width: 97%;
+    overflow-x: auto;
+    position: relative;
+    top: 70px;
+    left: 40px; 
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+}
+/* Table Styles */
+.tableWrapper{
+    flex-direction: column;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.columnHeaderParent {
+    background-color: #f4f7fc;
+}
+
+th,
+td {
+    padding: 12px 10px;
+    text-align: left;
+}
+
+tr:hover{
+    background-color: #eeeeeeaa;
+}
+
+/* Dòng của ListItem */
+.row {
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.info {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.imageCell {
+    width: 220px;
+    padding: 10px;
+    height: 220px; /* Tăng chiều cao của cell */
+}
+
+.staffImage {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    display: block; /* Đảm bảo hình ảnh hiển thị như một block */
+    margin: 0 auto; /* Căn giữa hình ảnh */
+}
+
+.staffImage:hover {
+    transform: scale(1.05);
+}
+
+.imagePlaceholder {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #666;
+    margin: 0 auto; /* Căn giữa placeholder */
+}
+
+.actionCell {
+    padding: 15px;
+    text-align: center;
+}
+
+.columnHeaderParent th {
+    padding: 15px;
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: left;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.statusWrapper {
+    display: flex;
+}
+
+.openStatus {
+    font-size: 12px;
+    color: #14804A;
+    padding: 1px 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background: var(--Green-0, #E1FCEF);
+}
+.closeStatus {
+    font-size: 12px;
+    color: #D12953;
+    padding: 1px 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background: var(--Red-0, #FAF0F3);
+}
+
+.salonImg {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+}
+.main{
+    width: 100%;
+    height: 100%;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px; /* Thu hẹp độ rộng tối đa */
+    margin: 0 auto; /* Căn giữa */
+}
+
+.formGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formItem {
+    width: 100%;
+}
+
+.submitButton {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* Thêm styles mới cho form items */
+:global(.ant-form-item) {
+    margin-bottom: 0;
+}
+
+:global(.ant-form-item-label) {
+    padding-bottom: 5px;
+}
+
+:global(.ant-input),
+:global(.ant-select-selector),
+:global(.ant-picker) {
+    height: 40px !important;
+}
+
+:global(.ant-input-number) {
+    width: 100% !important;
+}
+
+:global(.ant-select-selector),
+:global(.ant-picker) {
+    display: flex;
+    align-items: center;
+}
+
+/* Điều chỉnh kích thước của các ô khác để phù hợp với ô hình ảnh lớn hơn */
+.row td {
+    height: 220px; /* Đảm bảo tất cả các ô có cùng chiều cao */
+    vertical-align: middle;
+}

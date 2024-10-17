@@ -1,0 +1,130 @@
+.mainContent {
+    position: relative;
+    top: 40px;
+    left: 25%;
+    width: 820px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 76px;
+    color: #000;
+}
+.infoParent {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start; */
+    gap: 13px;
+}
+.infoTitle {
+    position: relative;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #666;
+}
+.info {
+    position: relative;
+    font-size: 14px;
+    font-weight: 300;
+    color: #000;
+    white-space: nowrap;
+    padding-left: 5px;
+}
+.profileParent {
+    align-self: stretch;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-size: 25px;
+    width: 820px;
+}
+.profileAvatar {
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+.profileHeader {
+    align-self: stretch;
+    position: relative;
+    font-weight: 500;
+}
+.infoGroup {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 40px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    background-color: #fff;
+}
+.accountHeader {
+    align-self: stretch;
+    position: relative;
+    font-size: 25px;
+    font-weight: 500;
+}
+.passwordParent {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 13px;
+}
+.infoChild {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 30px;
+    padding: 20px;
+}
+.accountGroup {
+    /* align-self: stretch; */
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    width: 820px;
+    /* height: 150px; */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    background-color: #fff;
+}
+.accountParent {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 24px;
+    /* font-size: 16px; */
+}
+.changePassword {
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    font-size: 16px;
+}
+.changePasswordButton, .editProfileButton {
+    align-self: stretch;
+    position: relative;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border: none;
+    background-color: #2965d9;
+    height: 40px;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 30px;
+}
+
+
