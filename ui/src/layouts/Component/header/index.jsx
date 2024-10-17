@@ -118,7 +118,7 @@ function Header() {
         <Link to="/profile">Thông tin người dùng</Link>
       </Menu.Item>
       <Menu.Item key="3" icon={<KeyOutlined />}>
-        Đổi mật khẩu
+        <Link to="/change-password">Đổi mật khẩu</Link>
       </Menu.Item>
       <Menu.Item key="4" icon={<KeyOutlined />}>
       <Link to="/shine-history">Lịch sử tỏa sáng</Link>
