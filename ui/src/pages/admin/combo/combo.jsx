@@ -11,7 +11,7 @@ import HeaderButton from '../../../layouts/admin/components/table/buttonv2/heade
 const Combo = () => {
     // const navigate = useNavigate()
   const location = useLocation();
-  const isRootPath = location.pathname === '/combo';
+  const isRootPath = location.pathname === '/admin/combo';
   const [combo, setCombo] = useState([]);
   const [searchText, setSearchText] = useState('');
 

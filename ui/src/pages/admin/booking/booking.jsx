@@ -28,7 +28,7 @@ import EditButton from '../../../layouts/admin/components/table/button/editButto
     );
   };
 
-  const Booking = () => {
+  const HistoryBooking = () => {
     const listItems = [
         {id: "1", name: "Erica Greenholt", cutomerID: "1", serviceName: "Cắt tóc nam", bookedDate: "2024-01-10", paymentStatus: "Paid", bookingStatus: "Done"},
         {id: "2", name: "Everett Cassin", cutomerID: "2", serviceName: "Uốn tóc", bookedDate: "2024-01-11", paymentStatus: "Not yet", bookingStatus: "In progress"}
@@ -64,4 +64,4 @@ import EditButton from '../../../layouts/admin/components/table/button/editButto
         </div>
     )
   };
-  export default Booking;
+  export default HistoryBooking;

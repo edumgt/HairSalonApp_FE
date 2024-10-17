@@ -61,7 +61,7 @@ function UpdateCategory() {
 
             if (response.data && response.data.code === 0) {
                 setNotification({ message: 'Cập nhật danh mục thành công!', type: 'success' });
-                setTimeout(() => navigate('/category'), 2000);
+                setTimeout(() => navigate('/admin/category'), 2000);
             } else {
                 throw new Error('Có lỗi xảy ra khi cập nhật danh mục');
             }

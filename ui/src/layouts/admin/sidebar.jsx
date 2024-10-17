@@ -29,53 +29,53 @@ const Sidebar = () => {
   	return (
     		<div className={`${styles.nav} ${isVisible ? '' : styles.toggle}`}>
 				  <div className={styles.brand}>
-        				<img className={styles.menuIcon} alt="" src={menuIcon} onClick={toggleSidebar}/>
-        				<i className={styles.brandsName}>360Shine</i>
+        				<img className={styles.menuIcon} alt="" src={menuIcon} onClick={toggleSidebar} />
+        				<i className={styles.brandsName}>30Shine</i>
       			</div>
       			<div className={styles.navs}>
         				<div className={styles.item}>
           					<div className={styles.itemGroup}>
-            						<img className={styles.navIcon} alt="" src={dashboardIcon} />
+            						<img className={styles.navIcon} alt="" src={dashboardIcon}  />
             						<div className={styles.itemContent}>Trang chủ</div>
           					</div>
         				</div>
-        				<div className={`${styles.item} ${activeItem === 'profile' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/profile', 'profile')}>
+        				<div className={`${styles.item} ${activeItem === 'adminprofile' ? styles.active : ''}`} 
+                            onClick={() => handleItem('/admin/adminprofile', 'adminprofile')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={profileIcon} />
-            						<div className={styles.itemContent}>Bạn</div>
+            						<div className={styles.itemContent}>Thông tin cá nhân</div>
           					</div>
         				</div>
         				<div className={`${styles.item} ${activeItem === 'staff' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/staff', 'staff')}>
+                            onClick={() => handleItem('/admin/staff', 'staff')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={staffIcon} />
             						<div className={styles.itemContent}>Nhân viên</div>
           					</div>
         				</div>
         				<div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/combo', 'combo')}>
+                            onClick={() => handleItem('/admin/combo', 'combo')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={comboIcon} />
             						<div className={styles.itemContent}>Combo</div>
           					</div>
         				</div>
         				<div className={`${styles.item} ${activeItem === 'booking' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/booking', 'booking')}>
+                            onClick={() => handleItem('/admin/historybooking', 'booking')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={bookingIcon} />
             						<div className={styles.itemContent}>Đặt lịch</div>
           					</div>
         				</div>
 						<div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/service', 'service')}>
+                            onClick={() => handleItem('/admin/service', 'service')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={serviceIcon} />
             						<div className={styles.itemContent}>Dịch vụ</div>
           					</div>
         				</div>
 						<div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/category', 'category')}>
+                            onClick={() => handleItem('/admin/category', 'category')}>
           					<div className={styles.itemGroup}>
             						<img className={styles.navIcon} alt="" src={categoryIcon} />
             						<div className={styles.itemContent}>Danh mục</div>

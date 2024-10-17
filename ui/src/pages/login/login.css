@@ -1,179 +1,180 @@
 .loginPage {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f2f5;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.loginContainer {
+  width: 100%;
+  max-width: 350px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loginContainer h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 14px;
+}
+
+.loginInput {
+  width: 93%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.rememberMe {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.rememberMe input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.rememberMe label {
+  font-size: 14px;
+  color: #666;
+}
+
+.loginButton {
+  width: 99%;
+  padding: 10px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
   
+}
+
+.loginButton:hover {
+  background-color: #166fe5;
+}
+
+.forgetPasswordLink {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  color: #1877f2;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgetPasswordLink:hover {
+  text-decoration: underline;
+}
+
+.divider {
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+.socialLoginText {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.socialLogin {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.googleLogin, .facebookLogin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.googleLogin:hover, .facebookLogin:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.signupLink {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.signupLink a {
+  color: #1877f2;
+  text-decoration: none;
+}
+
+.signupLink a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
   .loginContainer {
-    width: 100%;
-    max-width: 350px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .loginContainer h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .loginForm {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .formGroup {
-    margin-bottom: 15px;
-  }
-  
-  .formGroup label {
-    display: block;
-    margin-bottom: 5px;
-    color: #666;
-    font-size: 14px;
-  }
-  
-  .loginInput {
-    width: 93%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .rememberMe {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .rememberMe input[type="checkbox"] {
-    margin-right: 5px;
-  }
-  
-  .rememberMe label {
-    font-size: 14px;
-    color: #666;
+    padding: 15px;
   }
   
   .loginButton {
-    width: 99%;
-    padding: 10px;
-    background-color: #1877f2;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  
-  .loginButton:hover {
-    background-color: #166fe5;
-  }
-  
-  .forgetPasswordLink {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    color: #1877f2;
-    text-decoration: none;
     font-size: 14px;
   }
-  
-  .forgetPasswordLink:hover {
-    text-decoration: underline;
-  }
-  
-  .divider {
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
-  }
-  
-  .socialLoginText {
-    text-align: center;
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 10px;
-  }
-  
-  .socialLogin {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  
-  .googleLogin, .facebookLogin {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    background-color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .googleLogin:hover, .facebookLogin:hover {
-    transform: scale(1.05);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .signupLink {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .signupLink a {
-    color: #1877f2;
-    text-decoration: none;
-  }
-  
-  .signupLink a:hover {
-    text-decoration: underline;
-  }
-  
-  @media (max-width: 480px) {
-    .loginContainer {
-      padding: 15px;
-    }
-    
-    .loginButton {
-      font-size: 14px;
-    }
-  }
-  
-  .loginPage .footer-container {
-    margin-top: auto;
-  }
-  
-  /* Thêm vào cuối file Login.css */
-  .ant-message {
-    z-index: 1050;
-  }
-  
-  .ant-message-notice-content {
-    padding: 12px 16px;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
-  }
-  
-  .ant-message-success .anticon {
-    color: #52c41a;
-  }
-  
-  .ant-message-error .anticon {
-    color: #ff4d4f;
-  }
+}
+
+.loginPage .footer-container {
+  margin-top: auto;
+}
+
+/* Thêm vào cuối file Login.css */
+.ant-message {
+  z-index: 1050;
+}
+
+.ant-message-notice-content {
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+}
+
+.ant-message-success .anticon {
+  color: #52c41a;
+}
+
+.ant-message-error .anticon {
+  color: #ff4d4f;
+}

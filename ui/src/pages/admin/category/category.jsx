@@ -27,7 +27,7 @@ function Category() {
     const location = useLocation()
     const navigate = useNavigate()
     
-    const isRootPath = location.pathname === '/category'
+    const isRootPath = location.pathname === '/admin/category'
 
     useEffect(() => {
         fetchCategories();
@@ -49,11 +49,11 @@ function Category() {
     };
 
     const handleAddCategory = () => {
-        navigate('/category/addCategory/createCategory');
+        navigate('/admin/category/addCategory/createCategory');
     };
 
     const handleEditCategory = (categoryId) => {
-        navigate(`/category/updateCategory/${categoryId}`);
+        navigate(`/admin/category/updateCategory/${categoryId}`);
     };
 
     const handleDeleteCategory = (categoryId) => {

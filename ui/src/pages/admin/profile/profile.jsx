@@ -10,7 +10,7 @@ const Profile = () => {
 	const user = useContext(UserContext)
   	return (
     		<div className={styles.main}>
-      			<NavLink currentPage="Bạn" />
+      			<NavLink currentPage="Thông tin cá nhân" />
       			<div className={styles.mainContent}>
         				<img className={styles.profileAvatar} alt="" src={avatar} />
         				<div className={styles.profileParent}>
@@ -41,7 +41,7 @@ const Profile = () => {
           					</div>
 							
 								<Button type='primary'
-									className={styles.editProfileButton} onClick={() => navigate('/editProfile')}>
+									className={styles.editProfileButton} onClick={() => navigate('/admin/adminprofile/editProfile')}>
 											<div className={styles.changePassword}>Chỉnh sửa thông tin</div>
           						</Button>
         				</div>
@@ -60,7 +60,7 @@ const Profile = () => {
             						</div>
           					</div>
           					<Button type='primary'
-							 className={styles.changePasswordButton} onClick={() => navigate('/changePassword')}>
+							 className={styles.changePasswordButton} onClick={() => navigate('/admin/changePassword')}>
             						<div className={styles.changePassword}>Đổi mật khẩu</div>
           					</Button>
         				</div>

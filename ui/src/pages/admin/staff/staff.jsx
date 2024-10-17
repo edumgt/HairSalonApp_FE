@@ -73,7 +73,7 @@ const Staff = () => {
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
-  const isRootPath = location.pathname === '/staff';
+  const isRootPath = location.pathname === '/admin/staff';
 
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
@@ -109,7 +109,7 @@ const Staff = () => {
   };
 
   const handleAddStaff = () => {
-    navigate('/staff/addStaff');
+    navigate('/admin/staff/addStaff');
   };
 
   const handleEditStaff = async (code) => {

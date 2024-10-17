@@ -46,7 +46,7 @@ const EditProfile = () => {
               if (response.ok) {
                 const updatedUser = await response.json(); // Parse updated user data
                 setInfo(updatedUser); // Update local state with updated information
-                navigate('/profile'); // Navigate back to profile page with updated data
+                navigate('/admin/adminprofile'); // Navigate back to profile page with updated data
               } else {
                 // Handle API call errors (e.g., display error message)
                 console.log("Error")

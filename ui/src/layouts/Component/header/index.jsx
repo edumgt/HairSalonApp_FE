@@ -115,7 +115,7 @@ function Header() {
       </span>
     </Menu.Item>
       <Menu.Item key="2" icon={<UserOutlined />}>
-        <Link to="/profile">Thông tin người dùng</Link>
+        <Link to="/userprofile">Thông tin người dùng</Link>
       </Menu.Item>
       <Menu.Item key="3" icon={<KeyOutlined />}>
         <Link to="/change-password">Đổi mật khẩu</Link>
@@ -125,7 +125,7 @@ function Header() {
       </Menu.Item>
       {(userRole === 'ADMIN' || userRole === 'admin') && (
         <Menu.Item key="5" icon={<UserOutlined />}>
-          <Link to="/admin">Cổng Admin</Link>
+          <Link to="/admin/adminprofile">Cổng Admin</Link>
         </Menu.Item>
       )}
       <Menu.Item key="6" onClick={handleLogout} icon={<LogoutOutlined />}>

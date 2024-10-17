@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from "./sidebar"
 import './layout.css'
-const Layout = () => {
+const AdminLayout = () => {
   return (
     <div className="app-container">
       <Sidebar />
@@ -13,4 +13,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default AdminLayout;
