@@ -200,6 +200,7 @@ const Staff = () => {
               add={true} 
               onClick={handleAddStaff}
               onSearch={handleSearch}
+              searchText='tên nhân viên'
             />
             <div className={styles.tableWrapper}>
               <table className={styles.table}>

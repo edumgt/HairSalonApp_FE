@@ -96,6 +96,7 @@ function Category() {
                             add={true} 
                             onClick={handleAddCategory} 
                             onSearch={handleSearch}
+                            searchText='tên danh mục'
                         />
                         <div className={styles.tableWrapper}>
                             <table className={styles.table}>

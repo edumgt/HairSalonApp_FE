@@ -29,16 +29,7 @@ function CUForm({inputs, handleSave, initialValues}) {
                         {input.isInput && <Input disabled={input.isDisabled} />}
                         {input.isTextArea && <TextArea rows={2} maxLength={3}/>}
                         {input.isSelect && 
-                            <Select allowClear mode={input.mode}>
-                                {input.options.map((option) => (
-                                    <Select.Option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                        }
-                        {input.isMultiSelect && 
-                            <Select allowClear >
+                            <Select allowClear mode={input.mode} onChange={input.onChange}>
                                 {input.options.map((option) => (
                                     <Select.Option key={option.value} value={option.value}>
                                         {option.label}
