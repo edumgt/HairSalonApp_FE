@@ -109,8 +109,41 @@
         }
       }
     }
+    .search-bar {
+      margin-bottom: 20px;
+      
+      input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+    }
+  
+    
   }
   
+  .category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .category-buttons button {
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .category-buttons button.active {
+    background-color: #007bff;
+    color: white;
+  }
   // Thêm animation cho các card khi chúng xuất hiện
   @keyframes fadeInUp {
     from {

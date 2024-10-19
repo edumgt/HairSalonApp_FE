@@ -6,7 +6,7 @@ import ScrollToTopButton from './layouts/Component/scrollButton';
 
 // User pages
 import Home from "./pages/Home";
-import Login from "./pages/Login/login";
+import Login from "./pages/Login/Login";
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
