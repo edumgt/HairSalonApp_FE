@@ -1,4 +1,7 @@
 .all-services {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
     padding: 40px 20px;
     width: 80%;
     max-width: 1200px;
@@ -11,7 +14,7 @@
       text-align: center;
       margin-bottom: 40px;
       font-size: 2.5rem;
-      color: #333;
+      color: #15397f;
       text-transform: uppercase;
       letter-spacing: 2px;
       position: relative;
@@ -21,7 +24,7 @@
         display: block;
         width: 50px;
         height: 3px;
-        background-color: #007bff;
+        background-color: #15397f;
         margin: 15px auto 0;
       }
     }
@@ -81,8 +84,9 @@
       .service-title {
         margin-bottom: 12px;
         font-size: 1.25rem;
-        color: #333;
+        color: #15397f;
         font-weight: 600;
+        margin-bottom: 10px;
       }
   
       .service-price {
@@ -90,6 +94,7 @@
         margin-bottom: 15px;
         font-weight: 500;
         font-size: 1.1rem;
+        margin-bottom: 10px;
       }
   
       .service-link {
@@ -97,11 +102,11 @@
         text-decoration: none;
         color: #ffffff;
         font-weight: bold;
-        background-color: #007bff;
+        background-color: #15397f;
         padding: 10px 20px;
         border-radius: 25px;
         transition: all 0.3s ease;
-  
+        margin-bottom: 10px;
         &:hover {
           background-color: #0056b3;
           transform: translateY(-2px);
@@ -110,7 +115,11 @@
       }
     }
     .search-bar {
-      margin-bottom: 20px;
+      width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    margin: auto 0 0 ;
+    border-radius: 5px;
       
       input {
         width: 100%;
@@ -121,29 +130,31 @@
       }
     }
   
+    .category-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .category-buttons button {
+      padding: 10px 15px;
+      background-color: #f0f0f0;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .category-buttons button.active {
+      background-color: #15397f;
+      color: white;
+    }
     
   }
   
-  .category-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
   
-  .category-buttons button {
-    padding: 10px 15px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .category-buttons button.active {
-    background-color: #007bff;
-    color: white;
-  }
   // Thêm animation cho các card khi chúng xuất hiện
   @keyframes fadeInUp {
     from {
