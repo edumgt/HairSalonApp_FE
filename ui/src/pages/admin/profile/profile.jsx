@@ -44,25 +44,10 @@ const Profile = () => {
 									className={styles.editProfileButton} onClick={() => navigate('/admin/adminprofile/editProfile')}>
 											<div className={styles.changePassword}>Chỉnh sửa thông tin</div>
           						</Button>
-        				</div>
-        				<div className={styles.accountParent}>
-          					<div className={styles.accountHeader}>Tài khoản</div>
-          					<div className={styles.accountGroup}>
-            						<div className={styles.infoChild}>
-              							<div className={styles.infoParent}>
-                								<div className={styles.infoTitle}>Tên tài khoản</div>
-                								<div className={styles.info}>{user.userName}</div>
-              							</div>
-              							<div className={styles.infoParent}>
-                								<div className={styles.infoTitle}>Mật khẩu</div>
-                								<div className={styles.info}>{user.pass}</div>
-              							</div>
-            						</div>
-          					</div>
-          					<Button type='primary'
-							 className={styles.changePasswordButton} onClick={() => navigate('/admin/changePassword')}>
-            						<div className={styles.changePassword}>Đổi mật khẩu</div>
-          					</Button>
+								<Button type='primary'
+									className={styles.changePasswordButton} onClick={() => navigate('/admin/changePassword')}>
+											<div className={styles.changePassword}>Đổi mật khẩu</div>
+								</Button>
         				</div>
       			</div>
     		</div>

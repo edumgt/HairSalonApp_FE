@@ -4,7 +4,7 @@ import filterIcon from '../../../../../assets/admin/filter.svg'
 import searchIcon from '../../../../../assets/admin/Search.svg'
 import './headerButton.css'
 
-const HeaderButton = ({text, add, onClick, onSearch}) => {
+const HeaderButton = ({text, add, onClick, onSearch, searchText}) => {
   const handleSearchChange = (e) => {
     if (onSearch) {
       onSearch(e.target.value);
@@ -21,7 +21,7 @@ const HeaderButton = ({text, add, onClick, onSearch}) => {
         <input 
           className="searchInput" 
           type="text" 
-          placeholder="Tìm"
+          placeholder={`Tìm theo ${searchText}`} 
           onChange={handleSearchChange}
         />
       </div>

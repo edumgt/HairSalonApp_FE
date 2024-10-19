@@ -78,7 +78,7 @@ const filteredCombos = combo.filter((item) =>
         <td className={styles.info}>{name}</td>
         <td className={styles.info}>
           {services.map(service => (
-            <div key={service.serviceId}>{service.serviceName}</div>
+            <div className={styles.serviceName} key={service.serviceId}>{service.serviceName}</div>
           ))}
         </td>
         <td className={styles.info}>{price.toLocaleString()} VND</td>

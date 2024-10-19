@@ -7,6 +7,7 @@ import { create, getServices } from '../services/comboService'
 
 function AddCombo() {
     const [serviceOptions, setServiceOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     useEffect(() => {
         const loadServices = async () => {
           try {
@@ -20,9 +21,11 @@ function AddCombo() {
             console.error("Error loading services:", error);
           }
         };
-        
         loadServices();
       }, []); 
+      const onSelect = (value) => {
+        setSelectedOptions(value)
+      }
     const inputs = [
         {
             label: 'Tên Combo',
@@ -48,7 +51,19 @@ function AddCombo() {
             isSelect: true,
             mode: 'multiple',
             options: serviceOptions,
-            rules: [{required: true, message: 'Vui lòng nhập Các dịch vụ!'}]
+            rules: [
+              { 
+                  required: true, 
+                  message: 'Vui lòng chọn ít nhất 2 dịch vụ!',
+                  validator: (_, selectedOptions) => {
+                      if (!selectedOptions || selectedOptions.length < 2) {
+                          return Promise.reject('Bạn phải chọn ít nhất 2 dịch vụ');
+                      }
+                      return Promise.resolve();
+                  }
+              }
+          ],
+            onChange: onSelect
         }
     ]
     const back = useNavigate()

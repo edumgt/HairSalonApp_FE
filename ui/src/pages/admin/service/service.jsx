@@ -200,6 +200,7 @@ const Service = () => {
                     add={true} 
                     onClick={handleAddService} 
                     onSearch={handleSearch}
+                    searchText='tên dịch vụ'
                 />
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>

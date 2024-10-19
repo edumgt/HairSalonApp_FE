@@ -12,7 +12,7 @@ const EditButton = ({handleDelete, id, forPage, item}) => {
   return (
     <div className='editGroup'>
       <Button color="primary" variant="outlined" size='small' onClick={handleEdit}>
-            Cập nhật
+            Cập nhật  
             <img className='editIcon' src={editIcon} alt="" />
       </Button>
       <Button color="danger" variant="outlined"  size='small' value={id} onClick={() => handleDelete(id)}>

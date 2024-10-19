@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 function UpdateCombo() {
     const [serviceOptions, setServiceOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     useEffect(() => {
         const loadServices = async () => {
           try {
@@ -32,6 +33,9 @@ function UpdateCombo() {
         price: combo?.price,
         description: combo?.description
     };
+    const onSelect = (value) => {
+      setSelectedOptions(value)
+    }
     const inputs = [
         {
             label: 'ID',
@@ -51,7 +55,19 @@ function UpdateCombo() {
             isSelect: true,
             mode: 'multiple',
             options: serviceOptions,
-            rules: [{required: true, message: 'Vui lòng chọn dịch vụ!'}]
+            rules: [
+              { 
+                  required: true, 
+                  message: 'Vui lòng chọn ít nhất 2 dịch vụ!',
+                  validator: (_, selectedOptions) => {
+                      if (!selectedOptions || selectedOptions.length < 2) {
+                          return Promise.reject('Bạn phải chọn ít nhất 2 dịch vụ');
+                      }
+                      return Promise.resolve();
+                  }
+              }
+          ],
+            onChange: onSelect
         },
         {
             label: 'Giá',
@@ -80,7 +96,7 @@ function UpdateCombo() {
                         duration: 2
                       });
                     setTimeout(() => {
-                        back('/combo', { state: { shouldReload: true } })
+                        back('/admin/combo', { state: { shouldReload: true } })
                     }, 1000)
                     return response
                 } catch (error) {

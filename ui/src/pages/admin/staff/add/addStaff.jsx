@@ -29,7 +29,7 @@ function AddStaff() {
             
             if (response.data && response.data.code === 200) {
                 message.success('Thêm nhân viên thành công');
-                navigate('/staff', { state: { refreshData: true } });
+                navigate('/admin/staff', { state: { refreshData: true } });
             } else {
                 throw new Error(response.data.message || 'Thêm nhân viên thất bại');
             }
