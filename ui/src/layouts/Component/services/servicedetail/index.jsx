@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { serviceDetails } from '../../../data/serviceDetails';
+import { serviceDetails } from '../../../../data/serviceDetails';
 import { message } from 'antd';
 import './index.scss';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Col, Form, Input, Row, Rate, Modal, message } from 'antd';
 import { useNavigate } from "react-router-dom";
-import HairServices from "../../layouts/Component/hairservice";
+import HairServices from "../../layouts/Component/services/hairservice";
 import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";

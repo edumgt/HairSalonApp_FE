@@ -13,11 +13,11 @@ const EditButton = ({handleDelete, id, forPage, item}) => {
     <div className='editGroup'>
       <Button color="primary" variant="outlined" size='small' onClick={handleEdit}>
             Cập nhật
-            <img src={editIcon} alt="" />
+            <img className='editIcon' src={editIcon} alt="" />
       </Button>
       <Button color="danger" variant="outlined"  size='small' value={id} onClick={() => handleDelete(id)}>
             Xóa
-            <img src={deleteIcon} alt=""/>
+            <img className='deleteIcon' src={deleteIcon} alt=""/>
       </Button>
     </div>
   )

@@ -12,7 +12,7 @@ import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
 import About from './pages/About';
 import HairCutServices from "./layouts/Component/haircombo";
-import ServiceDetail from "./layouts/Component/servicedetail";
+import ServiceDetail from "./layouts/Component/services/servicedetail";
 import CurlyHairServices from "./layouts/Component/curlyhairservice";
 import HairStylingDetail from "./layouts/Component/hairstylingdetail";
 import SpaCombo from "./layouts/Component/spacombo";
@@ -40,6 +40,7 @@ import UpdateStaff from './pages/admin/staff/update/updateStaff';
 import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
+import AllServices from './layouts/Component/services/allservices';
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -85,6 +86,7 @@ function LayoutWithScrollToTop() {
         { path: "userprofile", element: <UserProfile /> },
         { path: "shine-history", element: <ShineHistory /> },
         { path: "change-password", element: <ChangePassword /> },
+        { path: "tat-ca-dich-vu", element: <AllServices /> },
       ],
     },
     {

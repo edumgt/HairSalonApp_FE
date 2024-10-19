@@ -9,7 +9,7 @@ function UpdateStaff() {
     const { id } = useParams();
     const [error, setError] = useState('');
     const [staffData, setStaffData] = useState(null);
-
+    
     useEffect(() => {
         const fetchStaffData = async () => {
             try {
@@ -36,7 +36,7 @@ function UpdateStaff() {
         try {
             const response = await axios.put(`http://localhost:8080/api/v1/staff/${id}`, values);
             if (response.data && response.data.code === 200) {
-                navigate('/staff');
+                navigate('/admin/staff');
             } else {
                 setError('Cập nhật nhân viên thất bại. Vui lòng thử lại');
             }
