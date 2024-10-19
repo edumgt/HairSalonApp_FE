@@ -6,6 +6,7 @@ import { fetchServices } from "../../../../data/hairservice";
 const HairServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
   const [imageError, setImageError] = useState(false);
 
+
   return (
     <div className="hair-services__card">
       {!imageError ? (
@@ -44,6 +45,7 @@ const HairServices = () => {
   const [category, setCategory] = useState(null);
 
   const navigate = useNavigate();
+
 
   const getImgurDirectUrl = useCallback((url) => {
     if (!url) {
@@ -130,6 +132,7 @@ const HairServices = () => {
         ))}
       </div>
     </div>
+    
   );
 };
 

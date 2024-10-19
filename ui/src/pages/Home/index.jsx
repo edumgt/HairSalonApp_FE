@@ -6,6 +6,7 @@ import SpaServices from "../../layouts/Component/spaservice";
 import BrandAmbassadors from "../../layouts/Component/saotoasang";
 import TopStylists from "../../layouts/Component/topstylist";
 import LatestNews from "../../layouts/Component/LatestNew";
+import ComboServices from "../../layouts/Component/Combo/ComboService";
 
 
 
@@ -471,6 +472,7 @@ function Home() {
         </Col>
       </Row>
       <HairServices />
+      <ComboServices />
       <SpaServices />
       <BrandAmbassadors />
       <TopStylists />

@@ -22,6 +22,8 @@ import BookingSuccess from './layouts/Component/Booking/bookingsuccess';
 import UserProfile from './pages/UserProfile';
 import ShineHistory from './pages/ShineHistory';
 import ChangePassword from './pages/ChangePassword';
+import AllServices from './layouts/Component/services/allservices';
+import ComboServices from './layouts/Component/Combo/ComboService';
 
 // Admin pages
 import AdminProfile from './pages/admin/profile/profile';
@@ -40,7 +42,8 @@ import UpdateStaff from './pages/admin/staff/update/updateStaff';
 import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
-import AllServices from './layouts/Component/services/allservices';
+import AllCombos from './layouts/Component/Combo/allcombos';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -89,6 +92,7 @@ function LayoutWithScrollToTop() {
         { path: "shine-history", element: <ShineHistory /> },
         { path: "change-password", element: <ChangePassword /> },
         { path: "tat-ca-dich-vu", element: <AllServices /> },
+        { path: "tat-ca-combo", element: <AllCombos /> },
       ],
     },
     {

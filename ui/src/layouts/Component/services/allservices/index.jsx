@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchServices } from "../../../../data/hairservice"; 
 import "./index.scss";
+import { message } from "antd";
 
 const ServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
   const [imageError, setImageError] = useState(false);
@@ -43,6 +44,20 @@ const AllServices = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Tất cả dịch vụ');
+
+
+    const handleBookingClick = () => {
+      // Kiểm tra xem người dùng đã đăng nhập chưa
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
+        navigate('/booking');
+      } else {
+        // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+        message.info('Vui lòng đăng nhập để đặt lịch');
+        navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+      }
+    };
 
   const navigate = useNavigate();
 
@@ -157,6 +172,7 @@ const AllServices = () => {
           />
         ))}
       </div>
+      <button className="all-services__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
     </div>
   );
 };
