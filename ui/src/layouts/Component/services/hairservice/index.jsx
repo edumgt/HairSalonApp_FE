@@ -27,13 +27,12 @@ const HairServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
       {service.price && (
         <p className="hair-services__price">Giá từ {service.price.toLocaleString('vi-VN')} đ</p>
       )}
-      <a
-        href={`/dich-vu-cat-toc/${service.serviceId}`}
+      <Link
+        to={`/dich-vu-cat-toc/${service.serviceId}`}
         className="hair-services__link"
-        onClick={(e) => handleLinkClick(`/dich-vu-cat-toc/${service.serviceId}`, e)}
       >
         Tìm hiểu thêm 
-      </a>
+      </Link>
     </div>
   );
 };

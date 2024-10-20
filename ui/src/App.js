@@ -12,7 +12,7 @@ import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
 import About from './pages/About';
 import HairCutServices from "./layouts/Component/haircombo";
-import ServiceDetail from "./layouts/Component/services/servicedetail";
+
 import CurlyHairServices from "./layouts/Component/curlyhairservice";
 import HairStylingDetail from "./layouts/Component/hairstylingdetail";
 import SpaCombo from "./layouts/Component/spacombo";
@@ -23,7 +23,8 @@ import UserProfile from './pages/UserProfile';
 import ShineHistory from './pages/ShineHistory';
 import ChangePassword from './pages/ChangePassword';
 import AllServices from './layouts/Component/services/allservices';
-import ComboServices from './layouts/Component/Combo/ComboService';
+import ServiceDetail from './layouts/Component/services/ServiceDetails';
+
 
 // Admin pages
 import AdminProfile from './pages/admin/profile/profile';
@@ -81,9 +82,6 @@ function LayoutWithScrollToTop() {
         { path: "about", element: <About /> },
         { path: "dich-vu-cat-toc", element: <HairCutServices /> },
         { path: "dich-vu-uon-nhuom-toc", element: <CurlyHairServices /> },
-        { path: "dich-vu/cat-goi/:serviceId", element: <ServiceDetail /> },
-        { path: "dich-vu/uon/:serviceId", element: <HairStylingDetail /> },
-        { path: "dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
         { path: "dich-vu-goi-massage-spa-relax", element: <SpaCombo /> },
         { path: "dich-vu/spa/:comboId", element: <SpaComboDetail /> },
         { path: "booking", element: <BookingComponent /> },
@@ -93,6 +91,8 @@ function LayoutWithScrollToTop() {
         { path: "change-password", element: <ChangePassword /> },
         { path: "tat-ca-dich-vu", element: <AllServices /> },
         { path: "tat-ca-combo", element: <AllCombos /> },
+        { path: "dich-vu-cat-toc/:serviceId", element: <ServiceDetail /> }
+
       ],
     },
     {
