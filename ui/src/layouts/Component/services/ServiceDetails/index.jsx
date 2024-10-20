@@ -4,6 +4,10 @@ import { fetchServices } from '../../../../data/hairservice';
 import './index.scss';
 import { message } from 'antd';
 const ServiceDetail = () => {
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
   const { serviceId } = useParams();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);

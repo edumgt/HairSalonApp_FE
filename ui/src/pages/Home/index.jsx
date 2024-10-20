@@ -473,7 +473,6 @@ function Home() {
       </Row>
       <HairServices />
       <ComboServices />
-      <SpaServices />
       <BrandAmbassadors />
       <TopStylists />
       <LatestNews />

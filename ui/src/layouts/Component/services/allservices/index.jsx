@@ -14,7 +14,7 @@ const ServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
           src={getImgurDirectUrl(service.image)}
           alt={service.serviceName}
           className="service-image"
-          onClick={(e) => handleLinkClick(`/dich-vu-cat-toc/${service.serviceId}`, e)}
+          onClick={(e) => handleLinkClick(`/dich-vu/${service.serviceId}`, e)}
           onError={(e) => {
             console.error('Image failed to load:', service.image);
             setImageError(true);
@@ -162,7 +162,7 @@ const AllServices = () => {
           </button>
         ))}
       </div>
-      <div className="services-grid">
+      <div className="services-grid" >
         {filteredServices.map((service, index) => (
           <ServiceCard
             key={service.serviceId || index}

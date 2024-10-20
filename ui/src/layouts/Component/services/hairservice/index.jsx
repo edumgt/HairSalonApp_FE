@@ -14,7 +14,7 @@ const HairServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
           src={getImgurDirectUrl(service.image)}
           alt={service.serviceName}
           className="hair-services__image"
-          onClick={(e) => handleLinkClick(`/dich-vu-cat-toc/${service.serviceId}`, e)}
+          onClick={(e) => handleLinkClick(`/dich-vu/${service.serviceId}`, e)}
           onError={(e) => {
             console.error('Image failed to load:', service.image);
             setImageError(true);
@@ -28,7 +28,7 @@ const HairServiceCard = ({ service, handleLinkClick, getImgurDirectUrl }) => {
         <p className="hair-services__price">Giá từ {service.price.toLocaleString('vi-VN')} đ</p>
       )}
       <Link
-        to={`/dich-vu-cat-toc/${service.serviceId}`}
+        to={`/dich-vu/${service.serviceId}`}
         className="hair-services__link"
       >
         Tìm hiểu thêm 

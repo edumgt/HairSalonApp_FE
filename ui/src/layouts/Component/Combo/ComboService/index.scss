@@ -19,8 +19,7 @@
     &__view-all-link {
       color: #007bff;
       text-decoration: none;
-      font-weight: bold;
-  
+      font-size: 1.2rem;
       &:hover {
         text-decoration: underline;
       }
@@ -39,6 +38,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
+      cursor: pointer;
     }
   
     &__image {

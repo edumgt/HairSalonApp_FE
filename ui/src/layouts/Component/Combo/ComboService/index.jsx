@@ -5,7 +5,7 @@ import { fetchCombos } from "../../../../data/comboservice";
 
 const ComboServiceCard = ({ combo, handleLinkClick, getImgurDirectUrl }) => {
     return (
-      <div className="combo-services__card">
+      <div className="combo-services__card" onClick={(e) => handleLinkClick(`/combo/${combo.id}`, e)}>
         <div className="combo-services__images">
           {combo.services.slice(0, 2).map((service, index) => (
             <div key={service.serviceId} className="combo-services__image-container">
@@ -13,7 +13,7 @@ const ComboServiceCard = ({ combo, handleLinkClick, getImgurDirectUrl }) => {
                 src={getImgurDirectUrl(service.image)}
                 alt={service.serviceName}
                 className="combo-services__image"
-                onClick={(e) => handleLinkClick(`/combo/${combo.id}`, e)}
+               
                 onError={(e) => {
                   console.error('Image failed to load:', service.image);
                   e.target.src = '/fallback-image.jpg'; // Fallback image
