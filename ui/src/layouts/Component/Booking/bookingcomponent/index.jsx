@@ -360,11 +360,11 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   const showModal = () => setIsModalVisible(true);
   const hideModal = () => setIsModalVisible(false);
 
-  const handleRemoveService = (index) => {
-    const newServices = [...selectedServices];
-    const removedService = newServices.splice(index, 1)[0];
-    setSelectedServices(newServices);
-    setTotalPrice(prevTotal => prevTotal - (removedService.price || 0));
+  const handleRemoveService = (serviceToRemove) => {
+    setSelectedServices(prevServices => 
+      prevServices.filter(service => (service.serviceId || service.id) !== (serviceToRemove.serviceId || serviceToRemove.id))
+    );
+    setTotalPrice(prevTotal => prevTotal - (serviceToRemove.price || 0));
   };
 
   const handleDoneSelection = () => {
