@@ -119,4 +119,22 @@
         font-size: 1.2rem;
       }
     }
+
+    &__book-button {
+      display: block;
+      width: 200px;
+      margin: 4rem auto 0;
+      padding: 1rem;
+      background-color: #15397f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  
+      &:hover {
+        background-color: #0f2b5e;
+      }
+    }
   }

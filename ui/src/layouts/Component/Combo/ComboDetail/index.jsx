@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCombos } from '../../../../data/comboservice';
 import './index.scss';
 
@@ -13,7 +13,7 @@ const ComboDetail = () => {
   const [combo, setCombo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const loadComboDetail = async () => {
       try {
@@ -55,6 +55,16 @@ const ComboDetail = () => {
     return match && match[1] ? `https://i.imgur.com/${match[1]}.jpg` : url;
   };
 
+  const handleBookingClick = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/booking');
+    } else {
+      message.info('Vui lòng đăng nhập để đặt lịch');
+      navigate('/login', { state: { from: '/booking' } });
+    }
+  };
+
   const totalDuration = combo.services.reduce((total, service) => total + parseInt(service.duration), 0);
 
   return (
@@ -85,6 +95,7 @@ const ComboDetail = () => {
       <p className="combo-savings">
         Tiết kiệm: {(combo.services.reduce((total, service) => total + service.price, 0) - combo.price).toLocaleString('vi-VN')} đ
       </p>
+      <button className="combo-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
     </div>
   );
 };

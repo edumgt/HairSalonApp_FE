@@ -8,7 +8,7 @@ const ComboCard = ({ combo, handleLinkClick, getImgurDirectUrl }) => {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="combo-card">
+    <div className="combo-card" onClick={(e) => handleLinkClick(`/combo/${combo.id}`, e)}>
       <div className="combo-images">
         {combo.services.slice(0, 2).map((service, index) => (
           <div key={service.serviceId} className="combo-image-container">
@@ -158,7 +158,7 @@ const AllCombos = () => {
         {categories.map(category => (
           <button
             key={category}
-            onClick={() => setSelectedCategory(category)}
+            onClick= {e => setSelectedCategory(category, e)}
             className={selectedCategory === category ? 'active' : ''}
           >
             {category}
