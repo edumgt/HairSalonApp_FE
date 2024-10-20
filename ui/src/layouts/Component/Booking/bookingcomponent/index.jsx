@@ -15,6 +15,9 @@ import stylist5 from "../../../../assets/imageHome/Stylist/Stylist_5.jpg";
 import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
 import { DownOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { fetchServices } from '../../../../data/hairservice';
+import { fetchCombos } from '../../../../data/comboservice';
+
 
 const { Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -33,15 +36,25 @@ const BookingComponent = () => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [recurringBooking, setRecurringBooking] = useState(null);
 
+  const [selectedCombos, setSelectedCombos] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => setIsModalVisible(true);
   const hideModal = () => setIsModalVisible(false);
 
+
+  // Remove service
   const handleRemoveService = (index) => {
     const newServices = [...selectedServices];
     const removedService = newServices.splice(index, 1)[0];
     setSelectedServices(newServices);
     setTotalPrice(prevTotal => prevTotal - parseInt(removedService.price.replace(/\D/g, '')));
+  };
+
+  const handleRemoveCombo = (index) => {
+    const newCombos = [...selectedCombos];
+    const removedCombo = newCombos.splice(index, 1)[0];
+    setSelectedCombos(newCombos);
+    setTotalPrice(prevTotal => prevTotal - parseInt(removedCombo.price.replace(/\D/g, '')));
   };
 
   // Set fixed salon address
@@ -96,6 +109,7 @@ const BookingComponent = () => {
     const bookingInfo = {
       salon: selectedSalon,
       services: selectedServices,
+      combos: selectedCombos,
       stylist: selectedStylist,
       date: selectedDate,
       time: selectedTime,
@@ -234,111 +248,258 @@ const BookingComponent = () => {
   );
 };
 
+
 const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('Tất cả dịch vụ');
   const [filteredServices, setFilteredServices] = useState([]);
   const [selectedServices, setSelectedServices] = useState(initialServices || []);
   const [totalPrice, setTotalPrice] = useState(initialTotalPrice || 0);
-  const summaryRef = useRef(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [allServices, setAllServices] = useState([]);
+  const [categories, setCategories] = useState(['Tất cả dịch vụ']);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCombos, setSelectedCombos] = useState([]);
 
-  const formatPrice = (price) => {
-    return price.toLocaleString('vi-VN', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).replace(',', '.') + ' VND';
-  };
-
-  const handleAddService = (service) => {
-    const isServiceSelected = selectedServices.some(s => s.title === service.title);
-    if (!isServiceSelected) {
-      setSelectedServices(prevServices => [...prevServices, service]);
-      setTotalPrice(prevTotal => {
-        const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
-        return prevTotal + servicePrice;
-      });
-    } else {
-      // Nếu dịch vụ đã được chọn, hãy xóa nó
-      setSelectedServices(prevServices => prevServices.filter(s => s.title !== service.title));
-      setTotalPrice(prevTotal => {
-        const servicePrice = parseInt(service.price.replace(/\D/g, '')) || 0;
-        return prevTotal - servicePrice;
-      });
+  const getImgurDirectUrl = useCallback((url) => {
+    if (!url) {
+      console.warn('Image URL is undefined');
+      return '/fallback-image.jpg';
     }
-  };
-
-
-  const showModal = () => setIsModalVisible(true);
-  const hideModal = () => setIsModalVisible(false);
-
-  const handleRemoveService = (index) => {
-    const newServices = [...selectedServices];
-    const removedService = newServices.splice(index, 1)[0];
-    setSelectedServices(newServices);
-    setTotalPrice(prevTotal => {
-      const servicePrice = parseInt(removedService.price.replace(/\D/g, '')) || 0;
-      return prevTotal - servicePrice;
-    });
-  };
-
-  const allServices = {
-    ...serviceDetails,
-    ...spaComboDetail,
-    ...hairStylingDetail
-  };
-
-  const handleDoneSelection = () => {
-    onServiceSelection(selectedServices, totalPrice);
-  };
+    const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+    const match = url.match(imgurRegex);
+    if (match && match[1]) {
+      return `https://i.imgur.com/${match[1]}.jpg`;
+    }
+    console.warn('Invalid Imgur URL:', url);
+    return url;
+  }, []);
 
   useEffect(() => {
-    const filtered = Object.entries(allServices).filter(([key, service]) => {
+    const loadData = async () => {
+      try {
+        const [servicesResponse, combosResponse] = await Promise.all([
+          fetchServices(),
+          fetchCombos()
+        ]);
+
+        console.log('Raw services data:', JSON.stringify(servicesResponse, null, 2));
+        console.log('Raw combos data:', JSON.stringify(combosResponse, null, 2));
+
+        let servicesData = servicesResponse.result || servicesResponse;
+        let combosData = combosResponse.result || combosResponse;
+
+        if (Array.isArray(servicesData) && Array.isArray(combosData)) {
+          const allData = [...servicesData, ...combosData];
+          setAllServices(allData);
+
+          const categorySet = new Set(allData.flatMap(item => 
+            item.categories ? [item.categories.categoryName] : []
+          ).filter(Boolean));
+          setCategories(['Tất cả dịch vụ', ...Array.from(categorySet)]);
+        } else {
+          console.error('Services or combos data is not an array:', { servicesData, combosData });
+          setError("Dữ liệu dịch vụ không hợp lệ.");
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const filtered = allServices.filter(service => {
+      const serviceName = service.serviceName || service.name || '';
+      const description = service.description || '';
+      const categoryName = service.categories?.categoryName || '';
+
       const matchesSearch =
-        service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || key.includes(selectedCategory);
+        serviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = 
+        selectedCategory === 'Tất cả dịch vụ' || 
+        categoryName === selectedCategory;
       return matchesSearch && matchesCategory;
     });
     setFilteredServices(filtered);
   }, [searchTerm, selectedCategory, allServices]);
 
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    });
+  };
+
+  const handleAddService = (service) => {
+    const serviceId = service.serviceId || service.id;
+    const isServiceSelected = selectedServices.some(s => (s.serviceId || s.id) === serviceId);
+    if (!isServiceSelected) {
+      setSelectedServices(prevServices => [...prevServices, {...service, isCombo: false}]);
+    } else {
+      setSelectedServices(prevServices => prevServices.filter(s => (s.serviceId || s.id) !== serviceId));
+    }
+    updateTotalPrice();
+  };
+  
+  const handleAddCombo = (combo) => {
+    const comboId = combo.id || combo.serviceId;
+    const isComboSelected = selectedCombos.some(c => (c.id || c.serviceId) === comboId);
+    if (!isComboSelected) {
+      setSelectedCombos(prevCombos => [...prevCombos, {...combo, isCombo: true}]);
+    } else {
+      setSelectedCombos(prevCombos => prevCombos.filter(c => (c.id || c.serviceId) !== comboId));
+    }
+    updateTotalPrice();
+  };
+
+  const updateTotalPrice = () => {
+    const servicesTotal = selectedServices.reduce((total, service) => total + (Number(service.price) || 0), 0);
+    const combosTotal = selectedCombos.reduce((total, combo) => total + (Number(combo.price) || 0), 0);
+    setTotalPrice(servicesTotal + combosTotal);
+  };
+
+  useEffect(() => {
+    updateTotalPrice();
+  }, [selectedServices, selectedCombos]);
+
+
+
+  const showModal = () => setIsModalVisible(true);
+  const hideModal = () => setIsModalVisible(false);
+
+  const handleRemoveService = (serviceToRemove) => {
+    setSelectedServices(prevServices => 
+      prevServices.filter(service => (service.serviceId || service.id) !== (serviceToRemove.serviceId || serviceToRemove.id))
+    );
+    setTotalPrice(prevTotal => prevTotal - (Number(serviceToRemove.price) || 0));
+  };
+  
+  const handleRemoveCombo = (comboToRemove) => {
+    setSelectedCombos(prevCombos => 
+      prevCombos.filter(combo => (combo.id || combo.serviceId) !== (comboToRemove.id || comboToRemove.serviceId))
+    );
+    setTotalPrice(prevTotal => prevTotal - (Number(comboToRemove.price) || 0));
+  };
+
+  const handleDoneSelection = () => {
+    onServiceSelection([...selectedServices, ...selectedCombos], totalPrice);
+  };
+
+  if (loading) return <div>Đang tải...</div>;
+  if (error) return <div>{error}</div>;
+
+  const ServiceCard = ({ service, isSelected, onSelect, getImgurDirectUrl }) => (
+    <div className="service-item">
+      <img src={getImgurDirectUrl(service.image)} alt={service.serviceName || service.name} />
+      <div className="service-content">
+        <h3>{service.serviceName || service.name}</h3>
+        <p>{service.description || ''}</p>
+        <p className="price">{formatPrice(service.price || 0)}</p>
+        <button
+          className={`add-service ${isSelected ? 'selected' : ''}`}
+          onClick={() => onSelect(service)}
+        >
+          {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
+        </button>
+      </div>
+    </div>
+  );
+
+ const ComboCard = ({ combo, isSelected, onSelect, getImgurDirectUrl }) => (
+  <div className="booking-combo-container">
+    <div className="combo-item">
+      <div className="combo-services__images">
+        {combo.services.slice(0, 2).map((service, index) => (
+          <div key={service.serviceId} className="combo-services__image-container">
+            <img
+              src={getImgurDirectUrl(service.image)}
+              alt={service.serviceName}
+              className="combo-services__image"
+              onError={(e) => {
+                console.error('Image failed to load:', service.image);
+                e.target.src = '/fallback-image.jpg';
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="combo-content">
+        <h3>{combo.name}</h3>
+        <p>{combo.description}</p>
+        <p className="price">{formatPrice(combo.price || 0)}</p>
+        <button
+          className={`add-service ${isSelected ? 'selected' : ''}`}
+          onClick={() => onSelect(combo)}
+        >
+          {isSelected ? 'Đã thêm' : 'Thêm combo'}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
   return (
     <div className="service-selection">
+      <Title level={2}>Chọn dịch vụ</Title>
       <div className="search-bar">
+        <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder="Tìm kiếm dịch vụ, nhóm dịch vụ hoặc giá"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        {searchTerm && (
+          <button className="clear-button" onClick={() => setSearchTerm('')}>
+            <FaTimes />
+          </button>
+        )}
       </div>
       <div className="category-buttons">
-        <button onClick={() => setSelectedCategory('all')} className={selectedCategory === 'all' ? 'active' : ''}>Tất cả dịch vụ</button>
-        <button onClick={() => setSelectedCategory('cat-goi')} className={selectedCategory === 'cat-goi' ? 'active' : ''}>Cắt gội xả massage</button>
-        <button onClick={() => setSelectedCategory('uon')} className={selectedCategory === 'uon' ? 'active' : ''}>Uốn định hình tóc</button>
-        <button onClick={() => setSelectedCategory('nhuom')} className={selectedCategory === 'nhuom' ? 'active' : ''}>Nhuộm tóc</button>
-        <button onClick={() => setSelectedCategory('goi-combo')} className={selectedCategory === 'goi-combo' ? 'active' : ''}>Gội massage</button>
+        {categories.map(category => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={selectedCategory === category ? 'active' : ''}
+          >
+            {category}
+          </button>
+        ))}
       </div>
       <div className="service-grid">
-        {filteredServices.map(([key, service]) => {
-          const isSelected = selectedServices.some(s => s.title === service.title);
-          return (
-            <div key={key} className="service-item">
-              <img src={service.steps[0].image} alt={service.title} />
-              <div className="service-content">
-                <h3>{service.title}</h3>
-                <p>{service.description}</p>
-                <p className="price">{service.price || 'Giá liên hệ'}</p>
-                <button
-                  className={`add-service ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleAddService(service)}
-                >
-                  {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
-                </button>
-              </div>
-            </div>
-          );
+        {filteredServices.map((item) => {
+          const itemId = item.serviceId || item.id;
+          const isSelected = selectedServices.some(s => (s.serviceId || s.id) === itemId);
+          if (item.services) {
+            // This is a combo
+            return (
+              <ComboCard
+                key={itemId}
+                combo={item}
+                isSelected={selectedCombos.some(c => (c.id || c.serviceId) === (item.id || item.serviceId))}
+                onSelect={handleAddCombo}
+                getImgurDirectUrl={getImgurDirectUrl}
+              />
+            );
+          } else {
+            // This is a single service
+            return (
+              <ServiceCard
+                key={itemId}
+                service={item}
+                isSelected={isSelected}
+                onSelect={handleAddService}
+                getImgurDirectUrl={getImgurDirectUrl}
+              />
+            );
+          }
         })}
       </div>
       {filteredServices.length === 0 && (
@@ -350,9 +511,8 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           <span
             className="selected-services"
             onClick={showModal}
-            style={{ cursor: 'pointer' }}
           >
-           {`Đã chọn ${selectedServices.length} dịch vụ`}
+           {`Đã chọn ${selectedServices.length + selectedCombos.length} dịch vụ`}
           </span>
           <span className="total-amount">
             Tổng thanh toán: {formatPrice(totalPrice)}
@@ -368,12 +528,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
       </div>
 
       <SelectedServicesModal
-        visible={isModalVisible}
-        onClose={hideModal}
-        selectedServices={selectedServices}
-        onRemoveService={handleRemoveService}
-        totalPrice={totalPrice}
-      />
+  visible={isModalVisible}
+  onClose={hideModal}
+  selectedServices={selectedServices}
+  selectedCombos={selectedCombos}
+  onRemoveService={handleRemoveService}
+  onRemoveCombo={handleRemoveCombo}
+  totalPrice={totalPrice}
+/>
     </div>
   );
 };

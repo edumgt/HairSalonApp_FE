@@ -1,8 +1,8 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import Layout from './layouts/Component/layout';
 import AdminLayout from './layouts/admin/layout';
-import ScrollToTopButton from './layouts/Component/scrollButton';
+import { useScrollRestoration } from './layouts/Component/CustomHook/useScrollRestoration';
 
 // User pages
 import Home from "./pages/Home";
@@ -11,10 +11,6 @@ import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
 import About from './pages/About';
-import HairCutServices from "./layouts/Component/haircombo";
-import ServiceDetail from "./layouts/Component/services/servicedetail";
-import CurlyHairServices from "./layouts/Component/curlyhairservice";
-import HairStylingDetail from "./layouts/Component/hairstylingdetail";
 import SpaCombo from "./layouts/Component/spacombo";
 import SpaComboDetail from './layouts/Component/spaComboDetail';
 import BookingComponent from './layouts/Component/Booking/bookingcomponent';
@@ -23,7 +19,8 @@ import UserProfile from './pages/UserProfile';
 import ShineHistory from './pages/ShineHistory';
 import ChangePassword from './pages/ChangePassword';
 import AllServices from './layouts/Component/services/allservices';
-import ComboServices from './layouts/Component/Combo/ComboService';
+import ServiceDetail from './layouts/Component/services/ServiceDetails';
+
 
 // Admin pages
 import AdminProfile from './pages/admin/profile/profile';
@@ -43,9 +40,20 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+<<<<<<< HEAD
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
+=======
+import ComboDetail from './layouts/Component/Combo/ComboDetail';
+
+
+
+const ScrollRestorationProvider = ({ children }) => {
+  useScrollRestoration();
+  return children;
+};
+>>>>>>> 103884124ebe6a7770332e137b7176512de95107
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -57,16 +65,76 @@ function ScrollToTop() {
   return null;
 }
 
-// Wrapper component to include ScrollToTop
-function LayoutWithScrollToTop() {
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <ScrollRestorationProvider>
+        <Layout>
+          <Outlet />
+        </Layout>
+      </ScrollRestorationProvider>
+    ),
+    children: [
+      { index: true, element: <Home /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <SignUp /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password", element: <ResetPassword /> },
+      // Thêm route mới để xử lý token từ email
+      { path: "reset-password/:token", element: <ResetPassword /> },
+      { path: "about", element: <About /> },
+      { path: "dich-vu-goi-massage-spa-relax", element: <SpaCombo /> },
+      { path: "dich-vu/spa/:comboId", element: <SpaComboDetail /> },
+      { path: "booking", element: <BookingComponent /> },
+      { path: "booking/success", element: <BookingSuccess /> },
+      { path: "userprofile", element: <UserProfile /> },
+      { path: "shine-history", element: <ShineHistory /> },
+      { path: "change-password", element: <ChangePassword /> },
+      { path: "tat-ca-dich-vu", element: <AllServices /> },
+      { path: "tat-ca-combo", element: <AllCombos /> },
+      { path: "dich-vu/:serviceId", element: <ServiceDetail /> },
+      { path: "combo/:comboId", element: <ComboDetail /> }
+
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "adminprofile", element: <AdminProfile /> },
+      { path: "staff", element: <Staff /> },
+      { path: "staff/addStaff", element: <AddStaff /> },
+      { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
+      { path: "historybooking", element: <HistoryBooking /> },
+      { path: "changePassword", element: <AdminChangePassword /> },
+      { path: "adminprofile/editProfile", element: <EditProfile /> },
+      { path: "service", element: <Service /> },
+      { path: "service/addService", element: <AddService /> },
+      { path: "service/updateService/:id", element: <UpdateService /> },
+      { path: "category", element: <Category /> },
+      { path: "category/addCategory/createCategory", element: <CreateCategory /> },
+      { path: "category/updateCategory/:categoryId", element: <UpdateCategory /> },
+      { path: "combo", element: <Combo /> },
+      { path: "combo/addCombo", element: <AddCombo /> },
+      { path: "combo/updateCombo", element: <UpdateCombo /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  },
+]);
+
+function App() {
   return (
-    <>
-      <ScrollToTop />
-      <Layout />
-      <ScrollToTopButton />
-    </>
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
   );
 }
+<<<<<<< HEAD
 ///////////////////////////////////////////////////
 
   const router = createBrowserRouter([
@@ -141,4 +209,7 @@ function LayoutWithScrollToTop() {
   export default App;
 
 
+=======
+>>>>>>> 103884124ebe6a7770332e137b7176512de95107
 
+export default App;

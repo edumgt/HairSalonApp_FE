@@ -1,29 +1,58 @@
 .selected-services-list {
-    .selected-service-item {
+  .selected-service-item,
+  .selected-combo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .selected-combo-item {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .combo-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #e8e8e8;
+      width: 100%;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
 
-      &:last-child {
-        border-bottom: none;
-      }
+    .combo-services {
+      list-style-type: none;
+      padding-left: 20px;
+      width: 100%;
+      margin: 0;
 
-      .anticon-close {
-        cursor: pointer;
-        color: #ff4d4f;
-        background-color: #f0f8ff;
-        font-size: 16px;
+      .combo-service-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        font-size: 0.9em;
+        color: #666;
       }
     }
   }
 
   .total-price {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
     margin-top: 20px;
-    padding-top: 10px;
-    border-top: 1px solid #e8e8e8;
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
   }
+
+  h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+}

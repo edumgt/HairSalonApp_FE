@@ -2,10 +2,10 @@ import React from 'react';
 import Header from "../header";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer";
-import ScrollToTop from '../scrollButton';
-import './index.scss'; // Tạo file CSS mới cho layout
-
+import './index.scss'; 
+import { useScrollRestoration } from '../CustomHook/useScrollRestoration';
 function Layout() {
+  useScrollRestoration();
   return (
     <div className="layout-container">
       <Header />
@@ -13,7 +13,6 @@ function Layout() {
         <Outlet />
       </main>
       <Footer />
-      <ScrollToTop />
     </div>
   );
 }
