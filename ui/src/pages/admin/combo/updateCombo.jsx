@@ -21,7 +21,6 @@ function UpdateCombo() {
             console.error("Error loading services:", error);
           }
         };
-        
         loadServices();
       }, []); 
     const location = useLocation();

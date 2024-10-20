@@ -1,7 +1,7 @@
 import Form from "antd/es/form/Form"
 import Input from "antd/es/input/Input"
 import { Content } from "antd/es/layout/layout"
-import { Button, DatePicker, Select } from 'antd';
+import { Button, DatePicker, Select, Space, TimePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Upload from "antd/es/upload/Upload";
 import './form.css'
@@ -14,6 +14,7 @@ const normFile = (e) => {
     return e?.fileList;
   };
 const monthFormat = 'YYYY/MM'
+const timeFormat = 'HH:mm';
 function CUForm({inputs, handleSave, initialValues}) {
   return (
     <div className="content">
@@ -37,6 +38,7 @@ function CUForm({inputs, handleSave, initialValues}) {
                                 ))}
                             </Select>
                         }
+                        {input.isTime && <TimePicker minuteStep={10} hourStep={1} format={timeFormat} onChange={input.onChange}/>}
                         {input.isDate && <DatePicker/>}
                         {input.isMonth && <DatePicker format={monthFormat} picker="month"/>}
                         {input.isImg && 
@@ -60,7 +62,6 @@ function CUForm({inputs, handleSave, initialValues}) {
                             </Upload>
                         }
                     </Form.Item>
-                    
                 ))}
                 <Form.Item>
                   <Button type="primary" htmlType="submit" className="btn">Lưu</Button>
