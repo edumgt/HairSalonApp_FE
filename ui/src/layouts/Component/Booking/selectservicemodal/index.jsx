@@ -13,9 +13,9 @@ const formatPrice = (price) => {
 const SelectedServicesModal = ({ 
   visible, 
   onClose, 
-  selectedServices, 
+  selectedServices = [],
   selectedCombos = [], 
-  onRemoveService, 
+  onRemoveService,
   onRemoveCombo, 
   totalPrice 
 }) => {
@@ -28,8 +28,8 @@ const SelectedServicesModal = ({
     >
       <div className="selected-services-list">
         <h3>Dịch vụ đơn lẻ:</h3>
-        {selectedServices && selectedServices.map((service) => (
-          <div key={service.id} className="selected-service-item">
+        {selectedServices.map((service) => (
+          <div key={service.id || service.serviceId} className="selected-service-item">
             <span>{service.name || service.serviceName}</span>
             <span>{formatPrice(service.price)}</span>
             <Button onClick={() => onRemoveService(service)} type="link" danger>
@@ -40,9 +40,19 @@ const SelectedServicesModal = ({
 
         <h3>Combo đã chọn:</h3>
         {selectedCombos.map((combo) => (
-          <div key={combo.id} className="selected-combo-item">
-            <span>{combo.name}</span>
-            <span>{formatPrice(combo.price)}</span>
+          <div key={combo.id || combo.serviceId} className="selected-combo-item">
+            <div className="combo-header">
+              <span>{combo.name || combo.serviceName}</span>
+              <span>{formatPrice(combo.price)}</span>
+            </div>
+            <ul className="combo-services">
+              {combo.services && combo.services.map((service, index) => (
+                <li key={index} className="combo-service-item">
+                  <span>{service.name || service.serviceName}</span>
+                  <span>{formatPrice(service.price)}</span>
+                </li>
+              ))}
+            </ul>
             <Button onClick={() => onRemoveCombo(combo)} type="link" danger>
               Xóa
             </Button>

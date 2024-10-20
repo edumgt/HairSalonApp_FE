@@ -16,7 +16,6 @@ import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
 import { DownOutlined } from '@ant-design/icons';
 import { fetchServices } from '../../../../data/hairservice';
 import { fetchCombos } from '../../../../data/comboservice';
-;
 
 
 const { Title, Paragraph } = Typography;
@@ -35,6 +34,7 @@ const BookingComponent = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [recurringBooking, setRecurringBooking] = useState(null);
+
   const [selectedCombos, setSelectedCombos] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => setIsModalVisible(true);
@@ -108,6 +108,7 @@ const BookingComponent = () => {
     const bookingInfo = {
       salon: selectedSalon,
       services: selectedServices,
+      combos: selectedCombos,
       stylist: selectedStylist,
       date: selectedDate,
       time: selectedTime,
@@ -339,23 +340,35 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     const serviceId = service.serviceId || service.id;
     const isServiceSelected = selectedServices.some(s => (s.serviceId || s.id) === serviceId);
     if (!isServiceSelected) {
-      setSelectedServices(prevServices => [...prevServices, service]);
-      setTotalPrice(prevTotal => prevTotal + (service.price || 0));
+      setSelectedServices(prevServices => [...prevServices, {...service, isCombo: false}]);
     } else {
       setSelectedServices(prevServices => prevServices.filter(s => (s.serviceId || s.id) !== serviceId));
-      setTotalPrice(prevTotal => prevTotal - (service.price || 0));
     }
+    updateTotalPrice();
   };
-
+  
   const handleAddCombo = (combo) => {
-    setSelectedCombos(prevCombos => [...prevCombos, combo]);
-    setTotalPrice(prevTotal => prevTotal + (combo.price || 0));
+    const comboId = combo.id || combo.serviceId;
+    const isComboSelected = selectedCombos.some(c => (c.id || c.serviceId) === comboId);
+    if (!isComboSelected) {
+      setSelectedCombos(prevCombos => [...prevCombos, {...combo, isCombo: true}]);
+    } else {
+      setSelectedCombos(prevCombos => prevCombos.filter(c => (c.id || c.serviceId) !== comboId));
+    }
+    updateTotalPrice();
   };
 
-  const handleRemoveCombo = (combo) => {
-    setSelectedCombos(prevCombos => prevCombos.filter(c => c.id !== combo.id));
-    setTotalPrice(prevTotal => prevTotal - (combo.price || 0));
+  const updateTotalPrice = () => {
+    const servicesTotal = selectedServices.reduce((total, service) => total + (Number(service.price) || 0), 0);
+    const combosTotal = selectedCombos.reduce((total, combo) => total + (Number(combo.price) || 0), 0);
+    setTotalPrice(servicesTotal + combosTotal);
   };
+
+  useEffect(() => {
+    updateTotalPrice();
+  }, [selectedServices, selectedCombos]);
+
+
 
   const showModal = () => setIsModalVisible(true);
   const hideModal = () => setIsModalVisible(false);
@@ -364,11 +377,18 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     setSelectedServices(prevServices => 
       prevServices.filter(service => (service.serviceId || service.id) !== (serviceToRemove.serviceId || serviceToRemove.id))
     );
-    setTotalPrice(prevTotal => prevTotal - (serviceToRemove.price || 0));
+    setTotalPrice(prevTotal => prevTotal - (Number(serviceToRemove.price) || 0));
+  };
+  
+  const handleRemoveCombo = (comboToRemove) => {
+    setSelectedCombos(prevCombos => 
+      prevCombos.filter(combo => (combo.id || combo.serviceId) !== (comboToRemove.id || comboToRemove.serviceId))
+    );
+    setTotalPrice(prevTotal => prevTotal - (Number(comboToRemove.price) || 0));
   };
 
   const handleDoneSelection = () => {
-    onServiceSelection(selectedServices, totalPrice);
+    onServiceSelection([...selectedServices, ...selectedCombos], totalPrice);
   };
 
   if (loading) return <div>Đang tải...</div>;
@@ -391,8 +411,8 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     </div>
   );
 
-  const ComboCard = ({ combo, isSelected, onSelect, getImgurDirectUrl }) => (
-    <div className="booking-combo-container">
+ const ComboCard = ({ combo, isSelected, onSelect, getImgurDirectUrl }) => (
+  <div className="booking-combo-container">
     <div className="combo-item">
       <div className="combo-services__images">
         {combo.services.slice(0, 2).map((service, index) => (
@@ -422,7 +442,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
       </div>
     </div>
   </div>
-  );
+);
 
   return (
     <div className="service-selection">
@@ -462,8 +482,8 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
               <ComboCard
                 key={itemId}
                 combo={item}
-                isSelected={isSelected}
-                onSelect={handleAddService}
+                isSelected={selectedCombos.some(c => (c.id || c.serviceId) === (item.id || item.serviceId))}
+                onSelect={handleAddCombo}
                 getImgurDirectUrl={getImgurDirectUrl}
               />
             );
@@ -491,7 +511,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
             className="selected-services"
             onClick={showModal}
           >
-           {`Đã chọn ${selectedServices.length} dịch vụ`}
+           {`Đã chọn ${selectedServices.length + selectedCombos.length} dịch vụ`}
           </span>
           <span className="total-amount">
             Tổng thanh toán: {formatPrice(totalPrice)}
@@ -507,15 +527,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
       </div>
 
       <SelectedServicesModal
-
-        visible={isModalVisible}
-        onClose={hideModal}
-        selectedServices={selectedServices}
-        selectedCombo={selectedCombos || []} 
-        onRemoveService={handleRemoveService}
-        onRemoveCombo={handleRemoveCombo}
-        totalPrice={totalPrice}
-      />
+  visible={isModalVisible}
+  onClose={hideModal}
+  selectedServices={selectedServices}
+  selectedCombos={selectedCombos}
+  onRemoveService={handleRemoveService}
+  onRemoveCombo={handleRemoveCombo}
+  totalPrice={totalPrice}
+/>
     </div>
   );
 };
