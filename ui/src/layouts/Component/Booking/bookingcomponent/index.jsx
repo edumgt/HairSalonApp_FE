@@ -392,6 +392,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   );
 
   const ComboCard = ({ combo, isSelected, onSelect, getImgurDirectUrl }) => (
+    <div className="booking-combo-container">
     <div className="combo-item">
       <div className="combo-services__images">
         {combo.services.slice(0, 2).map((service, index) => (
@@ -420,6 +421,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
         </button>
       </div>
     </div>
+  </div>
   );
 
   return (

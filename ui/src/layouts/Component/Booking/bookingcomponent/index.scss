@@ -346,7 +346,8 @@
     }
   }
 
-  .combo-item {
+  .booking-combo-container {
+    .combo-item {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -354,11 +355,14 @@
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    height: 90%;
+    
 
     .combo-services__images {
       display: flex;
       justify-content: space-between;
       margin-bottom: 15px;
+      
     }
 
     .combo-services__image-container {
@@ -366,6 +370,7 @@
       aspect-ratio: 1 / 1;
       overflow: hidden;
       border-radius: 8px;
+      height: 100%;
     }
 
     .combo-services__image {
@@ -384,21 +389,20 @@
       flex-direction: column;
       flex-grow: 1; 
       h3 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-        color: #333;
+        font-size: 18px;
+        margin: 10px;
+        color: #15397f;
       }
-
-      .price {
-        font-size: 1.1rem;
-        color: #007bff;
-        margin-bottom: 10px;
-      }
-
+  
       p {
-        font-size: 1rem;
-        color: #666;
-        margin-bottom: 15px;
+        margin: 0 10px 10px;
+        font-size: 14px;
+      }
+  
+      .price {
+        font-weight: bold;
+        color: #15397f;
+        margin-top: auto;
       }
 
       .add-service {
@@ -413,7 +417,7 @@
         width: 100%;
         border: none;
         cursor: pointer;
-        margin-top: auto;
+        margin-top: 10px;
 
         &:hover {
           background-color: #fff;
@@ -433,6 +437,7 @@
       }
     }
   }
+}
 
   .no-results {
     text-align: center;
