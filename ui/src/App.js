@@ -1,12 +1,12 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Layout from './layouts/Component/layout';
 import AdminLayout from './layouts/admin/layout';
 import { useScrollRestoration } from './layouts/Component/CustomHook/useScrollRestoration';
 
 // User pages
 import Home from "./pages/Home";
-import Login from "./pages/Login/login";
+import Login from "./pages/login/login";
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
@@ -40,9 +40,11 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
+
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
 
 
@@ -55,7 +57,7 @@ const ScrollRestorationProvider = ({ children }) => {
 function ScrollToTop() {
   const { pathname } = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -68,6 +70,7 @@ const router = createBrowserRouter([
     element: (
       <ScrollRestorationProvider>
         <Layout>
+          <ScrollToTop />
           <Outlet />
         </Layout>
       </ScrollRestorationProvider>
@@ -116,9 +119,6 @@ const router = createBrowserRouter([
       { path: "combo", element: <Combo /> },
       { path: "combo/addCombo", element: <AddCombo /> },
       { path: "combo/updateCombo", element: <UpdateCombo /> },
-      { path: "slot", element: <Slot /> },
-      { path: "slot/addSlot", element: <AddSlot /> },
-      { path: "slot/updateSlot/:slotId", element: <UpdateSlot /> },
     ],
   },
   {
@@ -135,5 +135,4 @@ function App() {
   );
 }
 
-  export default App;
-
+export default App;
