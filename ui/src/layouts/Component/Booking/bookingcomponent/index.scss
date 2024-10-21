@@ -262,10 +262,10 @@
     }
   }
 
-  .service-grid {
+  .service-grid, .combo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); // Điều chỉnh kích thước cột
+    gap: 15px; // Giảm khoảng cách giữa các item
   }
 
   .service-content {
@@ -275,7 +275,7 @@
     flex-grow: 1;
   }
 
-  .service-item {
+  .service-item, .combo-item {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
@@ -286,20 +286,19 @@
     
     img {
       width: 100%;
-      height: 200px;
+      height: 150px; // Giảm chiều cao của hình ảnh
       object-fit: cover;
     }
 
     h3 {
-      font-size: 18px;
+      font-size: 16px; // Giảm kích thước font chữ
       margin: 10px;
       color: #15397f;
     }
 
     p {
       margin: 0 10px 10px;
-      font-size: 14px;
-      
+      font-size: 12px; // Giảm kích thước font chữ
     }
 
     .price {
@@ -309,38 +308,49 @@
     }
 
     .add-service {
-      margin: 10px;
-      padding: 10px 16px;
+      display: inline-block;
       background-color: #15397f;
-      color: white;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 12px; // Giảm padding của nút
+      border-radius: 5px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s, border 0.3s;
+      width: 100%;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-top: 10px;
+      font-size: 12px; // Giảm kích thước font chữ
+      font-weight: bold;
+      height: 40px; // Đảm bảo chiều cao giống nhau
 
       &:hover {
+        background-color: #fff;
         color: #15397f;
-      background-color: #f0f8ff;
+        border: 1px solid #15397f;
       }
-      &:not(.selected) {
-        background-color: #15397f;
-        color: white;
-  
-        &:hover {
-          background-color: #fff;
-          color: #15397f;
-          border: 1px solid #15397f;
-        }
-      }
-  
+
       &.selected {
         background-color: #fff;
         color: #15397f;
         border: 1px solid #15397f;
-  
+
         &:hover {
-          background-color: #bcd9f2;
-          border: 1px solid #15397f;
+          background-color: #f0f8ff;
+        }
+      }
+
+      &.disabled {
+        background-color: #cccccc;
+        color: #666666;
+        cursor: not-allowed;
+        opacity: 0.7;
+        border: none;
+
+        &:hover {
+          background-color: #cccccc;
+          color: #666666;
+          border: none;
         }
       }
     }
@@ -413,11 +423,14 @@
         padding: 10px 15px;
         border-radius: 5px;
         text-align: center;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s, color 0.3s, border 0.3s;
         width: 100%;
         border: none;
         cursor: pointer;
         margin-top: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        height: 40px; // Tăng chiều cao của nút
 
         &:hover {
           background-color: #fff;
@@ -878,7 +891,7 @@
   
   .time-button {
     padding: 10px 15px;
-    border: 1px solid #ccc;
+    border: 1px solid black;
     background-color: #f0f0f0;
     border-radius: 5px;
     cursor: pointer;
@@ -891,10 +904,15 @@
   }
   
   .time-button.selected {
+    border: 1px solid black;
     background-color: #007bff;
     color: white;
   }
-  
+  .time-button:disabled {
+    border: 1px solid black;
+    background-color: #dbdbdb;
+    color: black;
+  }
   .nav-button {
     background: none;
     border: none;
@@ -1026,3 +1044,43 @@
     padding-right: 8px;
   }
 }
+
+.ant-modal {
+  width: 90% !important;
+  max-width: 1000px !important; // Giới hạn chiều rộng tối đa
+
+  .ant-modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+    max-height: 80vh; // Giới hạn chiều cao tối đa
+    overflow-y: auto; // Cho phép cuộn nếu nội dung quá dài
+  }
+}
+
+.service-selection {
+  // ... (styles hiện có giữ nguyên)
+
+  .done-button {
+    background-color: #15397f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #0e2b5c;
+    }
+
+    &:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
