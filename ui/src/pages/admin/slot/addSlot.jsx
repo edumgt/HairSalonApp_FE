@@ -4,100 +4,99 @@ import { useNavigate } from 'react-router-dom'
 import { Modal, notification } from 'antd'
 import CUForm from '../../../layouts/admin/components/formv2/form'
 import { create, getAll } from '../services/slotService'
-import moment from 'moment' // Thêm moment để định dạng thời gian
+import moment from 'moment'
 
 function AddSlot() {
-    const [availableSlot, setAvailableSlot] = useState([])
+    const [availableSlots, setAvailableSlots] = useState([])
     const [selectedSlot, setSelectedSlot] = useState(null)
+    const navigate = useNavigate()
+
     useEffect(() => {
         const loadSlots = async () => {
-          try {
-            const response = await getAll();
-            const slots = response.data.result.map(slot => ({
-                value: moment(slot.timeStart, 'HH:mm').format('HH:mm')   
-            }));
-            setAvailableSlot(slots)
-          } catch (error) {
-            console.error("Error loading slots:", error);
-          }
+            try {
+                const response = await getAll();
+                const slots = response.data.result.map(slot => ({
+                    value: moment(slot.timeStart, 'HH:mm:ss').format('HH:mm')
+                }));
+                setAvailableSlots(slots)
+            } catch (error) {
+                console.error("Error loading slots:", error);
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Không thể tải danh sách khung giờ. Vui lòng thử lại sau.',
+                    duration: 3
+                });
+            }
         };
         loadSlots();
-      }, []); 
-      const onSelect = (time) => {
+    }, []);
+
+    const onSelect = (time) => {
         if (time) {
-            setSelectedSlot(moment(time, 'HH:mm').format('HH:mm'));
+            setSelectedSlot(time);
         } else {
             setSelectedSlot(null);
         }
     }
-      const inputs = [
+
+    const inputs = [
         {
             label: 'Thời gian',
-            name:'timeStart',
+            name: 'timeStart',
             isTime: true,
-            rules: [{required: true, message: 'Vui lòng chọn thời gian!',
+            rules: [{
                 validator: (_, selectedSlot) => {
-                    if (availableSlot.some(slot => slot.value === selectedSlot)) {
-                        notification.error({
-                            message: 'Thời gian trùng lặp',
-                            description: 'Thời gian bạn chọn đã tồn tại, vui lòng chọn thời gian khác!',
-                            duration: 2 
-                        });
-                        return Promise.reject('Thời gian này đã tồn tại');
-                    }else if(!selectedSlot){
-                        notification.error({
-                            message: 'Thời gian bị trống',
-                            description: 'Thời gian đang bị bỏ trống!',
-                            duration: 2 
-                        });
+                    if (!selectedSlot) {
                         return Promise.reject('Thời gian không được bỏ trống');
+                    }
+                    if (availableSlots.some(slot => slot.value === selectedSlot.format('HH:mm'))) {
+                        return Promise.reject('Thời gian này đã tồn tại');
                     }
                     return Promise.resolve();
                 }
             }],
             onChange: onSelect
         }
-      ]
-    const back = useNavigate()
+    ]
+
     const handleCreate = async (value) => {
         Modal.confirm({
             title: 'Xác nhận',
             content: 'Bạn có muốn thêm mới khung giờ này ?',
             onOk: async () => {
                 try {
-                    const response = await create(value)
+                    const formattedValue = {
+                        timeStart: value.timeStart
+                    };
+                    
+                    const response = await create(formattedValue);
                     notification.success({
-                      message: 'Thành công',
-                      description: 'Khung giờ đã được thêm mới!',
-                      duration: 2
+                        message: 'Thành công',
+                        description: 'Khung giờ đã được thêm mới!',
+                        duration: 2
                     });
-                  setTimeout(() => {
-                    back('/admin/slot', { state: { shouldReload: true } })
-                  }, 1000)
-                    return response
+                    setTimeout(() => {
+                        navigate('/admin/slot', { state: { shouldReload: true } });
+                    }, 1000);
+                    return response;
                 } catch (error) {
                     console.error(error);
                     notification.error({
                         message: 'Thất bại',
                         description: 'Thêm mới khung giờ thất bại!',
                         duration: 2
-                      });
+                    });
                 }
             },
-            footer: (_, { OkBtn, CancelBtn }) => (
-              <>
-                <CancelBtn />
-                <OkBtn />
-              </>
-            ),
-          });
-        
+        });
     }
-  return (
-    <><NavLink currentPage='Thêm khung giờ'/>
-    <CUForm inputs={inputs} handleSave={handleCreate} />
-    </>
-  )
+
+    return (
+        <>
+            <NavLink currentPage='Thêm khung giờ'/>
+            <CUForm inputs={inputs} handleSave={handleCreate} />
+        </>
+    )
 }
 
 export default AddSlot

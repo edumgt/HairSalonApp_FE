@@ -108,6 +108,8 @@ const router = createBrowserRouter([
       { path: "staff/addStaff", element: <AddStaff /> },
       { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
       { path: "historybooking", element: <HistoryBooking /> },
+      { path: "slot", element: <Slot /> },
+      { path: "slot/addSlot", element: <AddSlot /> },
       { path: "changePassword", element: <AdminChangePassword /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },
       { path: "service", element: <Service /> },
@@ -119,6 +121,9 @@ const router = createBrowserRouter([
       { path: "combo", element: <Combo /> },
       { path: "combo/addCombo", element: <AddCombo /> },
       { path: "combo/updateCombo", element: <UpdateCombo /> },
+      { path: "slot", element: <Slot /> },
+      { path: "slot/addSlot", element: <AddSlot /> },
+      { path: "slot/updateSlot/", element: <UpdateSlot /> },
     ],
   },
   {
