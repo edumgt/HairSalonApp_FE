@@ -40,11 +40,9 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
-<<<<<<< HEAD
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
-=======
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
 
 
@@ -53,7 +51,6 @@ const ScrollRestorationProvider = ({ children }) => {
   useScrollRestoration();
   return children;
 };
->>>>>>> 103884124ebe6a7770332e137b7176512de95107
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -108,6 +105,8 @@ const router = createBrowserRouter([
       { path: "staff/addStaff", element: <AddStaff /> },
       { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
       { path: "historybooking", element: <HistoryBooking /> },
+      { path: "slot", element: <Slot /> },
+      { path: "slot/addSlot", element: <AddSlot /> },
       { path: "changePassword", element: <AdminChangePassword /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },
       { path: "service", element: <Service /> },
@@ -134,82 +133,5 @@ function App() {
     </React.StrictMode>
   );
 }
-<<<<<<< HEAD
-///////////////////////////////////////////////////
-
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout><ScrollToTopButton /></Layout>,
-      children: [
-        { index: true, element: <Home /> },
-        { path: "login", element: <Login /> },
-        { path: "register", element: <SignUp /> },
-        { path: "forgot-password", element: <ForgotPassword /> },
-        { path: "reset-password", element: <ResetPassword /> },
-        // Thêm route mới để xử lý token từ email
-        { path: "reset-password/:token", element: <ResetPassword /> },
-        { path: "about", element: <About /> },
-        { path: "dich-vu-cat-toc", element: <HairCutServices /> },
-        { path: "dich-vu-uon-nhuom-toc", element: <CurlyHairServices /> },
-        { path: "dich-vu/cat-goi/:serviceId", element: <ServiceDetail /> },
-        { path: "dich-vu/uon/:serviceId", element: <HairStylingDetail /> },
-        { path: "dich-vu/nhuom/:serviceId", element: <HairStylingDetail /> },
-        { path: "dich-vu-goi-massage-spa-relax", element: <SpaCombo /> },
-        { path: "dich-vu/spa/:comboId", element: <SpaComboDetail /> },
-        { path: "booking", element: <BookingComponent /> },
-        { path: "booking/success", element: <BookingSuccess /> },
-        { path: "userprofile", element: <UserProfile /> },
-        { path: "shine-history", element: <ShineHistory /> },
-        { path: "change-password", element: <ChangePassword /> },
-        { path: "tat-ca-dich-vu", element: <AllServices /> },
-        { path: "tat-ca-combo", element: <AllCombos /> },
-      ],
-    },
-    {
-      path: "/admin",
-      element: <AdminLayout />,
-      children: [
-        { index: true, element: <Navigate to="dashboard" replace /> },
-        { path: "adminprofile", element: <AdminProfile /> },
-        { path: "staff", element: <Staff /> },
-        { path: "staff/addStaff", element: <AddStaff /> },
-        { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
-        { path: "historybooking", element: <HistoryBooking /> },
-        { path: "slot", element: <Slot /> },
-        { path: "slot/addSlot", element: <AddSlot /> },
-        { path: "slot/updateSlot", element: <UpdateSlot /> },
-        { path: "changePassword", element: <AdminChangePassword /> },
-        { path: "adminprofile/editProfile", element: <EditProfile /> },
-        { path: "service", element: <Service /> },
-        { path: "service/addService", element: <AddService /> },
-        { path: "service/updateService/:id", element: <UpdateService /> },
-        { path: "category", element: <Category /> },
-        { path: "category/addCategory/createCategory", element: <CreateCategory /> },
-        { path: "category/updateCategory/:categoryId", element: <UpdateCategory /> },
-        { path: "combo", element: <Combo /> },
-        { path: "combo/addCombo", element: <AddCombo /> },
-        { path: "combo/updateCombo", element: <UpdateCombo /> },
-      ],
-    },
-    {
-      path: "*",
-      element: <Navigate to="/" replace />,
-    },
-  ]);
-
-  function App() {
-    return (
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    );
-  }
-  
-  export default App;
-
-
-=======
->>>>>>> 103884124ebe6a7770332e137b7176512de95107
 
 export default App;
