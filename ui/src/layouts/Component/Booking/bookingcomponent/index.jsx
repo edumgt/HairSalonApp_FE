@@ -220,6 +220,7 @@ const BookingComponent = () => {
     }
   };
 
+
   return (
     <div className="booking-wrapper">
       {step > 0 && (
@@ -246,6 +247,9 @@ const BookingComponent = () => {
     </div>
   );
 };
+
+
+
 
 
 const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
@@ -387,6 +391,77 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     setTotalPrice(prevTotal => prevTotal - (Number(comboToRemove.price) || 0));
   };
 
+
+
+  const handleBreakCombo = (comboId, serviceToRemove) => {
+    setSelectedCombos(prevCombos => {
+      const comboIndex = prevCombos.findIndex(combo => combo.id === comboId);
+      if (comboIndex === -1) return prevCombos; // Không tìm thấy combo, giữ nguyên state
+  
+      const combo = prevCombos[comboIndex];
+      const updatedComboServices = combo.services.filter(service => service.serviceId !== serviceToRemove.serviceId);
+      
+      // Remove the combo
+      const newSelectedCombos = prevCombos.filter(c => c.id !== comboId);
+  
+      // Add remaining services as individual services, avoiding duplicates
+      setSelectedServices(prevServices => {
+        const newServices = updatedComboServices.filter(comboService => 
+          !prevServices.some(existingService => 
+            existingService.serviceId === comboService.serviceId
+          )
+        );
+        return [...prevServices, ...newServices];
+      });
+  
+      return newSelectedCombos;
+    });
+  
+    // Update total price
+    updateTotalPrice();
+  };
+  
+  
+  
+  const handleRemoveServiceFromCombo = (comboId, serviceToRemove) => {
+    setSelectedCombos(prevCombos => {
+      const updatedCombos = prevCombos.map(combo => {
+        if (combo.id === comboId) {
+          const remainingServices = combo.services.filter(
+            service => service.id !== serviceToRemove.id
+          );
+          
+          if (remainingServices.length === 0) {
+            return null; // Remove the combo if no services left
+          }
+          
+          return {
+            ...combo,
+            services: remainingServices,
+            price: remainingServices.reduce((total, service) => total + service.price, 0)
+          };
+        }
+        return combo;
+      }).filter(Boolean); // Remove null combos
+  
+      // If the combo was removed or modified, add remaining services to selectedServices
+      const removedCombo = prevCombos.find(combo => combo.id === comboId);
+      if (!updatedCombos.find(combo => combo.id === comboId)) {
+        const servicesToAdd = removedCombo.services.filter(
+          service => service.id !== serviceToRemove.id
+        );
+        setSelectedServices(prev => [...prev, ...servicesToAdd]);
+      }
+  
+      return updatedCombos;
+    });
+  
+    // Update total price
+    updateTotalPrice();
+  };
+  
+
+
   const handleDoneSelection = () => {
     onServiceSelection([...selectedServices, ...selectedCombos], totalPrice);
   };
@@ -525,7 +600,6 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           Xong
         </button>
       </div>
-
       <SelectedServicesModal
   visible={isModalVisible}
   onClose={hideModal}
@@ -533,6 +607,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   selectedCombos={selectedCombos}
   onRemoveService={handleRemoveService}
   onRemoveCombo={handleRemoveCombo}
+  onRemoveServiceFromCombo={handleBreakCombo}
   totalPrice={totalPrice}
 />
     </div>

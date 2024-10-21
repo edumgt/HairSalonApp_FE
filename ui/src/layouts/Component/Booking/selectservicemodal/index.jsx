@@ -16,7 +16,8 @@ const SelectedServicesModal = ({
   selectedServices = [],
   selectedCombos = [], 
   onRemoveService,
-  onRemoveCombo, 
+  onRemoveCombo,
+  onRemoveServiceFromCombo,
   totalPrice 
 }) => {
   return (
@@ -44,18 +45,25 @@ const SelectedServicesModal = ({
             <div className="combo-header">
               <span>{combo.name || combo.serviceName}</span>
               <span>{formatPrice(combo.price)}</span>
+              <Button onClick={() => onRemoveCombo(combo)} type="link" danger>
+                Xóa Combo
+              </Button>
             </div>
             <ul className="combo-services">
-              {combo.services && combo.services.map((service, index) => (
-                <li key={index} className="combo-service-item">
+              {combo.services && combo.services.map((service) => (
+                <li key={service.id || service.serviceId} className="combo-service-item">
                   <span>{service.name || service.serviceName}</span>
                   <span>{formatPrice(service.price)}</span>
+                  <Button 
+                    onClick={() => onRemoveServiceFromCombo(combo.id || combo.serviceId, service)} 
+                    type="link" 
+                    danger
+                  >
+                    Xóa
+                  </Button>
                 </li>
               ))}
             </ul>
-            <Button onClick={() => onRemoveCombo(combo)} type="link" danger>
-              Xóa
-            </Button>
           </div>
         ))}
 
