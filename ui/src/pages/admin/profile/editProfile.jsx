@@ -1,175 +1,141 @@
-import { Button,Form,Input,Layout,Select,Modal, Space } from 'antd';
+import React from 'react';
+import { Button, Form, Input, Layout, Modal, Space, message } from 'antd';
 import { Content } from 'antd/es/layout/layout';
-import styles from './editProfile.module.css'
-import { useContext, useState } from 'react';
-import { UserContext } from './userContext';
-import { useNavigate } from 'react-router-dom';
+import styles from './editProfile.module.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { update } from '../services/profileService';
+import NavLink from '../../../layouts/admin/components/link/navLink';
+
 const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 6,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 14,
-    },
-  },
+  labelCol: { span: 24 },
+  wrapperCol: { span: 24 },
 };
+
 const EditProfile = () => {
-    const user = useContext(UserContext)
-    const navigate = useNavigate()
-    const [info, setInfo] = useState(user)
-    const handleChange = (event) =>{
-        const name = event.target.name
-        const value = event.target.defaultValue
-        setInfo(user => ({...user, [name]: value}))
-    }
-    const editProfile = async () => {
-        Modal.confirm({
-          title: 'Xác nhận',
-          content: 'Bạn có muốn thay đổi thông tin của bạn ?',
-          onOk: async () => {
-            try {
-              // Update user data on server using API call
-              const response = await fetch('/api/update-profile', {
-                method: 'POST',
-                body: JSON.stringify(info), // Send updated info in the request body
-              });
-      
-              if (response.ok) {
-                const updatedUser = await response.json(); // Parse updated user data
-                setInfo(updatedUser); // Update local state with updated information
-                navigate('/admin/adminprofile'); // Navigate back to profile page with updated data
-              } else {
-                // Handle API call errors (e.g., display error message)
-                console.log("Error")
-              }
-            } catch (error) {
-              console.error('Error updating profile:', error);
-              // Handle errors during API call
-            }
-          },
-          footer: (_, { OkBtn, CancelBtn }) => (
-            <>
-              <CancelBtn />
-              <OkBtn />
-            </>
-          ),
-        });
-      };
+  const location = useLocation();
+  const navigate = useNavigate();
+  const profile = location.state?.profile;
+  const [form] = Form.useForm();
+
+  const initialValues = {
+    id: profile?.id,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+    role: profile?.role,
+    email: profile?.email,
+    phone: profile?.phone,
+  };
+
+  const editProfile = async (values) => {
+    Modal.confirm({
+      title: 'Xác nhận cập nhật thông tin',
+      content: 'Bạn có chắc chắn muốn cập nhật thông tin cá nhân?',
+      onOk: async () => {
+        try {
+          const response = await update(values);
+          if (response.data && response.data.code === 200) {
+            message.success('Cập nhật thông tin thành công');
+            navigate('/admin/adminprofile', { state: { shouldReload: true } });
+          } else {
+            throw new Error(response.data?.message || 'Cập nhật thất bại');
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          message.error(error.message || 'Đã xảy ra lỗi khi cập nhật thông tin');
+        }
+      },
+    });
+  };
+
+  const handleCancel = () => {
+    navigate('/admin/adminprofile');
+  };
+
   return (
-    <Layout style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className={styles.bg}>
-        <div className={styles.header}>Chỉnh sửa thông tin</div>
-      <Content style={{ width: 800, maxHeight: 'fit-content'}}>
-    <Form
-        {...formItemLayout} 
-        style={{maxWidth: 800, padding: '10px'}}
-    >
-      <Space direction="vertical" style={{ width: '100%' }}>
-      <Form.Item
-        label="ID"
-        name="ID"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.id} onChange={handleChange} disabled/>
-      </Form.Item>
+    <>
+    <NavLink currentPage="Chỉnh sửa thông tin cá nhân" />
+    <Layout className={styles.layout}>
+      <div className={styles.bg}>
+        <div className={styles.header}>Chỉnh sửa thông tin cá nhân</div>
+        <Content className={styles.content}>
+          <Form
+            {...formItemLayout}
+            form={form}
+            initialValues={initialValues}
+            onFinish={editProfile}
+            className={styles.form}
+          >
+            <Form.Item
+              label="ID"
+              name="id"
+              rules={[{ required: true, message: 'Vui lòng nhập ID!' }]}
+            >
+              <Input disabled />
+            </Form.Item>
 
-      <Form.Item
-        label="Họ"
-        name="First Name"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.fullName} onChange={handleChange}/>
-      </Form.Item>
-      <Form.Item
-        label="Tên"
-        name="Last Name"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.userName}  onChange={handleChange}/>
-      </Form.Item>
-      <Form.Item
-        label="Vai trò"
-        name="Role"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Select defaultValue={info.role} onChange={handleChange}>
-          <Select.Option value="Admin"/>
-          <Select.Option value="Staff"/>
-        </Select>
-        
-      </Form.Item>
+            <Form.Item
+              label="Họ"
+              name="firstName"
+              rules={[{ required: true, message: 'Vui lòng nhập họ!' }]}
+            >
+              <Input />
+            </Form.Item>
 
-      <Form.Item
-        label="Email"
-        name="Email"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.email}  onChange={handleChange}/>
-      </Form.Item>
+            <Form.Item
+              label="Tên"
+              name="lastName"
+              rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
+            >
+              <Input />
+            </Form.Item>
 
-      <Form.Item
-        label="Số điện thoại"
-        name="Phone number"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập!',
-          },
-        ]}
-      >
-        <Input defaultValue={info.phone}  onChange={handleChange}/>
-      </Form.Item>
-      
+            <Form.Item
+              label="Vai trò"
+              name="role"
+              rules={[{ required: true, message: 'Vui lòng nhập vai trò!' }]}
+            >
+              <Input disabled />
+            </Form.Item>
 
-      <Form.Item
-        wrapperCol={{
-          offset: 6,
-          span: 16,
-        }}
-      >
-        <Button type="primary" htmlType="submit" onClick={editProfile}>
-          Lưu
-        </Button>
-      </Form.Item>
-      </Space>
-    </Form>
-    </Content>
-    </div>
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'Vui lòng nhập email!' },
+                { type: 'email', message: 'Email không hợp lệ!' }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Số điện thoại"
+              name="phone"
+              rules={[
+                { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                { min: 10, message: 'Số điện thoại phải có ít nhất 10 chữ số!' },
+                { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa số!' }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item className={styles.buttonGroup}>
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  Cập nhật thông tin
+                </Button>
+                <Button type="default" onClick={handleCancel}>
+                  Hủy
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Content>
+      </div>
     </Layout>
+    </>
   );
 };
+
 export default EditProfile;

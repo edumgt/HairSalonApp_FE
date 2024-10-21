@@ -1,53 +1,63 @@
 import styles from './profile.module.css';
 import avatar from '../../../assets/admin/profileIcon.svg'
 import NavLink from '../../../layouts/admin/components/link/navLink'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
-import { useContext } from 'react';
-import { UserContext } from './userContext'
+import { useEffect, useState } from 'react';
+import { getProfile } from '../services/profileService';
+
+
 const Profile = () => {
 	const navigate = useNavigate();
-	const user = useContext(UserContext)
+	const location = useLocation()
+	const [profile, setProfile] = useState({})
+	const loadUser = async () => {
+		try {
+			const response = await getProfile()
+			setProfile(response.data.result)
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	useEffect(() => {
+		if (location.state?.shouldReload || location.state === null) {
+			loadUser(); 
+		}
+	}, [location.state])
+
+	const Info = ({title, info}) => {
+		return (
+			<div className={styles.infoParent}>
+				<div className={styles.infoTitle}>{title}</div>
+				<div className={styles.info}>{info}</div>
+			</div>
+		)
+	}
   	return (
     		<div className={styles.main}>
-      			<NavLink currentPage="Thông tin cá nhân" />
+      			<NavLink currentPage="Profile" />
       			<div className={styles.mainContent}>
         				<img className={styles.profileAvatar} alt="" src={avatar} />
         				<div className={styles.profileParent}>
 							<div className={styles.profileHeader}>Về tôi</div>
           					<div className={styles.infoGroup}>
 								<div className={styles.infoChild}>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>ID</div>
-										<div className={styles.info}>{user.id}</div>
-									</div>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>Họ tên</div>
-										<div className={styles.info}>{user.fullName}</div>
-									</div>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>Vai trò</div>
-										<div className={styles.info}>{user.role}</div>
-									</div>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>Email</div>
-										<div className={styles.info}>{user.email}</div>
-									</div>
-									<div className={styles.infoParent}>
-										<div className={styles.infoTitle}>Số điện thoại</div>
-										<div className={styles.info}>{user.phone}</div>
-									</div>
+									<Info title='ID' info={profile.id}/>
+									<Info title='Full name' info={`${profile.firstName} ${profile.lastName}`}/>
+									<Info title='Role' info={profile.role}/>
+									<Info title='Email' info={profile.email}/>
+									<Info title='Phone number' info={profile.phone}/>
 								</div>
           					</div>
 							
 								<Button type='primary'
-									className={styles.editProfileButton} onClick={() => navigate('/admin/adminprofile/editProfile')}>
-											<div className={styles.changePassword}>Chỉnh sửa thông tin</div>
+									className={styles.editProfileButton} onClick={() => navigate('editProfile', { state: { profile } })}>
+											<div className={styles.changePassword}>Edit profile</div>
           						</Button>
-								<Button type='primary'
-									className={styles.changePasswordButton} onClick={() => navigate('/admin/changePassword')}>
-											<div className={styles.changePassword}>Đổi mật khẩu</div>
-								</Button>
+								  <Button type='primary'
+							 		className={styles.changePasswordButton} onClick={() => navigate('changePassword')}>
+            						<div className={styles.changePassword}>Change password</div>
+          					</Button>
         				</div>
       			</div>
     		</div>
