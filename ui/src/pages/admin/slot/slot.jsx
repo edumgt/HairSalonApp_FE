@@ -29,6 +29,7 @@ function Slot() {
       loadData();
     }
   }, [location.state]);
+
   const handleSearch = (e) => {
     setSearchText(e.target.value);
   };
@@ -70,9 +71,14 @@ const handleDelete = async (id) => {
     return (
       <tr className={styles.row}>
         <td className={styles.info}>{id}</td>
-        <td className={styles.info}>{timeStart}</td>
+        <td className={styles.info}>{moment(timeStart, 'HH:mm:ss').format('HH:mm')}</td>
         <td>
-          <EditButton id={id} forPage='updateSlot' handleDelete={handleDelete} item={ {id, timeStart} } />
+          <EditButton 
+            id={id} 
+            forPage='updateSlot' 
+            handleDelete={handleDelete} 
+            item={{ id, timeStart: moment(timeStart, 'HH:mm:ss').format('HH:mm') }} 
+          />
         </td>
       </tr>
     );

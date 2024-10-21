@@ -33,7 +33,7 @@ function AddSlot() {
 
     const onSelect = (time) => {
         if (time) {
-            setSelectedSlot(moment(time).format('HH:mm'));
+            setSelectedSlot(time);
         } else {
             setSelectedSlot(null);
         }
@@ -45,14 +45,11 @@ function AddSlot() {
             name: 'timeStart',
             isTime: true,
             rules: [{
-                required: true,
-                message: 'Vui lòng chọn thời gian!',
-                validator: (_, value) => {
-                    if (!value) {
+                validator: (_, selectedSlot) => {
+                    if (!selectedSlot) {
                         return Promise.reject('Thời gian không được bỏ trống');
                     }
-                    const formattedValue = moment(value).format('HH:mm');
-                    if (availableSlots.some(slot => slot.value === formattedValue)) {
+                    if (availableSlots.some(slot => slot.value === selectedSlot.format('HH:mm'))) {
                         return Promise.reject('Thời gian này đã tồn tại');
                     }
                     return Promise.resolve();
@@ -62,14 +59,14 @@ function AddSlot() {
         }
     ]
 
-    const handleCreate = async (values) => {
+    const handleCreate = async (value) => {
         Modal.confirm({
             title: 'Xác nhận',
             content: 'Bạn có muốn thêm mới khung giờ này ?',
             onOk: async () => {
                 try {
                     const formattedValue = {
-                        timeStart: moment(values.timeStart).format('HH:mm')
+                        timeStart: value.timeStart
                     };
                     
                     const response = await create(formattedValue);
