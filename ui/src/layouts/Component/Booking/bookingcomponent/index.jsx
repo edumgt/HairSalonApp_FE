@@ -98,53 +98,75 @@ const BookingComponent = () => {
     navigate('/booking?step=0');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Kiểm tra xem đã chọn đủ thông tin chưa
     if (!selectedSalon || selectedServices.length === 0 || !selectedStylist || !selectedDate || !selectedTime) {
       message.error("Vui lòng chọn đầy đủ thông tin trước khi đặt lịch.");
       return;
     }
 
-    // Lưu thông tin đã chọn vào localStorage, object chua thong tin dat lich 
-    const bookingInfo = {
-      salon: selectedSalon,
-      services: selectedServices,
-      combos: selectedCombos,
-      stylist: selectedStylist,
-      date: selectedDate,
-      time: selectedTime,
-      totalPrice: totalPrice,
-      recurringBooking: recurringBooking
+    // Chuẩn bị dữ liệu để gửi
+    const bookingData = {
+      date: selectedDate.date.toISOString().split('T')[0], // Định dạng ngày thành "YYYY-MM-DD"
+      stylistId: selectedStylist.code, // Sử dụng code của staff
+      slotId: selectedTime, // Đã là ID của slot, không cần chuyển đổi
+      price: totalPrice,
+      serviceId: [...selectedServices, ...selectedCombos].flatMap(item => 
+        item.services ? item.services.map(s => s.serviceId) : [item.serviceId]
+      ),
+      period: recurringBooking ? parseInt(recurringBooking) : null
     };
-    localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
-    console.log(bookingInfo);
 
-  //   try {
-  //     // Gửi dữ liệu đến server
-  //     const response = await axios.post('https://your-api-endpoint.com/bookings', bookingInfo);
-      
-  //     if (response.status === 200) {
-  //       // Nếu đặt lịch thành công
-  //       message.success("Đặt lịch thành công!");
+    console.log('Booking data being sent:', bookingData);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8080/api/v1/booking', bookingData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Server response:', response);  // Log toàn bộ phản hồi
+
+      // Kiểm tra cả status code và code trong data
+      if (response.status === 200 || (response.data && response.data.code === 200)) {
+        message.success("Đặt lịch thành công!");
         
-  //       // Lưu thông tin đã chọn vào localStorage (nếu cần)
-  //       localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
-
-  //       // Chuyển hướng đến trang success
-  //       navigate('/booking/success');
-  //     } else {
-  //       // Nếu có lỗi từ server
-  //       message.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting booking:", error);
-  //     message.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
-  //   }
-  // };
-
-
-    // Chuyển hướng đến trang success
-    navigate('/booking/success');
+        // Lưu thông tin đặt lịch chi tiết vào localStorage
+        const detailedBookingInfo = {
+          salon: selectedSalon,
+          services: [...selectedServices, ...selectedCombos],
+          stylist: selectedStylist,
+          date: selectedDate,
+          time: selectedTime,
+          totalPrice: totalPrice,
+          recurringBooking: recurringBooking
+        };
+        localStorage.setItem('bookingInfo', JSON.stringify(detailedBookingInfo));
+        
+        // Chuyển hướng đến trang thành công
+        navigate('/booking/success');
+      } else {
+        // Log thông tin chi tiết nếu có lỗi
+        console.error('Booking failed. Response:', response);
+        message.error(response.data.message || "Đặt lịch thất bại. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error('Lỗi khi đặt lịch:', error);
+      if (error.response) {
+        console.error('Error response:', error.response);
+        console.error('Error data:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('Error request:', error.request);
+      } else {
+        console.error('Error message:', error.message);
+      }
+      message.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+    }
   };
 
   const renderStepContent = () => {
@@ -221,6 +243,7 @@ const BookingComponent = () => {
     }
   };
 
+
   return (
     <div className="booking-wrapper">
       {step > 0 && (
@@ -249,6 +272,9 @@ const BookingComponent = () => {
 };
 
 
+
+
+
 const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tất cả dịch vụ');
@@ -261,6 +287,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCombos, setSelectedCombos] = useState([]);
+  const [comboDetails, setComboDetails] = useState({});
 
   const getImgurDirectUrl = useCallback((url) => {
     if (!url) {
@@ -348,14 +375,11 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     updateTotalPrice();
   };
   
-  const handleAddCombo = (combo) => {
-    const comboId = combo.id || combo.serviceId;
-    const isComboSelected = selectedCombos.some(c => (c.id || c.serviceId) === comboId);
-    if (!isComboSelected) {
-      setSelectedCombos(prevCombos => [...prevCombos, {...combo, isCombo: true}]);
-    } else {
-      setSelectedCombos(prevCombos => prevCombos.filter(c => (c.id || c.serviceId) !== comboId));
+  const handleAddCombo = async (combo) => {
+    if (!comboDetails[combo.id]) {
+      await fetchComboDetails(combo.id);
     }
+    setSelectedCombos(prevCombos => [...prevCombos, combo]);
     updateTotalPrice();
   };
 
@@ -388,62 +412,168 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     setTotalPrice(prevTotal => prevTotal - (Number(comboToRemove.price) || 0));
   };
 
+
+
+  const handleBreakCombo = (comboId, serviceToRemove) => {
+    setSelectedCombos(prevCombos => {
+      const comboIndex = prevCombos.findIndex(combo => combo.id === comboId);
+      if (comboIndex === -1) return prevCombos; // Không tìm thấy combo, giữ nguyên state
+  
+      const combo = prevCombos[comboIndex];
+      const updatedComboServices = combo.services.filter(service => service.serviceId !== serviceToRemove.serviceId);
+      
+      // Remove the combo
+      const newSelectedCombos = prevCombos.filter(c => c.id !== comboId);
+  
+      // Add remaining services as individual services, avoiding duplicates
+      setSelectedServices(prevServices => {
+        const newServices = updatedComboServices.filter(comboService => 
+          !prevServices.some(existingService => 
+            existingService.serviceId === comboService.serviceId
+          )
+        );
+        return [...prevServices, ...newServices];
+      });
+  
+      return newSelectedCombos;
+    });
+  
+    // Update total price
+    updateTotalPrice();
+  };
+  
+  
+  
+  const handleRemoveServiceFromCombo = (comboId, serviceToRemove) => {
+    setSelectedCombos(prevCombos => {
+      const updatedCombos = prevCombos.map(combo => {
+        if (combo.id === comboId) {
+          const remainingServices = combo.services.filter(
+            service => service.id !== serviceToRemove.id
+          );
+          
+          if (remainingServices.length === 0) {
+            return null; // Remove the combo if no services left
+          }
+          
+          return {
+            ...combo,
+            services: remainingServices,
+            price: remainingServices.reduce((total, service) => total + service.price, 0)
+          };
+        }
+        return combo;
+      }).filter(Boolean); // Remove null combos
+  
+      // If the combo was removed or modified, add remaining services to selectedServices
+      const removedCombo = prevCombos.find(combo => combo.id === comboId);
+      if (!updatedCombos.find(combo => combo.id === comboId)) {
+        const servicesToAdd = removedCombo.services.filter(
+          service => service.id !== serviceToRemove.id
+        );
+        setSelectedServices(prev => [...prev, ...servicesToAdd]);
+      }
+  
+      return updatedCombos;
+    });
+  
+    // Update total price
+    updateTotalPrice();
+  };
+  
+
+
   const handleDoneSelection = () => {
     onServiceSelection([...selectedServices, ...selectedCombos], totalPrice);
   };
 
+  const fetchComboDetails = async (comboId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8080/api/v1/combo/${comboId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.data.code === 200) {
+        setComboDetails(prevDetails => ({
+          ...prevDetails,
+          [comboId]: response.data.result
+        }));
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin combo:', error);
+    }
+  };
+
+  const isServiceInCombo = (serviceId) => {
+    return selectedCombos.some(combo => 
+      comboDetails[combo.id]?.services.some(service => service.serviceId === serviceId)
+    );
+  };
+
+  // Cập nhật hàm render cho các dịch vụ
+  const renderService = (service) => {
+    const isSelected = selectedServices.some(s => s.serviceId === service.serviceId);
+    const isDisabled = isServiceInCombo(service.serviceId);
+
+    return (
+      <div key={service.serviceId} className="service-item">
+        <img src={getImgurDirectUrl(service.image)} alt={service.serviceName || service.name} />
+        <div className="service-content">
+          <h3>{service.serviceName || service.name}</h3>
+          <p>{service.description || ''}</p>
+          <p className="price">{formatPrice(service.price || 0)}</p>
+          <button
+            className={`add-service ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+            onClick={() => handleAddService(service)}
+            disabled={isDisabled}
+          >
+            {isSelected ? 'Đã thêm' : isDisabled ? 'Trong combo' : 'Thêm dịch vụ'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Thêm hàm render cho combo
+  const renderCombo = (combo) => {
+    const isSelected = selectedCombos.some(c => c.id === combo.id);
+
+    return (
+      <div key={combo.id} className="combo-item">
+        <div className="combo-services__images">
+          {combo.services.slice(0, 2).map((service, index) => (
+            <div key={service.serviceId} className="combo-services__image-container">
+              <img
+                src={getImgurDirectUrl(service.image)}
+                alt={service.serviceName}
+                className="combo-services__image"
+                onError={(e) => {
+                  console.error('Image failed to load:', service.image);
+                  e.target.src = '/fallback-image.jpg';
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="combo-content">
+          <h3>{combo.name}</h3>
+          <p>{combo.description}</p>
+          <p className="price">{formatPrice(combo.price || 0)}</p>
+          <button
+            className={`add-service ${isSelected ? 'selected' : ''}`}
+            onClick={() => handleAddCombo(combo)}
+          >
+            {isSelected ? 'Đã thêm' : 'Thêm combo'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>{error}</div>;
-
-  const ServiceCard = ({ service, isSelected, onSelect, getImgurDirectUrl }) => (
-    <div className="service-item">
-      <img src={getImgurDirectUrl(service.image)} alt={service.serviceName || service.name} />
-      <div className="service-content">
-        <h3>{service.serviceName || service.name}</h3>
-        <p>{service.description || ''}</p>
-        <p className="price">{formatPrice(service.price || 0)}</p>
-        <button
-          className={`add-service ${isSelected ? 'selected' : ''}`}
-          onClick={() => onSelect(service)}
-        >
-          {isSelected ? 'Đã thêm' : 'Thêm dịch vụ'}
-        </button>
-      </div>
-    </div>
-  );
-
- const ComboCard = ({ combo, isSelected, onSelect, getImgurDirectUrl }) => (
-  <div className="booking-combo-container">
-    <div className="combo-item">
-      <div className="combo-services__images">
-        {combo.services.slice(0, 2).map((service, index) => (
-          <div key={service.serviceId} className="combo-services__image-container">
-            <img
-              src={getImgurDirectUrl(service.image)}
-              alt={service.serviceName}
-              className="combo-services__image"
-              onError={(e) => {
-                console.error('Image failed to load:', service.image);
-                e.target.src = '/fallback-image.jpg';
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="combo-content">
-        <h3>{combo.name}</h3>
-        <p>{combo.description}</p>
-        <p className="price">{formatPrice(combo.price || 0)}</p>
-        <button
-          className={`add-service ${isSelected ? 'selected' : ''}`}
-          onClick={() => onSelect(combo)}
-        >
-          {isSelected ? 'Đã thêm' : 'Thêm combo'}
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
   return (
     <div className="service-selection">
@@ -474,33 +604,9 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
         ))}
       </div>
       <div className="service-grid">
-        {filteredServices.map((item) => {
-          const itemId = item.serviceId || item.id;
-          const isSelected = selectedServices.some(s => (s.serviceId || s.id) === itemId);
-          if (item.services) {
-            // This is a combo
-            return (
-              <ComboCard
-                key={itemId}
-                combo={item}
-                isSelected={selectedCombos.some(c => (c.id || c.serviceId) === (item.id || item.serviceId))}
-                onSelect={handleAddCombo}
-                getImgurDirectUrl={getImgurDirectUrl}
-              />
-            );
-          } else {
-            // This is a single service
-            return (
-              <ServiceCard
-                key={itemId}
-                service={item}
-                isSelected={isSelected}
-                onSelect={handleAddService}
-                getImgurDirectUrl={getImgurDirectUrl}
-              />
-            );
-          }
-        })}
+        {filteredServices.map(item => 
+          item.services ? renderCombo(item) : renderService(item)
+        )}
       </div>
       {filteredServices.length === 0 && (
         <p className="no-results">Không tìm thấy dịch vụ phù hợp.</p>
@@ -520,13 +626,12 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
         </div>
         <button
           className="done-button"
-          disabled={selectedServices.length === 0}
+          disabled={selectedServices.length === 0 && selectedCombos.length === 0}
           onClick={handleDoneSelection}
         >
           Xong
         </button>
       </div>
-
       <SelectedServicesModal
   visible={isModalVisible}
   onClose={hideModal}
@@ -534,6 +639,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   selectedCombos={selectedCombos}
   onRemoveService={handleRemoveService}
   onRemoveCombo={handleRemoveCombo}
+  onRemoveServiceFromCombo={handleBreakCombo}
   totalPrice={totalPrice}
 />
     </div>
@@ -557,6 +663,8 @@ const DateTimeSelectionStep = ({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeSlots, setTimeSlots] = useState([]);
 
+  
+
   useEffect(() => {
     //updat current time every minute
     const updateCurrentTime = () => setCurrentTime(new Date());
@@ -568,9 +676,7 @@ const DateTimeSelectionStep = ({
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
-        // Retrieve the token from wherever you store it (e.g., localStorage)
         const token = localStorage.getItem('token');
-        
         const response = await axios.get('http://localhost:8080/api/v1/slot', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -578,26 +684,26 @@ const DateTimeSelectionStep = ({
         });
 
         if (response.data.code === 200) {
-          // Format the time slots
-          const formattedSlots = response.data.result.map(slot => {
-            const [hours, minutes] = slot.timeStart.split(':');
-            return `${hours}:${minutes}`;
-          });
-          setTimeSlots(formattedSlots);
+          setTimeSlots(response.data.result);
+        } else {
+          console.error('Failed to fetch time slots:', response.data.message);
         }
       } catch (error) {
         console.error('Error fetching time slots:', error);
-        // Handle error (e.g., show a message to the user)
       }
     };
 
     fetchTimeSlots();
   }, []);
 
-  const isTimeDisabled = (time) => {
+  const handleTimeSelect = (slot) => {
+    setSelectedTime(slot.id);
+  };
+
+  const isTimeDisabled = (timeStart) => {
     if (!selectedDate) return false;
     
-    const [hours, minutes] = time.split('h').map(Number);
+    const [hours, minutes] = timeStart.split(':').map(Number);
     const selectedDateTime = new Date(selectedDate.date);
     selectedDateTime.setHours(hours, minutes, 0, 0);
 
@@ -629,15 +735,16 @@ const DateTimeSelectionStep = ({
   ];
 
   const stylists = [
-    { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1 },
-    { id: 2, name: 'Luận Triệu', image: stylist2 },
-    { id: 3, name: 'Bắc Lý', image: stylist3 },
-    { id: 4, name: 'Huy Nguyễn', image: stylist4 },
-    { id: 5, name: 'Đạt Nguyễn', image: stylist5 },
-    { id: 6, name: 'Phúc Nguyễn', image: stylist6 },
+    { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1, code: "None" },
+    { id: 2, name: 'Luận Triệu', image: stylist2, code: "S0001" },
+    { id: 3, name: 'Bắc Lý', image: stylist3, code: "S0002" },
+    { id: 4, name: 'Huy Nguyễn', image: stylist4, code: "S0003" },
+    { id: 5, name: 'Đạt Nguyễn', image: stylist5, code: "S0004" },
+    { id: 6, name: 'Phúc Nguyễn', image: stylist6, code: "S0005" },
   ];
 
   const handleStylistSelect = (stylist) => {
+    console.log('Selected stylist code:', stylist.code);
     setSelectedStylist(stylist);
     setIsStyleListOpen(false);
   };
@@ -803,14 +910,14 @@ const DateTimeSelectionStep = ({
             <div className="time-grid">
               {[0, 1, 2].map((rowIndex) => (
                 <div key={rowIndex} className="time-row">
-                  {timeSlots.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((time) => (
+                  {timeSlots.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((slot) => (
                     <button
-                      key={time}
-                      className={`time-button ${selectedTime === time ? 'selected' : ''} ${isTimeDisabled(time) ? 'disabled' : ''}`}
-                      onClick={() => !isTimeDisabled(time) && setSelectedTime(time)}
-                      disabled={isTimeDisabled(time)}
+                      key={slot.id}
+                      className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot.timeStart) ? 'disabled' : ''}`}
+                      onClick={() => !isTimeDisabled(slot.timeStart) && handleTimeSelect(slot)}
+                      disabled={isTimeDisabled(slot.timeStart)}
                     >
-                      {time}
+                      {slot.timeStart}
                     </button>
                   ))}
                 </div>
@@ -845,3 +952,4 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
+
