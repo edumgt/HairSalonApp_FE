@@ -54,13 +54,6 @@ const SelectedServicesModal = ({
                 <li key={service.id || service.serviceId} className="combo-service-item">
                   <span>{service.name || service.serviceName}</span>
                   <span>{formatPrice(service.price)}</span>
-                  <Button 
-                    onClick={() => onRemoveServiceFromCombo(combo.id || combo.serviceId, service)} 
-                    type="link" 
-                    danger
-                  >
-                    Xóa
-                  </Button>
                 </li>
               ))}
             </ul>

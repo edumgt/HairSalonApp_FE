@@ -5,7 +5,7 @@ import { serviceDetails } from '../../../../data/serviceDetails';
 import { spaComboDetail } from '../../../../data/spaComboDetail';
 import { hairStylingDetail } from '../../../../data/hairStylingDetail';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { message, Radio, Typography, Select } from 'antd';
+import { message, Radio, Typography, Select, Modal } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
 import stylist1 from "../../../../assets/imageHome/Stylist/Stylist_1.jpg";
 import stylist2 from "../../../../assets/imageHome/Stylist/Stylist_2.jpg";
@@ -41,6 +41,8 @@ const BookingComponent = () => {
   const showModal = () => setIsModalVisible(true);
   const hideModal = () => setIsModalVisible(false);
 
+  const [selectedCombosDetails, setSelectedCombosDetails] = useState([]);
+  const [isServiceModalVisible, setIsServiceModalVisible] = useState(false);
 
   // Remove service
   const handleRemoveService = (index) => {
@@ -81,39 +83,70 @@ const BookingComponent = () => {
 
   const handleViewAllServices = () => {
     if (selectedSalon) {
-      navigate('/booking?step=2');
+      setIsServiceModalVisible(true);
     } else {
-      // Hiển thị thông báo
       message.warning("Anh vui lòng chọn salon trước để xem lịch còn trống ạ!");
     }
+  };
+
+  const handleCloseServiceModal = () => {
+    setIsServiceModalVisible(false);
   };
 
   const handleBack = () => {
     navigate('/booking?step=0');
   };
 
-  const handleServiceSelection = (services, price) => {
+  const handleServiceSelection = (services, combos, price) => {
     setSelectedServices(services);
+    setSelectedCombosDetails(combos);
     setTotalPrice(price);
     navigate('/booking?step=0');
   };
 
   const handleSubmit = async () => {
-    // Kiểm tra xem đã chọn đủ thông tin chưa
-    if (!selectedSalon || selectedServices.length === 0 || !selectedStylist || !selectedDate || !selectedTime) {
-      message.error("Vui lòng chọn đầy đủ thông tin trước khi đặt lịch.");
+    console.log('Submitting booking with:', {
+      selectedSalon,
+      selectedServices,
+      selectedCombos: selectedCombosDetails,
+      selectedStylist,
+      selectedDate,
+      selectedTime,
+      totalPrice,
+      recurringBooking
+    });
+
+    if (!selectedSalon) {
+      message.error("Vui lòng chọn salon.");
+      return;
+    }
+    if (selectedServices.length === 0 && selectedCombosDetails.length === 0) {
+      message.error("Vui lòng chọn ít nhất một dịch vụ hoặc combo.");
+      return;
+    }
+    if (!selectedStylist) {
+      message.error("Vui lòng chọn stylist.");
+      return;
+    }
+    if (!selectedDate) {
+      message.error("Vui lòng chọn ngày.");
+      return;
+    }
+    if (!selectedTime) {
+      message.error("Vui lòng chọn giờ.");
       return;
     }
 
     // Chuẩn bị dữ liệu để gửi
     const bookingData = {
       date: selectedDate.date.toISOString().split('T')[0], // Định dạng ngày thành "YYYY-MM-DD"
-      stylistId: selectedStylist.code, // Sử dụng code của staff
-      slotId: selectedTime, // Đã là ID của slot, không cần chuyển đổi
+      stylistId: selectedStylist,
+      slotId: parseInt(selectedTime),
       price: totalPrice,
-      serviceId: [...selectedServices, ...selectedCombos].flatMap(item => 
-        item.services ? item.services.map(s => s.serviceId) : [item.serviceId]
-      ),
+      serviceId: [
+        ...selectedServices.map(s => s.serviceId || s.id),
+        ...selectedCombosDetails.flatMap(c => c.services ? c.services.map(s => s.serviceId || s.id) : [c.serviceId || c.id])
+      ],
       period: recurringBooking ? parseInt(recurringBooking) : null
     };
 
@@ -128,28 +161,16 @@ const BookingComponent = () => {
         }
       });
 
-      console.log('Server response:', response);  // Log toàn bộ phản hồi
+      console.log('Server response:', response);
 
-      // Kiểm tra cả status code và code trong data
       if (response.status === 200 || (response.data && response.data.code === 200)) {
         message.success("Đặt lịch thành công!");
         
-        // Lưu thông tin đặt lịch chi tiết vào localStorage
-        const detailedBookingInfo = {
-          salon: selectedSalon,
-          services: [...selectedServices, ...selectedCombos],
-          stylist: selectedStylist,
-          date: selectedDate,
-          time: selectedTime,
-          totalPrice: totalPrice,
-          recurringBooking: recurringBooking
-        };
-        localStorage.setItem('bookingInfo', JSON.stringify(detailedBookingInfo));
-        
-        // Chuyển hướng đến trang thành công
-        navigate('/booking/success');
+        // Chuyển hướng đến trang success với dữ liệu từ response
+        navigate('/booking/success', { 
+          state: { bookingInfo: response.data.result }
+        });
       } else {
-        // Log thông tin chi tiết nếu có lỗi
         console.error('Booking failed. Response:', response);
         message.error(response.data.message || "Đặt lịch thất bại. Vui lòng thử lại.");
       }
@@ -222,6 +243,7 @@ const BookingComponent = () => {
           <ServiceSelectionStep
             onServiceSelection={handleServiceSelection}
             initialServices={selectedServices}
+            initialCombos={selectedCombosDetails}
             initialTotalPrice={totalPrice}
           />
         ) : null;
@@ -256,7 +278,7 @@ const BookingComponent = () => {
         {renderStepContent()}
         {(step === 0 || step === 3) && (
           <button className="submit-button" onClick={handleSubmit}>
-            CHỐT GIỜ CẮT
+            {step === 0 ? 'CHỐT GIỜ CẮT' : 'HOÀN TẤT ĐẶT LỊCH'}
           </button>
         )}
       </div>  
@@ -264,9 +286,27 @@ const BookingComponent = () => {
         visible={isModalVisible}
         onClose={hideModal}
         selectedServices={selectedServices}
+        selectedCombos={selectedCombosDetails}
         onRemoveService={handleRemoveService}
+        onRemoveCombo={handleRemoveCombo}
         totalPrice={totalPrice}
       />
+      <Modal
+        visible={isServiceModalVisible}
+        onCancel={handleCloseServiceModal}
+        footer={null}
+        width="90%"
+        style={{ maxWidth: '1000px' }}
+        bodyStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+      >
+        <ServiceSelectionStep
+          onServiceSelection={handleServiceSelection}
+          initialServices={selectedServices}
+          initialCombos={selectedCombosDetails}
+          initialTotalPrice={totalPrice}
+          onClose={handleCloseServiceModal}
+        />
+      </Modal>
     </div>
   );
 };
@@ -275,7 +315,7 @@ const BookingComponent = () => {
 
 
 
-const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTotalPrice }) => {
+const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialCombos, initialTotalPrice, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tất cả dịch vụ');
   const [filteredServices, setFilteredServices] = useState([]);
@@ -286,8 +326,10 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   const [categories, setCategories] = useState(['Tất cả dịch vụ']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCombos, setSelectedCombos] = useState([]);
+  const [selectedCombos, setSelectedCombos] = useState(initialCombos || []);
   const [comboDetails, setComboDetails] = useState({});
+  const [combos, setCombos] = useState([]);
+  const [selectedCombosDetails, setSelectedCombosDetails] = useState(initialCombos || []);
 
   const getImgurDirectUrl = useCallback((url) => {
     if (!url) {
@@ -311,17 +353,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           fetchCombos()
         ]);
 
-        console.log('Raw services data:', JSON.stringify(servicesResponse, null, 2));
-        console.log('Raw combos data:', JSON.stringify(combosResponse, null, 2));
-
         let servicesData = servicesResponse.result || servicesResponse;
         let combosData = combosResponse.result || combosResponse;
 
         if (Array.isArray(servicesData) && Array.isArray(combosData)) {
-          const allData = [...servicesData, ...combosData];
-          setAllServices(allData);
+          setAllServices(servicesData);
+          setCombos(combosData);
 
-          const categorySet = new Set(allData.flatMap(item => 
+          const categorySet = new Set(servicesData.flatMap(item => 
             item.categories ? [item.categories.categoryName] : []
           ).filter(Boolean));
           setCategories(['Tất cả dịch vụ', ...Array.from(categorySet)]);
@@ -379,7 +418,23 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     if (!comboDetails[combo.id]) {
       await fetchComboDetails(combo.id);
     }
-    setSelectedCombos(prevCombos => [...prevCombos, combo]);
+    const comboWithDetails = comboDetails[combo.id] || combo;
+    setSelectedCombos(prevCombos => {
+      const isAlreadySelected = prevCombos.some(c => c.id === combo.id);
+      if (isAlreadySelected) {
+        return prevCombos.filter(c => c.id !== combo.id);
+      } else {
+        return [...prevCombos, comboWithDetails];
+      }
+    });
+    setSelectedCombosDetails(prevDetails => {
+      const isAlreadySelected = prevDetails.some(c => c.id === combo.id);
+      if (isAlreadySelected) {
+        return prevDetails.filter(c => c.id !== combo.id);
+      } else {
+        return [...prevDetails, comboWithDetails];
+      }
+    });
     updateTotalPrice();
   };
 
@@ -408,6 +463,9 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   const handleRemoveCombo = (comboToRemove) => {
     setSelectedCombos(prevCombos => 
       prevCombos.filter(combo => (combo.id || combo.serviceId) !== (comboToRemove.id || comboToRemove.serviceId))
+    );
+    setSelectedCombosDetails(prevDetails =>
+      prevDetails.filter(combo => (combo.id || combo.serviceId) !== (comboToRemove.id || comboToRemove.serviceId))
     );
     setTotalPrice(prevTotal => prevTotal - (Number(comboToRemove.price) || 0));
   };
@@ -484,7 +542,8 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
 
 
   const handleDoneSelection = () => {
-    onServiceSelection([...selectedServices, ...selectedCombos], totalPrice);
+    onServiceSelection(selectedServices, selectedCombosDetails, totalPrice);
+    onClose();
   };
 
   const fetchComboDetails = async (comboId) => {
@@ -506,13 +565,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
     }
   };
 
-  const isServiceInCombo = (serviceId) => {
+  // Cập nhật hàm isServiceInCombo
+  const isServiceInCombo = useCallback((serviceId) => {
     return selectedCombos.some(combo => 
-      comboDetails[combo.id]?.services.some(service => service.serviceId === serviceId)
+      combo.services && combo.services.some(service => service.serviceId === serviceId)
     );
-  };
+  }, [selectedCombos]);
 
-  // Cập nhật hàm render cho các dịch vụ
+  // Cập nhật hàm renderService
   const renderService = (service) => {
     const isSelected = selectedServices.some(s => s.serviceId === service.serviceId);
     const isDisabled = isServiceInCombo(service.serviceId);
@@ -526,7 +586,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           <p className="price">{formatPrice(service.price || 0)}</p>
           <button
             className={`add-service ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-            onClick={() => handleAddService(service)}
+            onClick={() => !isDisabled && handleAddService(service)}
             disabled={isDisabled}
           >
             {isSelected ? 'Đã thêm' : isDisabled ? 'Trong combo' : 'Thêm dịch vụ'}
@@ -539,31 +599,28 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   // Thêm hàm render cho combo
   const renderCombo = (combo) => {
     const isSelected = selectedCombos.some(c => c.id === combo.id);
+    const comboWithDetails = comboDetails[combo.id] || combo;
 
     return (
       <div key={combo.id} className="combo-item">
         <div className="combo-services__images">
-          {combo.services.slice(0, 2).map((service, index) => (
+          {comboWithDetails.services && comboWithDetails.services.slice(0, 2).map((service, index) => (
             <div key={service.serviceId} className="combo-services__image-container">
               <img
                 src={getImgurDirectUrl(service.image)}
                 alt={service.serviceName}
                 className="combo-services__image"
-                onError={(e) => {
-                  console.error('Image failed to load:', service.image);
-                  e.target.src = '/fallback-image.jpg';
-                }}
               />
             </div>
           ))}
         </div>
         <div className="combo-content">
-          <h3>{combo.name}</h3>
-          <p>{combo.description}</p>
-          <p className="price">{formatPrice(combo.price || 0)}</p>
+          <h3>{comboWithDetails.name}</h3>
+          <p>{comboWithDetails.description}</p>
+          <p className="price">{formatPrice(comboWithDetails.price || 0)}</p>
           <button
             className={`add-service ${isSelected ? 'selected' : ''}`}
-            onClick={() => handleAddCombo(combo)}
+            onClick={() => handleAddCombo(comboWithDetails)}
           >
             {isSelected ? 'Đã thêm' : 'Thêm combo'}
           </button>
@@ -603,22 +660,20 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
           </button>
         ))}
       </div>
-      <div className="service-grid">
-        {filteredServices.map(item => 
-          item.services ? renderCombo(item) : renderService(item)
-        )}
+      <h3>Combo dịch vụ</h3>
+      <div className="combo-grid">
+        {combos.map(combo => renderCombo(combo))}
       </div>
-      {filteredServices.length === 0 && (
-        <p className="no-results">Không tìm thấy dịch vụ phù hợp.</p>
-      )}
+
+      <h3>Dịch vụ riêng lẻ</h3>
+      <div className="service-grid">
+        {filteredServices.map(service => renderService(service))}
+      </div>
 
       <div className="service-summary">
         <div className="summary-content">
-          <span
-            className="selected-services"
-            onClick={showModal}
-          >
-           {`Đã chọn ${selectedServices.length + selectedCombos.length} dịch vụ`}
+          <span className="selected-services" onClick={showModal}>
+            {`Đã chọn ${selectedServices.length + selectedCombos.length} dịch vụ`}
           </span>
           <span className="total-amount">
             Tổng thanh toán: {formatPrice(totalPrice)}
@@ -636,7 +691,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialTota
   visible={isModalVisible}
   onClose={hideModal}
   selectedServices={selectedServices}
-  selectedCombos={selectedCombos}
+  selectedCombos={selectedCombosDetails}
   onRemoveService={handleRemoveService}
   onRemoveCombo={handleRemoveCombo}
   onRemoveServiceFromCombo={handleBreakCombo}
@@ -724,15 +779,7 @@ const DateTimeSelectionStep = ({
     return false;
   };
 
-  const times = [
- '8h00',
-    '8h40', '9h00', '9h40', '10h00',
-    '10h40', '11h00', '11h40', '12h00',
-    '12h40', '13h00', '13h40', '14h00',
-    '14h40', '15h00', '15h40', '16h00',
-    '16h40', '17h00', '17h40', '18h00',
-    '18h40', '19h00', '19h40', '20h00',
-  ];
+
 
   const stylists = [
     { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1, code: "None" },
@@ -745,7 +792,7 @@ const DateTimeSelectionStep = ({
 
   const handleStylistSelect = (stylist) => {
     console.log('Selected stylist code:', stylist.code);
-    setSelectedStylist(stylist);
+    setSelectedStylist(stylist.code);
     setIsStyleListOpen(false);
   };
 
@@ -814,18 +861,14 @@ const DateTimeSelectionStep = ({
         </h3>
         {selectedStylist && (
           <div className="selected-stylist-summary">
-            <p>Lựa chọn của bạn: {selectedStylist.name}</p>
+            <p>Lựa chọn của bạn: {stylists.find(s => s.code === selectedStylist)?.name || 'Chưa chọn'}</p>
             <img
-              src={selectedStylist.image}
-              alt={selectedStylist.name}
+              src={stylists.find(s => s.code === selectedStylist)?.image || stylist1}
+              alt={stylists.find(s => s.code === selectedStylist)?.name || 'Chưa chọn'}
               className="stylist-image"
             />
           </div>
         )}
-        {/* Thêm thông tin bổ sung nếu có */}
-    {/* <p>Chuyên môn: {selectedStylist.specialty}</p> */}
-    {/* <p>Đánh giá: {selectedStylist.rating}</p> */}
-        
         {isStyleListOpen && (
           <div className="stylist-carousel">
             {currentStylistIndex > 0 && (
@@ -837,7 +880,7 @@ const DateTimeSelectionStep = ({
               {stylists.map((stylist) => (
                 <div
                   key={stylist.id}
-                  className={`stylist-item ${selectedStylist && selectedStylist.id === stylist.id ? 'selected' : ''}`}
+                  className={`stylist-item ${selectedStylist === stylist.code ? 'selected' : ''}`}
                   onClick={() => handleStylistSelect(stylist)}
                 >
                   {stylist.id === 1 ? (
@@ -853,7 +896,7 @@ const DateTimeSelectionStep = ({
                       </div>
                     </>
                   )}
-                  {selectedStylist && selectedStylist.id === stylist.id && (
+                  {selectedStylist === stylist.code && (
                     <div className="check-icon">✓</div>
                   )}
                 </div>
@@ -952,4 +995,12 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
+
+
+
+
+
+
+
+
 
