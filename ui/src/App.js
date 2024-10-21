@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Layout from './layouts/Component/layout';
 import AdminLayout from './layouts/admin/layout';
 import { useScrollRestoration } from './layouts/Component/CustomHook/useScrollRestoration';
@@ -40,9 +40,11 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
+
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
 
 
@@ -55,7 +57,7 @@ const ScrollRestorationProvider = ({ children }) => {
 function ScrollToTop() {
   const { pathname } = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -68,6 +70,7 @@ const router = createBrowserRouter([
     element: (
       <ScrollRestorationProvider>
         <Layout>
+          <ScrollToTop />
           <Outlet />
         </Layout>
       </ScrollRestorationProvider>
