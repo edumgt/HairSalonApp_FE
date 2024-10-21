@@ -6,7 +6,7 @@ import { useScrollRestoration } from './layouts/Component/CustomHook/useScrollRe
 
 // User pages
 import Home from "./pages/Home";
-import Login from "./pages/Login/Login";
+import Login from "./pages/Login/login";
 import SignUp from './pages/signUp/SignUp';
 import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 import ResetPassword from './pages/resetPassword/resetPassword';
@@ -40,6 +40,9 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+import Slot from './pages/admin/slot/slot';
+import AddSlot from './pages/admin/slot/addSlot';
+import UpdateSlot from './pages/admin/slot/updateSlot';
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
 
 
@@ -113,6 +116,9 @@ const router = createBrowserRouter([
       { path: "combo", element: <Combo /> },
       { path: "combo/addCombo", element: <AddCombo /> },
       { path: "combo/updateCombo", element: <UpdateCombo /> },
+      { path: "slot", element: <Slot /> },
+      { path: "slot/addSlot", element: <AddSlot /> },
+      { path: "slot/updateSlot/:slotId", element: <UpdateSlot /> },
     ],
   },
   {
@@ -129,4 +135,5 @@ function App() {
   );
 }
 
-export default App;
+  export default App;
+

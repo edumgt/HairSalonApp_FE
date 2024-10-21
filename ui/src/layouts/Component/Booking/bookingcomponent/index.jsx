@@ -14,6 +14,7 @@ import stylist4 from "../../../../assets/imageHome/Stylist/Stylist_4.jpg";
 import stylist5 from "../../../../assets/imageHome/Stylist/Stylist_5.jpg";
 import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
 import { DownOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import { fetchServices } from '../../../../data/hairservice';
 import { fetchCombos } from '../../../../data/comboservice';
 
@@ -629,6 +630,7 @@ const DateTimeSelectionStep = ({
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
   const [currentStylistIndex, setCurrentStylistIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeSlots, setTimeSlots] = useState([]);
 
   useEffect(() => {
     //updat current time every minute
@@ -636,6 +638,35 @@ const DateTimeSelectionStep = ({
     updateCurrentTime(); //  set initial time imediately
     const timer = setInterval(updateCurrentTime, 6000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        // Retrieve the token from wherever you store it (e.g., localStorage)
+        const token = localStorage.getItem('token');
+        
+        const response = await axios.get('http://localhost:8080/api/v1/slot', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.data.code === 200) {
+          // Format the time slots
+          const formattedSlots = response.data.result.map(slot => {
+            const [hours, minutes] = slot.timeStart.split(':');
+            return `${hours}:${minutes}`;
+          });
+          setTimeSlots(formattedSlots);
+        }
+      } catch (error) {
+        console.error('Error fetching time slots:', error);
+        // Handle error (e.g., show a message to the user)
+      }
+    };
+
+    fetchTimeSlots();
   }, []);
 
   const isTimeDisabled = (time) => {
@@ -727,7 +758,7 @@ const DateTimeSelectionStep = ({
   };
 
   const handleNextTime = () => {
-    setCurrentTimeIndex(prev => Math.min(times.length - 3, prev + 1));
+    setCurrentTimeIndex(prev => Math.min(timeSlots.length - 3, prev + 1));
   };
 
   const handleRecurringChange = (value) => {
@@ -847,7 +878,7 @@ const DateTimeSelectionStep = ({
             <div className="time-grid">
               {[0, 1, 2].map((rowIndex) => (
                 <div key={rowIndex} className="time-row">
-                  {times.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((time) => (
+                  {timeSlots.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((time) => (
                     <button
                       key={time}
                       className={`time-button ${selectedTime === time ? 'selected' : ''} ${isTimeDisabled(time) ? 'disabled' : ''}`}
@@ -860,7 +891,7 @@ const DateTimeSelectionStep = ({
                 </div>
               ))}
             </div>
-            <button className="nav-button next" onClick={handleNextTime} disabled={currentTimeIndex >= times.length - 15}>
+            <button className="nav-button next" onClick={handleNextTime} disabled={currentTimeIndex >= timeSlots.length - 15}>
               <FaChevronRight />
             </button>
           </div>
