@@ -1025,6 +1025,12 @@
       }
     }
   }
+
+  .form-error {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+  }
 }
 
 .time-button.disabled {
@@ -1231,6 +1237,14 @@
     .stylist-info {
       padding: 10px;
       text-align: center;
+
+      &.centered-text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+      }
     }
 
     .stylist-name {
@@ -1275,3 +1289,5 @@
     width: 100%; // 1 item per row
   }
 }
+
+

@@ -105,14 +105,18 @@ const BookingComponent = () => {
 
     try {
       const token = localStorage.getItem('token');
+      
+      // Xử lý danh sách dịch vụ
+      const comboServices = selectedCombosDetails.flatMap(combo => combo.services);
+      const allServices = [...selectedServices, ...comboServices];
+      const serviceIds = allServices.map(service => service.serviceId || service.id);
+
       const bookingData = {
         date: moment(selectedDate.date).format('YYYY-MM-DD'),
-        stylistId: selectedStylist === 'None' ? null : selectedStylist,
+        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist, // Thay đổi ở đây
         slotId: parseInt(selectedTime),
         price: parseInt(totalPrice),
-        serviceId: selectedCombos.length > 0 
-          ? selectedCombos.flatMap(combo => combo.services.map(service => service.serviceId))
-          : selectedServices.map(service => service.serviceId),
+        serviceId: serviceIds,
         period: recurringBooking ? parseInt(recurringBooking) : null
       };
 
@@ -127,11 +131,14 @@ const BookingComponent = () => {
 
       console.log('Received response:', response.data);
 
-      if (response.data.code === 200) {
-        message.success("Đặt lịch thành công!");
-        // Chuyển hướng ngay lập tức sau khi đặt lịch thành công
-        navigate('/bookingsuccess', { 
-          state: { bookingInfo: response.data.result }
+      if (response.data.code === 201) {
+        message.success(response.data.message);
+        navigate('/booking/success', { 
+          state: { 
+            bookingInfo: response.data.result,
+            selectedServices: selectedServices,
+            selectedCombos: selectedCombosDetails
+          }
         });
       } else {
         message.warning(response.data.message || "Có vấn đề khi đặt lịch. Vui lòng kiểm tra lại.");
@@ -147,6 +154,24 @@ const BookingComponent = () => {
         message.error("Có lỗi xảy ra khi kết nối với server. Vui lòng thử lại sau.");
       }
     }
+  };
+
+  const handleServiceConfirm = (allServices, selectedCombos, totalPrice) => {
+    // Lấy danh sách dịch vụ từ các combo đã chọn
+    const comboServices = selectedCombos.flatMap(combo => combo.services);
+    
+    // Lấy danh sách dịch vụ đơn lẻ (không nằm trong combo)
+    const singleServices = allServices.filter(service => 
+      !comboServices.some(comboService => comboService.serviceId === service.serviceId)
+    );
+
+    setSelectedServices(singleServices);
+    setSelectedCombosDetails(selectedCombos);
+    setTotalPrice(totalPrice);
+
+    console.log('Danh sách dịch vụ trong combo:', comboServices);
+    console.log('Danh sách dịch vụ đơn lẻ:', singleServices);
+    console.log('Tất cả dịch vụ:', allServices);
   };
 
   const renderStepContent = () => {
@@ -192,6 +217,8 @@ const BookingComponent = () => {
                 setSelectedStylist={setSelectedStylist}
                 recurringBooking={recurringBooking}
                 setRecurringBooking={setRecurringBooking}
+                selectedServices={selectedServices}
+                selectedCombos={selectedCombosDetails}
               />
             </div>
           </div>
@@ -216,6 +243,8 @@ const BookingComponent = () => {
             setSelectedTime={setSelectedTime}
             recurringBooking={recurringBooking}
             setRecurringBooking={setRecurringBooking}
+            selectedServices={selectedServices}
+            selectedCombos={selectedCombosDetails}
           />
         );
       default:
@@ -248,6 +277,7 @@ const BookingComponent = () => {
         onRemoveService={handleRemoveService}
         onRemoveCombo={handleRemoveCombo}
         totalPrice={totalPrice}
+        onConfirm={handleServiceConfirm}
       />
       <Modal
         visible={isServiceModalVisible}
@@ -667,7 +697,9 @@ const DateTimeSelectionStep = ({
   selectedStylist, 
   setSelectedStylist, 
   recurringBooking,
-  setRecurringBooking
+  setRecurringBooking,
+  selectedServices,
+  selectedCombos
 }) => {
   const [isDateListOpen, setIsDateListOpen] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -676,6 +708,7 @@ const DateTimeSelectionStep = ({
   const [availableStylists, setAvailableStylists] = useState([]);
   const [isStylistLoading, setIsStylistLoading] = useState(false);
   const [stylistError, setStylistError] = useState(null);
+  const [formError, setFormError] = useState('');
 
   const fetchTimeSlots = async () => {
     setIsLoading(true);
@@ -746,18 +779,46 @@ const DateTimeSelectionStep = ({
   };
 
   const handleDateSelect = (date) => {
+    if (!checkServiceSelected()) {
+      setFormError('Vui lòng chọn dịch vụ hoặc combo trước khi chọn ngày.');
+      return;
+    }
     setSelectedDate(date);
     setSelectedTime(null);
     setSelectedStylist(null);
+    setIsDateListOpen(false);
+    setFormError('');
   };
 
   const handleTimeSelect = (slot) => {
+    if (!selectedDate) {
+      setFormError('Vui lòng chọn ngày trước khi chọn giờ.');
+      return;
+    }
     setSelectedTime(slot.id);
     setSelectedStylist(null);
+    setFormError('');
   };
 
   const handleStylistSelect = (stylist) => {
-    setSelectedStylist(stylist.code);
+    if (!selectedTime) {
+      setFormError('Vui lòng chọn giờ trước khi chọn stylist.');
+      return;
+    }
+    setSelectedStylist(stylist.code === 'None' ? 'None' : stylist.code);
+    setFormError('');
+  };
+
+  const checkServiceSelected = () => {
+    return (selectedServices && selectedServices.length > 0) || (selectedCombos && selectedCombos.length > 0);
+  };
+
+  const toggleDateList = () => {
+    if (!checkServiceSelected()) {
+      setFormError('Vui lòng chọn dịch vụ hoặc combo trước khi chọn ngày.');
+      return;
+    }
+    setIsDateListOpen(prevState => !prevState);
   };
 
   const today = new Date();
@@ -785,10 +846,6 @@ const DateTimeSelectionStep = ({
     { value: 3, label: 'Mỗi 3 tuần' },
     { value: 4, label: 'Mỗi 4 tuần' },
   ];
-
-  const toggleDateList = () => {
-    setIsDateListOpen(prevState => !prevState);
-  };
 
   const groupTimeSlots = (slots) => {
     const morning = slots.filter(slot => {
@@ -849,6 +906,28 @@ const DateTimeSelectionStep = ({
     return url;
   }, []);
 
+  // Hàm kiểm tra các bước đã được chọn
+  const checkSteps = () => {
+    if (!selectedServices || !selectedCombos) {
+      message.warning('Vui lòng chọn dịch vụ hoặc combo trước');
+      return false;
+    }
+    if ((selectedServices.length === 0 && selectedCombos.length === 0) || 
+        (!selectedServices.length && !selectedCombos.length)) {
+      message.warning('Vui lòng chọn dịch vụ hoặc combo trước');
+      return false;
+    }
+    if (!selectedDate) {
+      message.warning('Vui lòng chọn ngày trước');
+      return false;
+    }
+    if (!selectedTime) {
+      message.warning('Vui lòng chọn khung giờ trước');
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="date-time-selection">
       <div className="date-selection">
@@ -861,7 +940,7 @@ const DateTimeSelectionStep = ({
           <span className={`tag ${selectedDate ? (selectedDate.tag === 'Cuối tuần' ? 'weekend' : 'weekday') : ''}`}>
             {selectedDate ? selectedDate.tag : ''}
           </span>
-          <FaChevronRight className="arrow" />
+          <FaChevronRight className={`arrow ${isDateListOpen ? 'open' : ''}`} />
         </div>
 
         {isDateListOpen && (
@@ -880,25 +959,27 @@ const DateTimeSelectionStep = ({
         )}
       </div>
 
-      <div className="time-selection">
-        <h4>
-          <FaClock className="icon" />
-          Chọn giờ
-        </h4>
-        {isLoading ? (
-          <p>Đang tải khung giờ...</p>
-        ) : error ? (
-          <p className="error-message">{error}</p>
-        ) : timeSlots.length > 0 ? (
-          <>
-            {renderTimeGroup('Buổi sáng', groupTimeSlots(timeSlots).morning)}
-            {renderTimeGroup('Buổi chiều', groupTimeSlots(timeSlots).afternoon)}
-            {renderTimeGroup('Buổi tối', groupTimeSlots(timeSlots).evening)}
-          </>
-        ) : (
-          <p>Không có khung giờ nào khả dụng.</p>
-        )}
-      </div>
+      {selectedDate && (
+        <div className="time-selection">
+          <h4>
+            <FaClock className="icon" />
+            Chọn giờ
+          </h4>
+          {isLoading ? (
+            <p>Đang tải khung giờ...</p>
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : timeSlots.length > 0 ? (
+            <>
+              {renderTimeGroup('Buổi sáng', groupTimeSlots(timeSlots).morning)}
+              {renderTimeGroup('Buổi chiều', groupTimeSlots(timeSlots).afternoon)}
+              {renderTimeGroup('Buổi tối', groupTimeSlots(timeSlots).evening)}
+            </>
+          ) : (
+            <p>Không có khung giờ nào khả dụng.</p>
+          )}
+        </div>
+      )}
 
       {selectedDate && selectedTime && (
         <div className="stylist-selection">
@@ -916,7 +997,7 @@ const DateTimeSelectionStep = ({
                 className={`stylist-item ${selectedStylist === 'None' ? 'selected' : ''}`}
                 onClick={() => handleStylistSelect({ code: 'None' })}
               >
-                <div className="stylist-info">
+                <div className="stylist-info centered-text">
                   <p className="stylist-name">Để chúng tôi chọn giúp bạn</p>
                 </div>
                 {selectedStylist === 'None' && (
@@ -942,6 +1023,8 @@ const DateTimeSelectionStep = ({
           )}
         </div>
       )}
+
+      {formError && <p className="form-error">{formError}</p>}
 
       <div className="recurring-booking">
         <Title level={4}>Đặt lịch định kỳ (Không bắt buộc)</Title>
