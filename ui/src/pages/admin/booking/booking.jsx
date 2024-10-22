@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styles from './booking.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
-import { getAll } from '../services/bookingService';
+import { getAll, updateStatus } from '../services/bookingService';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import HeaderButton from '../../../layouts/admin/components/table/buttonv2/headerButton';
-import { Dropdown, Modal } from 'antd';
+import { Button, Dropdown, Modal, notification } from 'antd';
 import EditButton from '../../../layouts/admin/components/table/buttonv2/editButton';
+import { DownOutlined } from '@ant-design/icons';
 
 const HistoryBooking = () => {
   const location = useLocation();
@@ -22,17 +23,46 @@ const HistoryBooking = () => {
   }, []);
 
   const canManageBooking = userRole === 'ADMIN' || userRole === 'MANAGER' || userRole === 'manager' || userRole === 'admin';
+  const isAdmin = userRole === 'ADMIN' || userRole === 'admin';
+  const isManager = userRole === 'MANAGER' || userRole === 'manager';
+  const isStaff = userRole === 'STAFF' || userRole === 'staff';
+  const isStylist = userRole === 'STYLIST' || userRole === 'stylist';
 
   const items = [
-    { key: '1', label: 'RECEIVED' },
-    { key: '2', label: 'COMPLETED' },
-    { key: '3', label: 'CANCELLED' },
+    { key: 'CHECKED_IN', label: 'Checkin', disabled: !isAdmin && !isManager && !isStaff },
+    { key: 'SUCCESS', label: 'Hoàn thành', disabled: !isStylist },
+    { key: 'COMPLETED', label: 'Xong', disabled: !isAdmin && !isManager && !isStaff },
+    { key: 'CANCELED', label: 'Hủy', disabled: !isAdmin && !isManager && !isStaff },
   ];
 
   const ListItem = ({ id, date, slot, period, account, stylistId, services, price, status }) => {
-    const handleStatusChange = (key) => {
-      // Implement status change logic here
-      console.log(`Changing status of booking ${id} to ${items[parseInt(key) - 1].label}`);
+    const handleStatusChange = async (key) => {
+      Modal.confirm({
+        title: 'Xác nhận',
+        content: `Bạn có muốn cập nhật trạng thái đặt lịch này thành "${key}" ?`,
+        onOk: async () => {
+          try {
+            const response = await updateStatus({ bookingId: id, status: key });
+            if (response.data && response.data.code === 200) {
+              notification.success({
+                message: 'Thành công',
+                description: 'Trạng thái đặt lịch đã được cập nhật!',
+                duration: 2
+              });
+              loadBooking();
+            } else {
+              throw new Error(response.data?.message || 'Cập nhật trạng thái thất bại');
+            }
+          } catch (error) {
+            console.error(error);
+            notification.error({
+              message: 'Thất bại',
+              description: 'Cập nhật trạng thái đặt lịch thất bại!',
+              duration: 2
+            });
+          }
+        },
+      });
     };
 
     return (
@@ -49,7 +79,9 @@ const HistoryBooking = () => {
         <td className={styles.info}>{price.toLocaleString()} VND</td>
         <td>
           <div className={styles.statusWrapper}>
-            <div className={`${status === 'RECEIVED' ? styles.greenStatus : styles.redStatus}`}>{status}</div>
+            <div className={`${status === 'RECEIVED' || status === 'SUCCESS' ? styles.greenStatus
+                              : status === 'CHECKED_IN' || status === 'COMPLETED' ? styles.blueStatus
+                              : status === 'CANCELED' ? styles.redStatus : ''}`}>{status}</div>
           </div>
         </td>
         {canManageBooking && (
@@ -63,14 +95,16 @@ const HistoryBooking = () => {
           </td>
         )}
         <td>
-          <Dropdown.Button
+          <Dropdown
             menu={{
               items,
               onClick: ({ key }) => handleStatusChange(key),
             }}
           >
-            Trạng thái
-          </Dropdown.Button>
+            <Button>
+              Trạng thái <DownOutlined />
+            </Button>
+          </Dropdown>
         </td>
       </tr>
     );

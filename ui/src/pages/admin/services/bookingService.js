@@ -12,3 +12,7 @@ export const update = async (values) => {
     })
     return response
 }
+export const updateStatus = async (values) => {
+    const response = await BASE_URL.put(`booking/${values.bookingId}/${values.status}`);
+    return response;
+}
