@@ -12,7 +12,7 @@ import { Outlet } from 'react-router-dom';
 
 const { Option } = Select;
 
-const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete }) => {
+const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete, canManageStaff }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -54,9 +54,11 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      <td className={styles.actionCell}>
-        <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
-      </td>
+      {canManageStaff && (
+        <td className={styles.actionCell}>
+          <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
+        </td>
+      )}
     </tr>
   );
 };
@@ -74,6 +76,14 @@ const Staff = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isRootPath = location.pathname === '/admin/staff';
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+  }, []);
+
+  const canManageStaff = userRole === 'ADMIN' || userRole === 'MANAGER';
 
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
@@ -195,13 +205,21 @@ const Staff = () => {
         <>
           <NavLink currentPage="Nhân viên" />
           <div className={styles.tableGroup}>
-            <HeaderButton 
-              text="Thêm nhân viên" 
-              add={true} 
-              onClick={handleAddStaff}
-              onSearch={handleSearch}
-              searchText='tên nhân viên'
-            />
+            {canManageStaff && (
+              <HeaderButton 
+                text="Thêm nhân viên" 
+                add={true} 
+                onClick={handleAddStaff}
+                onSearch={handleSearch}
+                searchText='tên nhân viên'
+              />
+            )}
+            {!canManageStaff && (
+              <HeaderButton 
+                onSearch={handleSearch}
+                searchText='tên nhân viên'
+              />
+            )}
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
@@ -215,7 +233,7 @@ const Staff = () => {
                     <HeaderColumn title="Ngày bắt đầu làm"  />
                     <HeaderColumn title="Vai trò"  />
                     <HeaderColumn title="Hình ảnh" />
-                    <HeaderColumn title="" />
+                    {canManageStaff && <HeaderColumn title="" />}
                   </tr>
                 </thead>
                 <tbody>
@@ -223,8 +241,9 @@ const Staff = () => {
                     <ListItem 
                       key={item.id} 
                       {...item} 
-                      onEdit={handleEditStaff}
-                      onDelete={handleDeleteStaff}
+                      onEdit={canManageStaff ? handleEditStaff : undefined}
+                      onDelete={canManageStaff ? handleDeleteStaff : undefined}
+                      canManageStaff={canManageStaff}
                     />
                   ))}
                 </tbody>
@@ -236,63 +255,65 @@ const Staff = () => {
         <Outlet/>
       )}
       {/* Modal for editing staff */}
-      <Modal
-        title="Cập nhật nhân viên"
-        visible={isEditModalVisible}
-        onCancel={() => setIsEditModalVisible(false)}
-        footer={null}
-        width={700} // Thu hẹp độ rộng của modal
-        centered
-        destroyOnClose={true}
-      >
-        <div className={styles.modalContent}>
-          <Form
-            form={form}
-            onFinish={handleUpdateStaff}
-            layout="vertical"
-            initialValues={editingStaff}
-          >
-            <div className={styles.formGrid}>
-              <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
-                <Input disabled />
-              </Form.Item>
-              <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
-              </Form.Item>
-              <Form.Item name="lastName" label="Tên" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
-              </Form.Item>
-              <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
-                <Select>
-                  <Option value="male">Nam</Option>
-                  <Option value="female">Nữ</Option>
-                  <Option value="other">Khác</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
-                <InputNumber style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
-              </Form.Item>
-              <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
-                <Input />
-              </Form.Item>
-              <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                  Cập nhật nhân viên
-                </Button>
-              </Form.Item>
-            </div>
-          </Form>
-        </div>
-      </Modal>
+      {canManageStaff && (
+        <Modal
+          title="Cập nhật nhân viên"
+          visible={isEditModalVisible}
+          onCancel={() => setIsEditModalVisible(false)}
+          footer={null}
+          width={700}
+          centered
+          destroyOnClose={true}
+        >
+          <div className={styles.modalContent}>
+            <Form
+              form={form}
+              onFinish={handleUpdateStaff}
+              layout="vertical"
+              initialValues={editingStaff}
+            >
+              <div className={styles.formGrid}>
+                <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="lastName" label="Tên" rules={[{ required: true }]} className={styles.formItem}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
+                  <Select>
+                    <Option value="male">Nam</Option>
+                    <Option value="female">Nữ</Option>
+                    <Option value="other">Khác</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
+                  <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]} className={styles.formItem}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
+                  <Input />
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" className={styles.submitButton}>
+                    Cập nhật nhân viên
+                  </Button>
+                </Form.Item>
+              </div>
+            </Form>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
