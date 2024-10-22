@@ -46,6 +46,7 @@ import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
 
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
+import UpdateBooking from './pages/admin/booking/updateBooking';
 
 
 
@@ -110,6 +111,7 @@ const router = createBrowserRouter([
       { path: "staff/addStaff", element: <AddStaff /> },
       { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
       { path: "historybooking", element: <HistoryBooking /> },
+      { path: "historybooking/updateBooking", element: <UpdateBooking /> },
       { path: "changePassword", element: <AdminChangePassword /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },
       { path: "service", element: <Service /> },
