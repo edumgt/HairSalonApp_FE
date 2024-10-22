@@ -186,7 +186,7 @@ const BookingComponent = () => {
       } else {
         console.error('Error message:', error.message);
       }
-      message.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+      message.error(error.response.data.message);
     }
   };
 
