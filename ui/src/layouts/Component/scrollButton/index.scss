@@ -1,0 +1,12 @@
+.scrollButton {
+  position: fixed !important;
+  bottom: 40px !important; // Thay đổi từ top thành bottom
+  right: 40px !important; // Tăng khoảng cách từ mép phải
+  z-index: 9999 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  width: 50px !important; // Tăng kích thước nút
+  height: 50px !important; // Tăng kích thước nút
+  font-size: 24px !important; // Tăng kích thước icon
+  background-color: #214386 !important;
+}
+

@@ -1,0 +1,48 @@
+.updateServiceContainer {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.updateServiceContainer h2 {
+    margin-bottom: 20px;
+}
+
+.updateServiceContainer div {
+    margin-bottom: 15px;
+}
+
+.updateServiceContainer label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.updateServiceContainer input,
+.updateServiceContainer textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cancelButton, .saveButton {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+}
+
+.saveButton {
+    background-color: #007bff;
+    color: white;
+}

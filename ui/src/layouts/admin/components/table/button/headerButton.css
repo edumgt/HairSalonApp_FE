@@ -1,0 +1,49 @@
+  /* Thanh header bao gồm các nút và input */
+  .headerButton {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px;
+    gap: 20px;
+  }
+  .filter,
+  .search,
+  .addButton{
+    height: 20px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .filter{
+    width: 20px;
+    height: 20px;
+  }
+  .filterIcon{
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+  }
+  .search{
+    width: 30%;
+  }
+  .searchInput{
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+  }
+  .addButton{
+    background-color: #2264e5;
+    border: none;
+  }
+  .addButton:hover{
+    background-color: #004add;
+  }
+  .add {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+  }

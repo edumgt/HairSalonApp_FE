@@ -1,0 +1,179 @@
+.spa-combo {
+    padding: 2rem;
+    width: 70%;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: sans-serif;
+  
+    .service-category {
+      margin-bottom: 3rem;
+  
+      &__title {
+        font-size: 2rem;
+        color: #15397f;
+        margin-bottom: 0.5rem;
+        text-align: left;
+      }
+  
+      &__subtitle {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 2rem;
+        text-align: left;
+      }
+  
+      &__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); // Sử dụng minmax để đảm bảo các cột có kích thước bằng nhau
+        gap: 2rem;
+        justify-content: start;
+      }
+  
+      &#lay-ray-tai {
+        .service-category__grid {
+          grid-template-columns: minmax(0, 580px); // Giới hạn chiều rộng tối đa là 500px
+          justify-content: start; // Căn trái grid
+        }
+      }
+    }
+  
+    .service-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      width: 60%;
+      padding: 15px;
+      gap: 1rem;
+      height: 100%;
+  
+      &:hover {
+        transform: translateY(-5px);
+      }
+  
+      &__title {
+        font-size: 1.25rem;
+        color: #15397f;
+        padding: 1rem 1rem 0.5rem;
+        margin: 0;
+        text-align: left;
+      }
+  
+      &__description {
+        padding: 0 1rem 1rem;
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+        text-align: left;
+        
+      }
+  
+      &__image-container {
+        display: flex;
+        padding: 0 1rem 1rem;
+        background-color: #f0f4ff;
+        height: 150px;
+      }
+  
+      &__main-image {
+        width: 60%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+  
+      &__sub-images {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-left: 0.5rem;
+  
+        img {
+          width: 100%;
+          height: 72px;
+          object-fit: cover;
+          border-radius: 5px;
+        }
+      }
+  
+      &__footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: #f0f4ff;
+        margin-top: auto;
+      }
+  
+      &__duration {
+        color: #15397f;
+        background-color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid #15397f;
+      }
+  
+      &__price {
+        font-weight: bold;
+        color: #fff;
+        background-color: #15397f;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+      }
+      &__link {
+        display: block;
+        text-align: right;
+        color: #15397f;
+        margin-top: 10px;
+        font-size: 0.9em;
+        text-decoration: none;
+    
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  
+    &__book-button {
+      display: block;
+      width: 200px;
+      margin: 4rem auto 0;
+      padding: 1rem;
+      background-color: #15397f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  
+      &:hover {
+        background-color: #0f2b5e;
+      }
+    }
+  }
+  
+  
+@media (max-width: 1024px) {
+  .spa-combo {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .spa-combo {
+    width: 95%;
+
+    .service-category__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

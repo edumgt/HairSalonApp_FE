@@ -1,0 +1,211 @@
+.all-combos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      color: #15397f;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      
+      &::after {
+        content: '';
+        display: block;
+        width: 50px;
+        height: 3px;
+        background-color: #15397f;
+        margin: 15px auto 0;
+      }
+    }
+  
+    .combos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      justify-content: center;
+  
+      @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  
+    .combo-card {
+      background-color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+  
+      .combo-images {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+  
+      .combo-image-container {
+        width: 48%;
+        height: 100px;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+  
+      .combo-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+  
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+  
+      .combo-image-placeholder {
+        width: 100%;
+        height: 100px;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #6c757d;
+        font-style: italic;
+      }
+  
+      .combo-title {
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+        color: #15397f;
+        font-weight: 600;
+      }
+  
+      .combo-price {
+        color: #28a745;
+        margin-bottom: 15px;
+        font-weight: 500;
+        font-size: 1.1rem;
+      }
+  
+      .combo-description {
+        color: #6c757d;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+      }
+  
+      .combo-link {
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        font-weight: bold;
+        background-color: #15397f;
+        padding: 10px 20px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #0056b3;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+      }
+    }
+  
+    .search-bar {
+      width: 50%;
+      padding: 10px;
+      font-size: 16px;
+      margin: auto 0 0;
+      border-radius: 5px;
+      
+      input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+    }
+  
+    .category-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .category-buttons button {
+      padding: 10px 15px;
+      background-color: #f0f0f0;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .category-buttons button.active {
+      background-color: #15397f;
+      color: white;
+    }
+  
+    &__book-button {
+      display: block;
+      width: 200px;
+      margin: 4rem auto 0;
+      padding: 1rem;
+      background-color: #15397f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  
+      &:hover {
+        background-color: #0f2b5e;
+      }
+    }
+  }
+  
+  // Thêm animation cho các card khi chúng xuất hiện
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .combo-card {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+  
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+  }

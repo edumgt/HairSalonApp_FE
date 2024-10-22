@@ -1,0 +1,20 @@
+.app-container {
+    display: flex;
+    height: 100vh; /* Full height */
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+  .sidebar{
+    position: fixed;
+  }
+  .main {
+    width: 100%;
+    max-height: 100%;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: left;
+    color: #666;
+    background-color: #F1F1F1;
+    padding: 20px;
+}

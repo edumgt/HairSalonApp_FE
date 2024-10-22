@@ -1,0 +1,46 @@
+.layout {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.content {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form :global(.ant-form-item) {
+  margin-bottom: 0;
+}
+
+.form :global(.ant-form-item-label) {
+  text-align: left;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}

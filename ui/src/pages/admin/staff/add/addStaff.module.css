@@ -1,0 +1,20 @@
+.addStaffContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form :global(.ant-form-item) {
+    margin-bottom: 20px;
+}
+
+.form :global(.ant-btn-primary) {
+    width: 100%;
+}
