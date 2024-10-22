@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
 import './index.scss';
 
 const BookingSuccess = () => {
@@ -24,7 +25,10 @@ const BookingSuccess = () => {
           }
         } catch (error) {
           console.error('Error fetching stylist info:', error);
+          setStylistName('Không thể tải thông tin stylist');
         }
+      } else {
+        setStylistName('Chưa chọn (Để hệ thống chọn giúp bạn)');
       }
     };
 
@@ -45,7 +49,7 @@ const BookingSuccess = () => {
       <h1>Đặt lịch thành công!</h1>
       <div className="booking-details">
         <p><strong>Mã đặt lịch:</strong> {bookingInfo.id}</p>
-        <p><strong>Ngày:</strong> {new Date(bookingInfo.date).toLocaleDateString('vi-VN')}</p>
+        <p><strong>Ngày:</strong> {moment(bookingInfo.date).format('DD/MM/YYYY')}</p>
         <p><strong>Giờ:</strong> {bookingInfo.slot.timeStart}</p>
         <p><strong>Stylist:</strong> {stylistName || 'Đang tải...'}</p>
         <p><strong>Dịch vụ:</strong></p>
@@ -58,7 +62,7 @@ const BookingSuccess = () => {
         </ul>
         <p><strong>Tổng giá:</strong> {formatPrice(bookingInfo.price)}</p>
         <p><strong>Trạng thái:</strong> {bookingInfo.status}</p>
-        <p><strong>Đặt lịch định kỳ:</strong> {bookingInfo.period ? `${bookingInfo.period} Tuần` : 'Không đặt lịch định kỳ'}</p>
+        <p><strong>Đặt lịch định kỳ:</strong> {bookingInfo.period ? `Mỗi ${bookingInfo.period} tuần` : 'Không đặt lịch định kỳ'}</p>
       </div>
       <Link to="/" className="home-link">Quay về trang chủ</Link>
     </div>
