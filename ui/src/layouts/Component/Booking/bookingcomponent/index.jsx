@@ -752,18 +752,15 @@ const DateTimeSelectionStep = ({
     try {
       const token = localStorage.getItem('token');
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.post('http://localhost:8080/api/v1/staff/stylist', 
-        {
-          date: formattedDate,
-          slotId: slotId.toString()
+      const response = await axios.get('http://localhost:8080/api/v1/staff/stylist', {
+        params: {
+          slotId: slotId,
+          date: formattedDate
         },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      );
+      });
 
       if (response.data.code === 200) {
         setAvailableStylists(response.data.result);
@@ -1048,3 +1045,4 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
+
