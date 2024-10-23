@@ -1,46 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Typography, Spin, message } from 'antd';
-import { CalendarOutlined, ScissorOutlined, DollarOutlined } from '@ant-design/icons';
+import { Table, Typography, Spin, message, Tag } from 'antd';
+import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import './index.scss';
 
 const { Title } = Typography;
 
 function ShineHistory() {
-  const [history, setHistory] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchShineHistory();
+    fetchBookingHistory();
   }, []);
 
-  const fetchShineHistory = async () => {
+  const fetchBookingHistory = async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        message.error('Vui lòng đăng nhập để xem lịch sử');
+        message.error('Vui lòng đăng nhập để xem lịch sử đặt lịch');
         setLoading(false);
         return;
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/shine-history', {
+      const response = await axios.patch('http://localhost:8080/api/v1/booking', {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch shine history');
-      }
-
-      const data = await response.json();
-      if (data.result) {
-        setHistory(data.result);
+      if (response.data.result) {
+        setBookings(response.data.result);
       } else {
-        throw new Error('Shine history data not found');
+        throw new Error('Dữ liệu đặt lịch không tìm thấy');
       }
     } catch (error) {
-      console.error('Error fetching shine history:', error);
-      message.error('Không thể tải lịch sử tỏa sáng. Vui lòng thử lại sau.');
+      console.error('Lỗi khi lấy lịch sử đặt lịch:', error);
+      message.error('Không thể tải lịch sử đặt lịch. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -48,29 +44,38 @@ function ShineHistory() {
 
   const columns = [
     {
+      title: 'Mã đặt lịch',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
       title: 'Ngày',
       dataIndex: 'date',
       key: 'date',
-      render: (text) => (
+      render: (text, record) => (
         <span>
           <CalendarOutlined style={{ marginRight: 8 }} />
-          {text}
+          {text} {record.slot.timeStart}
         </span>
       ),
     },
     {
       title: 'Dịch vụ',
-      dataIndex: 'service',
-      key: 'service',
-      render: (text) => (
-        <span>
-          <ScissorOutlined style={{ marginRight: 8 }} />
-          {text}
-        </span>
+      dataIndex: 'services',
+      key: 'services',
+      render: (services) => (
+        <>
+          {services.map((service) => (
+            <Tag key={service.serviceId} color="blue">
+              <ScissorOutlined style={{ marginRight: 4 }} />
+              {service.serviceName}
+            </Tag>
+          ))}
+        </>
       ),
     },
     {
-      title: 'Giá',
+      title: 'Tổng giá',
       dataIndex: 'price',
       key: 'price',
       render: (text) => (
@@ -82,9 +87,45 @@ function ShineHistory() {
     },
     {
       title: 'Stylist',
-      dataIndex: 'stylist',
+      dataIndex: ['stylistId', 'firstName'],
       key: 'stylist',
+      render: (firstName, record) => (
+        <span>
+          <UserOutlined style={{ marginRight: 8 }} />
+          {`${record.stylistId.firstName} ${record.stylistId.lastName}`}
+        </span>
+      ),
     },
+    {
+      title: 'Thời gian',
+      dataIndex: ['slot', 'timeStart'],
+      key: 'time',
+      render: (timeStart) => (
+        <span>
+          <ClockCircleOutlined style={{ marginRight: 8 }} />
+          {timeStart}
+        </span>
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        let color = 'blue';
+        switch (status) {
+          case 'RECEIVED':
+            color = 'green';
+            break;
+          // Thêm các trường hợp khác nếu cần
+        }
+        return (
+          <Tag color={color}>
+            {status}
+          </Tag>
+        );
+      },
+    }
   ];
 
   if (loading) {
@@ -93,9 +134,9 @@ function ShineHistory() {
 
   return (
     <div className="shine-history-container">
-      <Title level={2}>Lịch Sử Tỏa Sáng</Title>
+      <Title level={2}>Lịch Sử Đặt Lịch</Title>
       <Table 
-        dataSource={history} 
+        dataSource={bookings} 
         columns={columns} 
         rowKey="id"
         pagination={{ pageSize: 10 }}
@@ -105,4 +146,3 @@ function ShineHistory() {
 }
 
 export default ShineHistory;
-
