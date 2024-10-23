@@ -191,16 +191,19 @@ const BookingComponent = () => {
               <div className="option" onClick={handleViewAllServices}>
                 <span className="icon">✂️</span>
                 <span>
-                  {selectedServices.length > 0
-                    ? `Đã chọn ${selectedServices.length} dịch vụ`
-                    : "Xem tt cả dịch vụ hấp dẫn"}
+                  {selectedServices.length > 0 || selectedCombosDetails.length > 0
+                    ? `Đã chọn ${selectedServices.length + selectedCombosDetails.length} dịch vụ/combo`
+                    : "Xem tất cả dịch vụ hấp dẫn"}
                 </span>
                 <span className="arrow">›</span>
               </div>
-              {selectedServices.length > 0 && (
+              {(selectedServices.length > 0 || selectedCombosDetails.length > 0) && (
                 <div className="selected-services-summary">
                   {selectedServices.map((service, index) => (
-                    <p key={index}>{service.title}</p>
+                    <p key={index}>{service.serviceName || service.name}</p>
+                  ))}
+                  {selectedCombosDetails.map((combo, index) => (
+                    <p key={`combo-${index}`}>{combo.name} (Combo)</p>
                   ))}
                   <p className="total-price">Tổng thanh toán: {totalPrice.toLocaleString()} VND</p>
                 </div>
@@ -393,12 +396,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
 
   const handleAddService = (service) => {
     const serviceId = service.serviceId || service.id;
-    const isServiceSelected = selectedServices.some(s => (s.serviceId || s.id) === serviceId);
-    if (!isServiceSelected) {
-      setSelectedServices(prevServices => [...prevServices, {...service, isCombo: false}]);
-    } else {
-      setSelectedServices(prevServices => prevServices.filter(s => (s.serviceId || s.id) !== serviceId));
-    }
+    setSelectedServices(prevServices => {
+      const isServiceSelected = prevServices.some(s => (s.serviceId || s.id) === serviceId);
+      if (!isServiceSelected) {
+        return [...prevServices, {...service, isCombo: false}];
+      } else {
+        return prevServices.filter(s => (s.serviceId || s.id) !== serviceId);
+      }
+    });
     updateTotalPrice();
   };
   
@@ -412,6 +417,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
       if (isAlreadySelected) {
         return prevCombos.filter(c => c.id !== combo.id);
       } else {
+        // Loại bỏ các dịch vụ đơn lẻ đã có trong combo
+        setSelectedServices(prevServices => 
+          prevServices.filter(service => 
+            !comboWithDetails.services.some(comboService => 
+              (comboService.serviceId || comboService.id) === (service.serviceId || service.id)
+            )
+          )
+        );
         return [...prevCombos, comboWithDetails];
       }
     });
@@ -1045,4 +1058,3 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
-
