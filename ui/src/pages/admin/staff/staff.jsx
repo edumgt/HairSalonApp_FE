@@ -257,65 +257,69 @@ const Staff = () => {
         <Outlet/>
       )}
       {/* Modal for editing staff */}
-      {canManageStaff && (
-        <Modal
-          title="Cập nhật nhân viên"
-          visible={isEditModalVisible}
-          onCancel={() => setIsEditModalVisible(false)}
-          footer={null}
-          width={700}
-          centered
-          destroyOnClose={true}
-        >
-          <div className={styles.modalContent}>
-            <Form
-              form={form}
-              onFinish={handleUpdateStaff}
-              layout="vertical"
-              initialValues={editingStaff}
-            >
-              <div className={styles.formGrid}>
-                <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="lastName" label="Tên" rules={[{ required: true }]} className={styles.formItem}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
-                  <Select>
-                    <Option value="male">Nam</Option>
-                    <Option value="female">Nữ</Option>
-                    <Option value="other">Khác</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
-                  <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]} className={styles.formItem}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
-                  <DatePicker style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
-                  <Input />
-                </Form.Item>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                    Cập nhật nhân viên
-                  </Button>
-                </Form.Item>
-              </div>
-            </Form>
-          </div>
-        </Modal>
-      )}
+      <Modal
+        title="Cập nhật nhân viên"
+        visible={isEditModalVisible}
+        onCancel={() => setIsEditModalVisible(false)}
+        footer={null}
+        width={700}
+        centered
+        destroyOnClose={true}
+      >
+        <div className={styles.modalContent}>
+          <Form
+            form={form}
+            onFinish={handleUpdateStaff}
+            layout="vertical"
+            initialValues={editingStaff}
+          >
+            <div className={styles.formGrid}>
+              <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
+                <Input disabled />
+              </Form.Item>
+              <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="lastName" label="Tên" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]} className={styles.formItem}>
+                <Select>
+                  <Option value="male">Nam</Option>
+                  <Option value="female">Nữ</Option>
+                  <Option value="other">Khác</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="yob" label="Năm sinh" rules={[{ required: true }]} className={styles.formItem}>
+                <InputNumber style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
+                <DatePicker style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
+                <Input />
+              </Form.Item>
+              <Form.Item name="role" label="Chức vụ" rules={[{ required: true }]} className={styles.formItem}>
+                <Select>
+                  <Option value="STAFF">Nhân viên</Option>
+                  <Option value="STYLIST">Thợ cắt tóc</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" className={styles.submitButton}>
+                  Cập nhật nhân viên
+                </Button>
+              </Form.Item>
+            </div>
+          </Form>
+        </div>
+      </Modal>
     </div>
   );
 };

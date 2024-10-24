@@ -1,22 +1,15 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
-import { serviceDetails } from '../../../../data/serviceDetails';
-import { spaComboDetail } from '../../../../data/spaComboDetail';
-import { hairStylingDetail } from '../../../../data/hairStylingDetail';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { message, Radio, Typography, Select, Modal } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
-import stylist1 from "../../../../assets/imageHome/Stylist/Stylist_1.jpg";
-import stylist2 from "../../../../assets/imageHome/Stylist/Stylist_2.jpg";
-import stylist3 from "../../../../assets/imageHome/Stylist/Stylist_3.jpg";
-import stylist4 from "../../../../assets/imageHome/Stylist/Stylist_4.jpg";
-import stylist5 from "../../../../assets/imageHome/Stylist/Stylist_5.jpg";
-import stylist6 from "../../../../assets/imageHome/Stylist/Stylist_6.jpg";
 import { DownOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { fetchServices } from '../../../../data/hairservice';
 import { fetchCombos } from '../../../../data/comboservice';
+import moment from 'moment';
+
 
 
 const { Title, Paragraph } = Typography;
@@ -107,55 +100,30 @@ const BookingComponent = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('Submitting booking with:', {
-      selectedSalon,
-      selectedServices,
-      selectedCombos: selectedCombosDetails,
-      selectedStylist,
-      selectedDate,
-      selectedTime,
-      totalPrice,
-      recurringBooking
-    });
-
-    if (!selectedSalon) {
-      message.error("Vui lòng chọn salon.");
+    if (!selectedDate || !selectedTime || (!selectedStylist && selectedStylist !== 'None')) {
+      message.error("Vui lòng chọn đầy đủ thông tin đặt lịch.");
       return;
     }
-    if (selectedServices.length === 0 && selectedCombosDetails.length === 0) {
-      message.error("Vui lòng chọn ít nhất một dịch vụ hoặc combo.");
-      return;
-    }
-    if (!selectedStylist) {
-      message.error("Vui lòng chọn stylist.");
-      return;
-    }
-    if (!selectedDate) {
-      message.error("Vui lòng chọn ngày.");
-      return;
-    }
-    if (!selectedTime) {
-      message.error("Vui lòng chọn giờ.");
-      return;
-    }
-
-    // Chuẩn bị dữ liệu để gửi
-    const bookingData = {
-      date: selectedDate.date.toISOString().split('T')[0], // Định dạng ngày thành "YYYY-MM-DD"
-      stylistId: selectedStylist,
-      slotId: parseInt(selectedTime),
-      price: totalPrice,
-      serviceId: [
-        ...selectedServices.map(s => s.serviceId || s.id),
-        ...selectedCombosDetails.flatMap(c => c.services ? c.services.map(s => s.serviceId || s.id) : [c.serviceId || c.id])
-      ],
-      period: recurringBooking ? parseInt(recurringBooking) : null
-    };
-
-    console.log('Booking data being sent:', bookingData);
 
     try {
       const token = localStorage.getItem('token');
+      
+      // Xử lý danh sách dịch vụ
+      const comboServices = selectedCombosDetails.flatMap(combo => combo.services);
+      const allServices = [...selectedServices, ...comboServices];
+      const serviceIds = allServices.map(service => service.serviceId || service.id);
+
+      const bookingData = {
+        date: moment(selectedDate.date).format('YYYY-MM-DD'),
+        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist, // Thay đổi ở đây
+        slotId: parseInt(selectedTime),
+        price: parseInt(totalPrice),
+        serviceId: serviceIds,
+        period: recurringBooking ? parseInt(recurringBooking) : null
+      };
+
+      console.log('Sending booking data:', bookingData);
+
       const response = await axios.post('http://localhost:8080/api/v1/booking', bookingData, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -163,33 +131,49 @@ const BookingComponent = () => {
         }
       });
 
-      console.log('Server response:', response);
+      console.log('Received response:', response.data);
 
-      if (response.status === 200 || (response.data && response.data.code === 200)) {
-        message.success("Đặt lịch thành công!");
-        
-        // Chuyển hướng đến trang success với dữ liệu từ response
+      if (response.data.code === 201) {
+        message.success(response.data.message);
         navigate('/booking/success', { 
-          state: { bookingInfo: response.data.result }
+          state: { 
+            bookingInfo: response.data.result,
+            selectedServices: selectedServices,
+            selectedCombos: selectedCombosDetails
+          }
         });
       } else {
-        console.error('Booking failed. Response:', response);
-        message.error(response.data.message || "Đặt lịch thất bại. Vui lòng thử lại.");
+        message.warning(response.data.message || "Có vấn đề khi đặt lịch. Vui lòng kiểm tra lại.");
       }
     } catch (error) {
       console.error('Lỗi khi đặt lịch:', error);
       if (error.response) {
-        console.error('Error response:', error.response);
-        console.error('Error data:', error.response.data);
+        console.error('Error response:', error.response.data);
         console.error('Error status:', error.response.status);
         console.error('Error headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('Error request:', error.request);
+        message.error(error.response.data.message || "Đặt lịch thất bại. Vui lòng thử lại.");
       } else {
-        console.error('Error message:', error.message);
+        message.error("Có lỗi xảy ra khi kết nối với server. Vui lòng thử lại sau.");
       }
-      message.error(error.response.data.message);
     }
+  };
+
+  const handleServiceConfirm = (allServices, selectedCombos, totalPrice) => {
+    // Lấy danh sách dịch vụ từ các combo đã chọn
+    const comboServices = selectedCombos.flatMap(combo => combo.services);
+    
+    // Lấy danh sách dịch vụ đơn lẻ (không nằm trong combo)
+    const singleServices = allServices.filter(service => 
+      !comboServices.some(comboService => comboService.serviceId === service.serviceId)
+    );
+
+    setSelectedServices(singleServices);
+    setSelectedCombosDetails(selectedCombos);
+    setTotalPrice(totalPrice);
+
+    console.log('Danh sách dịch vụ trong combo:', comboServices);
+    console.log('Danh sách dịch vụ đơn lẻ:', singleServices);
+    console.log('Tất cả dịch vụ:', allServices);
   };
 
   const renderStepContent = () => {
@@ -209,16 +193,19 @@ const BookingComponent = () => {
               <div className="option" onClick={handleViewAllServices}>
                 <span className="icon">✂️</span>
                 <span>
-                  {selectedServices.length > 0
-                    ? `Đã chọn ${selectedServices.length} dịch vụ`
+                  {selectedServices.length > 0 || selectedCombosDetails.length > 0
+                    ? `Đã chọn ${selectedServices.length + selectedCombosDetails.length} dịch vụ/combo`
                     : "Xem tất cả dịch vụ hấp dẫn"}
                 </span>
                 <span className="arrow">›</span>
               </div>
-              {selectedServices.length > 0 && (
+              {(selectedServices.length > 0 || selectedCombosDetails.length > 0) && (
                 <div className="selected-services-summary">
                   {selectedServices.map((service, index) => (
-                    <p key={index}>{service.title}</p>
+                    <p key={index}>{service.serviceName || service.name}</p>
+                  ))}
+                  {selectedCombosDetails.map((combo, index) => (
+                    <p key={`combo-${index}`}>{combo.name} (Combo)</p>
                   ))}
                   <p className="total-price">Tổng thanh toán: {totalPrice.toLocaleString()} VND</p>
                 </div>
@@ -226,17 +213,18 @@ const BookingComponent = () => {
             </div>
             <div className="step">
               <h3>3. Chọn ngày, giờ & stylist</h3>
-
               <DateTimeSelectionStep 
-              selectedStylist={selectedStylist} 
-              setSelectedStylist={setSelectedStylist}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              selectedTime={selectedTime}
-              setSelectedTime={setSelectedTime}
-              recurringBooking={recurringBooking}
-              setRecurringBooking={setRecurringBooking}
-             />
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                selectedTime={selectedTime}
+                setSelectedTime={setSelectedTime}
+                selectedStylist={selectedStylist} 
+                setSelectedStylist={setSelectedStylist}
+                recurringBooking={recurringBooking}
+                setRecurringBooking={setRecurringBooking}
+                selectedServices={selectedServices}
+                selectedCombos={selectedCombosDetails}
+              />
             </div>
           </div>
         );
@@ -260,6 +248,8 @@ const BookingComponent = () => {
             setSelectedTime={setSelectedTime}
             recurringBooking={recurringBooking}
             setRecurringBooking={setRecurringBooking}
+            selectedServices={selectedServices}
+            selectedCombos={selectedCombosDetails}
           />
         );
       default:
@@ -314,6 +304,7 @@ const BookingComponent = () => {
         onRemoveService={handleRemoveService}
         onRemoveCombo={handleRemoveCombo}
         totalPrice={totalPrice}
+        onConfirm={handleServiceConfirm}
       />
       <Modal
         visible={isServiceModalVisible}
@@ -390,7 +381,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
           setCategories(['Tất cả dịch vụ', ...Array.from(categorySet)]);
         } else {
           console.error('Services or combos data is not an array:', { servicesData, combosData });
-          setError("Dữ liệu dịch vụ không hợp lệ.");
+          setError("Dữ liệu dịch vụ khng hợp lệ.");
         }
         setLoading(false);
       } catch (err) {
@@ -429,12 +420,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
 
   const handleAddService = (service) => {
     const serviceId = service.serviceId || service.id;
-    const isServiceSelected = selectedServices.some(s => (s.serviceId || s.id) === serviceId);
-    if (!isServiceSelected) {
-      setSelectedServices(prevServices => [...prevServices, {...service, isCombo: false}]);
-    } else {
-      setSelectedServices(prevServices => prevServices.filter(s => (s.serviceId || s.id) !== serviceId));
-    }
+    setSelectedServices(prevServices => {
+      const isServiceSelected = prevServices.some(s => (s.serviceId || s.id) === serviceId);
+      if (!isServiceSelected) {
+        return [...prevServices, {...service, isCombo: false}];
+      } else {
+        return prevServices.filter(s => (s.serviceId || s.id) !== serviceId);
+      }
+    });
     updateTotalPrice();
   };
   
@@ -448,6 +441,14 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
       if (isAlreadySelected) {
         return prevCombos.filter(c => c.id !== combo.id);
       } else {
+        // Loại bỏ các dịch vụ đơn lẻ đã có trong combo
+        setSelectedServices(prevServices => 
+          prevServices.filter(service => 
+            !comboWithDetails.services.some(comboService => 
+              (comboService.serviceId || comboService.id) === (service.serviceId || service.id)
+            )
+          )
+        );
         return [...prevCombos, comboWithDetails];
       }
     });
@@ -726,124 +727,132 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
 };
 
 const DateTimeSelectionStep = ({ 
-  selectedStylist, 
-  setSelectedStylist, 
   selectedDate, 
   setSelectedDate, 
   selectedTime, 
   setSelectedTime,
+  selectedStylist, 
+  setSelectedStylist, 
   recurringBooking,
-  setRecurringBooking
+  setRecurringBooking,
+  selectedServices,
+  selectedCombos
 }) => {
-  const [isStyleListOpen, setIsStyleListOpen] = useState(false);
   const [isDateListOpen, setIsDateListOpen] = useState(false);
-  const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
-  const [currentStylistIndex, setCurrentStylistIndex] = useState(0);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [timeSlots, setTimeSlots] = useState([]);
-  const [unavailableSlots, setUnavailableSlots] = useState([]); // Thêm state này
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [availableStylists, setAvailableStylists] = useState([]);
+  const [isStylistLoading, setIsStylistLoading] = useState(false);
+  const [stylistError, setStylistError] = useState(null);
+  const [formError, setFormError] = useState('');
 
-  useEffect(() => {
-    const fetchUnavailableSlots = async () => {
-      if (selectedDate) {
-        try {
-          const token = localStorage.getItem('token');
-          const formattedDate = selectedDate.date.toISOString().split('T')[0];
-          const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (response.data && response.data.code === 200) {
-            setUnavailableSlots(response.data.result);
-          }
-        } catch (error) {
-          console.error('Error fetching unavailable slots:', error);
+  const fetchTimeSlots = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8080/api/v1/slot', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
+
+      console.log('Time slots response:', response.data); // Log the response
+
+      if (response.data.code === 200) {
+        setTimeSlots(response.data.result);
+      } else {
+        setError('Không thể lấy khung giờ: ' + response.data.message);
       }
-    };
-
-    fetchUnavailableSlots();
-  }, [selectedDate]);
-
-  // Cập nhật hàm isTimeDisabled
-  const isTimeDisabled = (slot) => {
-    if (!selectedDate) return false;
-    
-    const [hours, minutes] = slot.timeStart.split(':').map(Number);
-    const selectedDateTime = new Date(selectedDate.date);
-    selectedDateTime.setHours(hours, minutes, 0, 0);
-
-    // Kiểm tra xem slot có trong danh sách unavailable không
-    const isUnavailable = unavailableSlots.some(unavailableSlot => unavailableSlot.id === slot.id);
-
-    // Nếu ngày được chọn là hôm nay, vô hiệu hóa các thời gian trước hoặc bằng thời gian hiện tại
-    if (selectedDate.date.toDateString() === currentTime.toDateString()) {
-      const currentHours = currentTime.getHours();
-      const currentMinutes = currentTime.getMinutes();
-      
-      if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
-        return true;
-      }
-      
-      // Vô hiệu hóa các slot trong vòng 30 phút kể từ bây giờ
-      const thirtyMinutesLater = new Date(currentTime.getTime() + 30 * 60000);
-      if (selectedDateTime <= thirtyMinutesLater) {
-        return true;
-      }
+    } catch (error) {
+      console.error('Error fetching time slots:', error);
+      setError('Lỗi khi lấy khung giờ: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsLoading(false);
     }
-
-    return isUnavailable;
   };
 
   useEffect(() => {
-    //updat current time every minute
-    const updateCurrentTime = () => setCurrentTime(new Date());
-    updateCurrentTime(); //  set initial time imediately
-    const timer = setInterval(updateCurrentTime, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const fetchTimeSlots = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8080/api/v1/slot', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.data.code === 200) {
-          setTimeSlots(response.data.result);
-        } else {
-          console.error('Failed to fetch time slots:', response.data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching time slots:', error);
-      }
-    };
-
     fetchTimeSlots();
   }, []);
 
-  const handleTimeSelect = (slot) => {
-    setSelectedTime(slot.id);
+  useEffect(() => {
+    if (selectedDate && selectedTime) {
+      fetchAvailableStylists(selectedTime, selectedDate.date);
+    }
+  }, [selectedDate, selectedTime]);
+
+  const fetchAvailableStylists = async (slotId, date) => {
+    setIsStylistLoading(true);
+    setStylistError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const formattedDate = moment(date).format('YYYY-MM-DD');
+      const response = await axios.get('http://localhost:8080/api/v1/staff/stylist', {
+        params: {
+          slotId: slotId,
+          date: formattedDate
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.code === 200) {
+        setAvailableStylists(response.data.result);
+      } else {
+        throw new Error(response.data.message || 'Không thể lấy danh sách stylist có sẵn');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách stylist có sẵn:', error);
+      setStylistError('Không thể tải danh sách stylist có sẵn. Vui lòng thử lại.');
+    } finally {
+      setIsStylistLoading(false);
+    }
   };
 
-  const stylists = [
-    { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1, code: "None" },
-    { id: 2, name: 'Luận Triệu', image: stylist2, code: "S0001" },
-    { id: 3, name: 'Bắc Lý', image: stylist3, code: "S0002" },
-    { id: 4, name: 'Huy Nguyễn', image: stylist4, code: "S0003" },
-    { id: 5, name: 'Đạt Nguyễn', image: stylist5, code: "S0004" },
-    { id: 6, name: 'Phúc Nguyễn', image: stylist6, code: "S0005" },
-  ];
+  const handleDateSelect = (date) => {
+    if (!checkServiceSelected()) {
+      setFormError('Vui lòng chọn dịch vụ hoặc combo trước khi chọn ngày.');
+      return;
+    }
+    setSelectedDate(date);
+    setSelectedTime(null);
+    setSelectedStylist(null);
+    setIsDateListOpen(false);
+    setFormError('');
+  };
+
+  const handleTimeSelect = (slot) => {
+    if (!selectedDate) {
+      setFormError('Vui lòng chọn ngày trước khi chọn giờ.');
+      return;
+    }
+    setSelectedTime(slot.id);
+    setSelectedStylist(null);
+    setFormError('');
+  };
 
   const handleStylistSelect = (stylist) => {
-    console.log('Selected stylist code:', stylist.code);
-    setSelectedStylist(stylist.code);
-    setIsStyleListOpen(false);
+    if (!selectedTime) {
+      setFormError('Vui lòng chọn giờ trước khi chọn stylist.');
+      return;
+    }
+    setSelectedStylist(stylist.code === 'None' ? 'None' : stylist.code);
+    setFormError('');
+  };
+
+  const checkServiceSelected = () => {
+    return (selectedServices && selectedServices.length > 0) || (selectedCombos && selectedCombos.length > 0);
+  };
+
+  const toggleDateList = () => {
+    if (!checkServiceSelected()) {
+      setFormError('Vui lòng chọn dịch vụ hoặc combo trước khi chọn ngày.');
+      return;
+    }
+    setIsDateListOpen(prevState => !prevState);
   };
 
   const today = new Date();
@@ -860,36 +869,6 @@ const DateTimeSelectionStep = ({
     { date: tomorrow, label: `Ngày mai, ${formatDate(tomorrow)}`, tag: tomorrow.getDay() === 0 || tomorrow.getDay() === 6 ? 'Cuối tuần' : 'Ngày thường' },
   ];
 
-
-  const handleDateSelect = (date) => {
-    setSelectedDate(date);
-    setIsDateListOpen(false);
-  };
-  const toggleStyleList = () => {
-    setIsStyleListOpen(!isStyleListOpen);
-  };
-
-  const toggleDateList = () => {
-    setIsDateListOpen(!isDateListOpen);
-    setIsStyleListOpen(false);
-  };
-
-  const handlePrev = () => {
-    setCurrentStylistIndex(prevIndex => Math.max(0, prevIndex - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentStylistIndex(prevIndex => Math.min(stylists.length - 4, prevIndex + 1));
-  };
-
-  const handlePrevTime = () => {
-    setCurrentTimeIndex(prev => Math.max(0, prev - 1));
-  };
-
-  const handleNextTime = () => {
-    setCurrentTimeIndex(prev => Math.min(timeSlots.length - 3, prev + 1));
-  };
-
   const handleRecurringChange = (value) => {
     setRecurringBooking(value);
   };
@@ -902,65 +881,89 @@ const DateTimeSelectionStep = ({
     { value: 4, label: 'Mỗi 4 tuần' },
   ];
 
+  const groupTimeSlots = (slots) => {
+    const morning = slots.filter(slot => {
+      const hour = parseInt(slot.timeStart.split(':')[0]);
+      return hour >= 6 && hour < 12;
+    });
+    const afternoon = slots.filter(slot => {
+      const hour = parseInt(slot.timeStart.split(':')[0]);
+      return hour >= 12 && hour < 18;
+    });
+    const evening = slots.filter(slot => {
+      const hour = parseInt(slot.timeStart.split(':')[0]);
+      return hour >= 18 || hour < 6;
+    });
+    return { morning, afternoon, evening };
+  };
+
+  const isTimeDisabled = (timeStart) => {
+    if (!selectedDate) return false;
+    
+    const [hours, minutes] = timeStart.split(':').map(Number);
+    const selectedDateTime = new Date(selectedDate.date);
+    selectedDateTime.setHours(hours, minutes, 0, 0);
+
+    const now = new Date();
+    return selectedDateTime <= now;
+  };
+
+  const renderTimeGroup = (groupName, slots) => (
+    <div className="time-group" key={groupName}>
+      <h5>{groupName}</h5>
+      <div className="time-grid">
+        {slots.map((slot) => (
+          <button
+            key={slot.id}
+            className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot.timeStart) ? 'disabled' : ''}`}
+            onClick={() => !isTimeDisabled(slot.timeStart) && handleTimeSelect(slot)}
+            disabled={isTimeDisabled(slot.timeStart)}
+          >
+            {slot.timeStart.slice(0, 5)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const getImgurDirectUrl = useCallback((url) => {
+    if (!url) {
+      console.warn('Image URL is undefined');
+      return '/fallback-image.jpg';
+    }
+    const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+    const match = url.match(imgurRegex);
+    if (match && match[1]) {
+      return `https://i.imgur.com/${match[1]}.jpg`;
+    }
+    console.warn('Invalid Imgur URL:', url);
+    return url;
+  }, []);
+
+  // Hàm kiểm tra các bước đã được chọn
+  const checkSteps = () => {
+    if (!selectedServices || !selectedCombos) {
+      message.warning('Vui lòng chọn dịch vụ hoặc combo trước');
+      return false;
+    }
+    if ((selectedServices.length === 0 && selectedCombos.length === 0) || 
+        (!selectedServices.length && !selectedCombos.length)) {
+      message.warning('Vui lòng chọn dịch vụ hoặc combo trước');
+      return false;
+    }
+    if (!selectedDate) {
+      message.warning('Vui lòng chọn ngày trước');
+      return false;
+    }
+    if (!selectedTime) {
+      message.warning('Vui lòng chọn khung giờ trước');
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="date-time-selection">
-      <div className="stylist-selection">
-        <h3 onClick={toggleStyleList} className="stylist-header">
-          Chọn Stylist
-          <FaChevronRight className={`arrow ${isStyleListOpen ? 'open' : ''}`} />
-        </h3>
-        {selectedStylist && (
-          <div className="selected-stylist-summary">
-            <p>Lựa chọn của bạn: {stylists.find(s => s.code === selectedStylist)?.name || 'Chưa chọn'}</p>
-            <img
-              src={stylists.find(s => s.code === selectedStylist)?.image || stylist1}
-              alt={stylists.find(s => s.code === selectedStylist)?.name || 'Chưa chọn'}
-              className="stylist-image"
-            />
-          </div>
-        )}
-        {isStyleListOpen && (
-          <div className="stylist-carousel">
-            {currentStylistIndex > 0 && (
-              <button className="nav-button prev" onClick={handlePrev}>
-                <FaChevronLeft />
-              </button>
-            )}
-            <div className="stylist-list" style={{ transform: `translateX(-${currentStylistIndex * 25}%)` }}>
-              {stylists.map((stylist) => (
-                <div
-                  key={stylist.id}
-                  className={`stylist-item ${selectedStylist === stylist.code ? 'selected' : ''}`}
-                  onClick={() => handleStylistSelect(stylist)}
-                >
-                  {stylist.id === 1 ? (
-                    <div className="default-stylist">
-                      <FaUser className="icon" />
-                      <span className="stylist-name">{stylist.name}</span>
-                    </div>
-                  ) : (
-                    <>
-                      <img src={stylist.image} alt={stylist.name} />
-                      <div className="stylist-info">
-                        <p className="stylist-name">{stylist.name}</p>
-                      </div>
-                    </>
-                  )}
-                  {selectedStylist === stylist.code && (
-                    <div className="check-icon">✓</div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {currentStylistIndex < stylists.length - 4 && (
-              <button className="nav-button next" onClick={handleNext}>
-                <FaChevronRight />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
       <div className="date-selection">
         <div
           className="date-dropdown"
@@ -971,7 +974,7 @@ const DateTimeSelectionStep = ({
           <span className={`tag ${selectedDate ? (selectedDate.tag === 'Cuối tuần' ? 'weekend' : 'weekday') : ''}`}>
             {selectedDate ? selectedDate.tag : ''}
           </span>
-          <FaChevronRight className="arrow" />
+          <FaChevronRight className={`arrow ${isDateListOpen ? 'open' : ''}`} />
         </div>
 
         {isDateListOpen && (
@@ -996,32 +999,66 @@ const DateTimeSelectionStep = ({
             <FaClock className="icon" />
             Chọn giờ
           </h4>
-          <div className="time-carousel">
-            <button className="nav-button prev" onClick={handlePrevTime} disabled={currentTimeIndex === 0}>
-              <FaChevronLeft />
-            </button>
-            <div className="time-grid">
-              {[0, 1, 2].map((rowIndex) => (
-                <div key={rowIndex} className="time-row">
-                  {timeSlots.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((slot) => (
-                    <button
-                      key={slot.id}
-                      className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot) ? 'disabled' : ''}`}
-                      onClick={() => !isTimeDisabled(slot) && handleTimeSelect(slot)}
-                      disabled={isTimeDisabled(slot)}
-                    >
-                      {slot.timeStart}
-                    </button>
-                  ))}
+          {isLoading ? (
+            <p>Đang tải khung giờ...</p>
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : timeSlots.length > 0 ? (
+            <>
+              {renderTimeGroup('Buổi sáng', groupTimeSlots(timeSlots).morning)}
+              {renderTimeGroup('Buổi chiều', groupTimeSlots(timeSlots).afternoon)}
+              {renderTimeGroup('Buổi tối', groupTimeSlots(timeSlots).evening)}
+            </>
+          ) : (
+            <p>Không có khung giờ nào khả dụng.</p>
+          )}
+        </div>
+      )}
+
+      {selectedDate && selectedTime && (
+        <div className="stylist-selection">
+          <h4>
+            <FaUser className="icon" />
+            Chọn Stylist
+          </h4>
+          {isStylistLoading ? (
+            <p>Đang tải danh sách stylist...</p>
+          ) : stylistError ? (
+            <p className="error-message">{stylistError}</p>
+          ) : (
+            <div className="stylist-list">
+              <div
+                className={`stylist-item ${selectedStylist === 'None' ? 'selected' : ''}`}
+                onClick={() => handleStylistSelect({ code: 'None' })}
+              >
+                <div className="stylist-info centered-text">
+                  <p className="stylist-name">Để chúng tôi chọn giúp bạn</p>
+                </div>
+                {selectedStylist === 'None' && (
+                  <div className="check-icon">✓</div>
+                )}
+              </div>
+              {availableStylists.map((stylist) => (
+                <div
+                  key={stylist.code}
+                  className={`stylist-item ${selectedStylist === stylist.code ? 'selected' : ''}`}
+                  onClick={() => handleStylistSelect(stylist)}
+                >
+                  <img src={getImgurDirectUrl(stylist.image)} alt={`${stylist.firstName} ${stylist.lastName}`} />
+                  <div className="stylist-info">
+                    <p className="stylist-name">{`${stylist.firstName} ${stylist.lastName}`}</p>
+                  </div>
+                  {selectedStylist === stylist.code && (
+                    <div className="check-icon">✓</div>
+                  )}
                 </div>
               ))}
             </div>
-            <button className="nav-button next" onClick={handleNextTime} disabled={currentTimeIndex >= timeSlots.length - 15}>
-              <FaChevronRight />
-            </button>
-          </div>
+          )}
         </div>
       )}
+
+      {formError && <p className="form-error">{formError}</p>}
 
       <div className="recurring-booking">
         <Title level={4}>Đặt lịch định kỳ (Không bắt buộc)</Title>

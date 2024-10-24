@@ -18,14 +18,29 @@ const SelectedServicesModal = ({
   onRemoveService,
   onRemoveCombo,
   onRemoveServiceFromCombo,
-  totalPrice 
+  totalPrice,
+  onConfirm
 }) => {
+  const getAllServices = () => {
+    const comboServices = selectedCombos.flatMap(combo => combo.services);
+    return [...selectedServices, ...comboServices];
+  };
+
+  const handleConfirm = () => {
+    const allServices = getAllServices();
+    onConfirm(allServices, selectedCombos, totalPrice);
+    onClose();
+  };
+
   return (
     <Modal
       title="Dịch vụ đã chọn"
       visible={visible}
       onCancel={onClose}
-      footer={null}
+      footer={[
+        <Button key="cancel" onClick={onClose}>Hủy</Button>,
+        <Button key="confirm" type="primary" onClick={handleConfirm}>Xác nhận</Button>
+      ]}
     >
       <div className="selected-services-list">
         <h3>Dịch vụ đơn lẻ:</h3>
