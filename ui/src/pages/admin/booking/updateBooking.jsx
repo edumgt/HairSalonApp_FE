@@ -40,10 +40,10 @@ function UpdateBooking() {
                 try {
                     const response = await update({
                         bookingId: id,
-                        date: values.date.format('YYYY-MM-DD'),
-                        slotId: values.slotId
+                        slotId: values.slotId,
+                        date: values.date.format('YYYY-MM-DD')
                     });
-                    if (response.data && response.data.code === 200) {
+                    if (response.data && response.data.code === 0) {
                         notification.success({
                             message: 'Thành công',
                             description: 'Cập nhật lịch đặt thành công!',

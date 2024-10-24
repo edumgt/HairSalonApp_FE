@@ -9,6 +9,7 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
 import EditButton from '../../../layouts/admin/components/table/button/editButton';
 import { Outlet } from 'react-router-dom';
+import { log } from 'util';
 
 const { Option } = Select;
 
@@ -148,6 +149,7 @@ const Staff = () => {
         yob: parseInt(values.yob),
         joinIn: values.joinIn.format('YYYY-MM-DD')
       };
+      console.log(updatedStaff)
       const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
       if (response.data && response.data.code === 200) {
         Modal.success({

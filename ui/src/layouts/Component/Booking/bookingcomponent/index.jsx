@@ -44,6 +44,8 @@ const BookingComponent = () => {
   const [selectedCombosDetails, setSelectedCombosDetails] = useState([]);
   const [isServiceModalVisible, setIsServiceModalVisible] = useState(false);
 
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
+
   // Remove service
   const handleRemoveService = (index) => {
     const newServices = [...selectedServices];
@@ -265,6 +267,28 @@ const BookingComponent = () => {
     }
   };
 
+  const fetchUnavailableSlots = useCallback(async (date) => {
+    if (!date) return;
+    try {
+      const formattedDate = date.format('YYYY-MM-DD');
+      const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && response.data.code === 200) {
+        setUnavailableSlots(response.data.result);
+      }
+    } catch (error) {
+      console.error('Error fetching unavailable slots:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate) {
+      fetchUnavailableSlots(selectedDate.date);
+    }
+  }, [selectedDate, fetchUnavailableSlots]);
 
   return (
     <div className="booking-wrapper">
@@ -717,8 +741,60 @@ const DateTimeSelectionStep = ({
   const [currentStylistIndex, setCurrentStylistIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeSlots, setTimeSlots] = useState([]);
+  const [unavailableSlots, setUnavailableSlots] = useState([]); // Thêm state này
 
-  
+  useEffect(() => {
+    const fetchUnavailableSlots = async () => {
+      if (selectedDate) {
+        try {
+          const token = localStorage.getItem('token');
+          const formattedDate = selectedDate.date.toISOString().split('T')[0];
+          const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.data && response.data.code === 200) {
+            setUnavailableSlots(response.data.result);
+          }
+        } catch (error) {
+          console.error('Error fetching unavailable slots:', error);
+        }
+      }
+    };
+
+    fetchUnavailableSlots();
+  }, [selectedDate]);
+
+  // Cập nhật hàm isTimeDisabled
+  const isTimeDisabled = (slot) => {
+    if (!selectedDate) return false;
+    
+    const [hours, minutes] = slot.timeStart.split(':').map(Number);
+    const selectedDateTime = new Date(selectedDate.date);
+    selectedDateTime.setHours(hours, minutes, 0, 0);
+
+    // Kiểm tra xem slot có trong danh sách unavailable không
+    const isUnavailable = unavailableSlots.some(unavailableSlot => unavailableSlot.id === slot.id);
+
+    // Nếu ngày được chọn là hôm nay, vô hiệu hóa các thời gian trước hoặc bằng thời gian hiện tại
+    if (selectedDate.date.toDateString() === currentTime.toDateString()) {
+      const currentHours = currentTime.getHours();
+      const currentMinutes = currentTime.getMinutes();
+      
+      if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
+        return true;
+      }
+      
+      // Vô hiệu hóa các slot trong vòng 30 phút kể từ bây giờ
+      const thirtyMinutesLater = new Date(currentTime.getTime() + 30 * 60000);
+      if (selectedDateTime <= thirtyMinutesLater) {
+        return true;
+      }
+    }
+
+    return isUnavailable;
+  };
 
   useEffect(() => {
     //updat current time every minute
@@ -754,32 +830,6 @@ const DateTimeSelectionStep = ({
   const handleTimeSelect = (slot) => {
     setSelectedTime(slot.id);
   };
-
-  const isTimeDisabled = (timeStart) => {
-    if (!selectedDate) return false;
-    
-    const [hours, minutes] = timeStart.split(':').map(Number);
-    const selectedDateTime = new Date(selectedDate.date);
-    selectedDateTime.setHours(hours, minutes, 0, 0);
-
-    // If selected date is today, disable times before or equal to current time
-    if (selectedDate.date.toDateString() === currentTime.toDateString()) {
-      const currentHours = currentTime.getHours();
-      const currentMinutes = currentTime.getMinutes();
-      
-      // If the time is earlier than or equal to current time, disable it
-      if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
-        return true;
-      }
-      
-      // Disable slots within the next 30 minutes from now
-      const thirtyMinutesLater = new Date(currentTime.getTime() + 30 * 60000);
-      return selectedDateTime <= thirtyMinutesLater;
-    }
-    return false;
-  };
-
-
 
   const stylists = [
     { id: 1, name: '30Shine Chọn Giúp Anh', image: stylist1, code: "None" },
@@ -956,9 +1006,9 @@ const DateTimeSelectionStep = ({
                   {timeSlots.slice(currentTimeIndex + rowIndex * 5, currentTimeIndex + (rowIndex + 1) * 5).map((slot) => (
                     <button
                       key={slot.id}
-                      className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot.timeStart) ? 'disabled' : ''}`}
-                      onClick={() => !isTimeDisabled(slot.timeStart) && handleTimeSelect(slot)}
-                      disabled={isTimeDisabled(slot.timeStart)}
+                      className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot) ? 'disabled' : ''}`}
+                      onClick={() => !isTimeDisabled(slot) && handleTimeSelect(slot)}
+                      disabled={isTimeDisabled(slot)}
                     >
                       {slot.timeStart}
                     </button>
@@ -995,12 +1045,3 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
-
-
-
-
-
-
-
-
-

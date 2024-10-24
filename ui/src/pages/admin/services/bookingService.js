@@ -5,7 +5,7 @@ export const getAll = async () => {
     return response
 }
 export const update = async (values) => {
-    const response = await BASE_URL.put(`booking/${values.bookingId}`, {
+    const response = await BASE_URL.put('booking', {
         bookingId: values.bookingId,
         date: values.date,
         slotId: values.slotId,
@@ -14,5 +14,9 @@ export const update = async (values) => {
 }
 export const updateStatus = async (values) => {
     const response = await BASE_URL.put(`booking/${values.bookingId}/${values.status}`);
+    return response;
+}
+export const deleteById = async (id) => {
+    const response = await BASE_URL.delete(`booking/${id}`);
     return response;
 }

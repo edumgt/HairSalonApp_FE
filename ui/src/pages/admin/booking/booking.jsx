@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './booking.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
-import { getAll, updateStatus } from '../services/bookingService';
+import { deleteById, getAll, updateStatus } from '../services/bookingService';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import HeaderButton from '../../../layouts/admin/components/table/buttonv2/headerButton';
 import { Button, Dropdown, Modal, notification } from 'antd';
@@ -11,7 +11,6 @@ import { DownOutlined } from '@ant-design/icons';
 
 const HistoryBooking = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const isRootPath = location.pathname === '/admin/historybooking';
   const [booking, setBooking] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -95,12 +94,17 @@ const HistoryBooking = () => {
           </td>
         )}
         <td>
+          <Button color='danger' variant='outlined' size='small'>
+            Hủy định kỳ
+          </Button>
+        </td>
+        <td>
           <Dropdown
             menu={{
               items,
               onClick: ({ key }) => handleStatusChange(key),
             }}
-          >
+            >
             <Button>
               Trạng thái <DownOutlined />
             </Button>
@@ -137,15 +141,32 @@ const HistoryBooking = () => {
     Modal.confirm({
       title: 'Xác nhận xóa',
       content: 'Bạn có chắc chắn muốn xóa lịch đặt này?',
-      onOk() {
-        // Implement delete logic here
-        console.log(`Deleting booking ${id}`);
+      onOk: async () => {
+        try {
+          const response = await deleteById(id);
+          notification.success({
+            message: 'Thành công',
+            description: 'Lịch đặt đã được xóa',
+            duration: 2
+          });
+          loadBooking();
+          return response
+        } catch (error) {
+          console.log(error);
+          notification.error({
+            message: 'Thất bại',
+            description: 'Xóa lịch đặt thất bại',
+            duration: 2
+          });
+        }
       },
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <>
+          <CancelBtn />
+          <OkBtn />
+        </>
+      ),
     });
-  };
-
-  const handleAddBooking = () => {
-    navigate('/admin/historybooking/addBooking');
   };
 
   return (
@@ -155,9 +176,6 @@ const HistoryBooking = () => {
           <NavLink currentPage="Đặt lịch" />
           <div className={styles.tableGroup}>
             <HeaderButton 
-              text="Thêm đặt lịch" 
-              add={canManageBooking}
-              onClick={canManageBooking ? handleAddBooking : undefined}
               handleSearch={handleSearch}
               searchTarget='ID'
             />
@@ -177,6 +195,7 @@ const HistoryBooking = () => {
                     <HeaderColumn title="Giá" />
                     <HeaderColumn title="Trạng thái đặt lịch" />
                     {canManageBooking && <HeaderColumn title="" />}
+                    <HeaderColumn title="" />
                     <HeaderColumn title="" />
                   </tr>
                 </thead>
