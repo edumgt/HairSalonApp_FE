@@ -45,8 +45,7 @@ import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
 
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
-
-
+import Payment from './pages/Payment';
 
 const ScrollRestorationProvider = ({ children }) => {
   useScrollRestoration();
@@ -93,8 +92,8 @@ const router = createBrowserRouter([
       { path: "tat-ca-dich-vu", element: <AllServices /> },
       { path: "tat-ca-combo", element: <AllCombos /> },
       { path: "dich-vu/:serviceId", element: <ServiceDetail /> },
-      { path: "combo/:comboId", element: <ComboDetail /> }
-
+      { path: "combo/:comboId", element: <ComboDetail /> },
+      { path: "payment/:bookingId", element: <Payment /> },
     ],
   },
   {
