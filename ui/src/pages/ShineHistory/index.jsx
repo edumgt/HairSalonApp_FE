@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space } from 'antd';
-import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './index.scss';
@@ -119,6 +119,75 @@ function ShineHistory() {
     setIsModalVisible(false);
   };
 
+  const handleCancelPeriodic = () => {
+    confirm({
+      title: 'Xác nhận hủy đặt lịch định kỳ',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Bạn có chắc chắn muốn hủy đặt lịch định kỳ này không?',
+      okText: 'Đồng ý',
+      cancelText: 'Hủy bỏ',
+      onOk: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            message.error('Vui lòng đăng nhập để thực hiện thao tác này');
+            return;
+          }
+
+          const response = await axios.put(`http://localhost:8080/api/v1/booking/${selectedBooking.id}`, 
+            { period: 0 },
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+
+          if (response.status === 200) {
+            message.success('Đã hủy đặt lịch định kỳ thành công');
+            setIsModalVisible(false);
+            fetchBookingHistory(); // Cập nhật lại danh sách đặt lịch
+          } else {
+            throw new Error(response.data?.message || 'Hủy đặt lịch định kỳ thất bại');
+          }
+        } catch (error) {
+          console.error('Lỗi khi hủy đặt lịch định kỳ:', error);
+          message.error(error.message || 'Không thể hủy đặt lịch định kỳ. Vui lòng thử lại sau.');
+        }
+      },
+    });
+  };
+
+  const renderBookingDetails = () => {
+    if (!selectedBooking) return null;
+
+    const renderPeriodInfo = () => {
+      if (selectedBooking.period > 0) {
+        return `Có (${selectedBooking.period} tuần/lần)`;
+      }
+      return 'Không';
+    };
+
+    return (
+      <div className="booking-details">
+        <h3>Chi tiết đặt lịch</h3>
+        <p><strong>Mã đặt lịch:</strong> {selectedBooking.id}</p>
+        <p><strong>Ngày:</strong> {selectedBooking.date}</p>
+        <p><strong>Dịch vụ:</strong> {selectedBooking.services.map(s => s.serviceName).join(', ')}</p>
+        <p><strong>Tổng giá:</strong> {selectedBooking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
+        <p><strong>Stylist:</strong> {`${selectedBooking.stylistId.firstName} ${selectedBooking.stylistId.lastName}`}</p>
+        <p><strong>Thời gian:</strong> {selectedBooking.slot.timeStart}</p>
+        <p><strong>Trạng thái:</strong> {selectedBooking.status}</p>
+        <p><strong>Đặt lịch định kỳ:</strong> {renderPeriodInfo()}</p>
+        {selectedBooking.period > 0 && (
+          <Button onClick={handleCancelPeriodic} type="primary" danger>
+            Hủy định kỳ
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   const columns = [
     {
       title: 'Mã đặt lịch',
@@ -204,23 +273,6 @@ function ShineHistory() {
       },
     }
   ];
-
-  const renderBookingDetails = () => {
-    if (!selectedBooking) return null;
-
-    return (
-      <div className="booking-details">
-        <h3>Chi tiết đặt lịch</h3>
-        <p><strong>Mã đặt lịch:</strong> {selectedBooking.id}</p>
-        <p><strong>Ngày:</strong> {selectedBooking.date}</p>
-        <p><strong>Dịch vụ:</strong> {selectedBooking.services.map(s => s.serviceName).join(', ')}</p>
-        <p><strong>Tổng giá:</strong> {selectedBooking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
-        <p><strong>Stylist:</strong> {`${selectedBooking.stylistId.firstName} ${selectedBooking.stylistId.lastName}`}</p>
-        <p><strong>Thời gian:</strong> {selectedBooking.slot.timeStart}</p>
-        <p><strong>Trạng thái:</strong> {selectedBooking.status}</p>
-      </div>
-    );
-  };
 
   if (loading) {
     return <Spin size="large" />;
