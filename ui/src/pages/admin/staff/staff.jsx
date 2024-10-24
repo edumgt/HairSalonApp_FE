@@ -241,7 +241,7 @@ const Staff = () => {
         visible={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
-        width={700} // Thu hẹp độ rộng của modal
+        width={700}
         centered
         destroyOnClose={true}
       >
@@ -283,6 +283,12 @@ const Staff = () => {
               </Form.Item>
               <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
+              </Form.Item>
+              <Form.Item name="role" label="Chức vụ" rules={[{ required: true }]} className={styles.formItem}>
+                <Select>
+                  <Option value="STAFF">Nhân viên</Option>
+                  <Option value="STYLIST">Thợ cắt tóc</Option>
+                </Select>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className={styles.submitButton}>

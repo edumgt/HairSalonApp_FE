@@ -35,7 +35,6 @@ import AddService from './pages/admin/service/Create/addService';
 import UpdateService from './pages/admin/service/Update/updateService';
 import CreateCategory from './pages/admin/category/addCategory/createCategory';
 import UpdateCategory from './pages/admin/category/updateCategory/updateCategory';
-import UpdateStaff from './pages/admin/staff/update/updateStaff';
 import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
@@ -108,7 +107,7 @@ const router = createBrowserRouter([
       { path: "adminprofile/changePassword", element: <AdminChangePassword /> },
       { path: "staff", element: <Staff /> },
       { path: "staff/addStaff", element: <AddStaff /> },
-      { path: "staff/updateStaff/:id", element: <UpdateStaff /> },
+    
       { path: "historybooking", element: <HistoryBooking /> },
       { path: "changePassword", element: <AdminChangePassword /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },

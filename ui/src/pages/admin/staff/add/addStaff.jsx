@@ -22,13 +22,14 @@ function AddStaff() {
                 phone: values.phone,
                 email: values.email,
                 joinIn: values.joinIn.format('YYYY-MM-DD'),
+                role: values.role,
                 image: values.image
             };
 
             const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues);
             
             if (response.data && response.data.code === 200) {
-                message.success('Thêm nhân viên thành công');
+                message.success(response.data.message || 'Thêm nhân viên thành công');
                 navigate('/admin/staff', { state: { refreshData: true } });
             } else {
                 throw new Error(response.data.message || 'Thêm nhân viên thất bại');
@@ -117,6 +118,17 @@ function AddStaff() {
                     rules={[{ required: true, message: 'Vui lòng nhập URL!' }]}
                 >
                     <Input />
+                </Form.Item>
+
+                <Form.Item
+                    name="role"
+                    label="Chức vụ"
+                    rules={[{ required: true, message: 'Vui lòng chọn chức vụ!' }]}
+                >
+                    <Select>
+                        <Option value="STAFF">Nhân viên</Option>
+                        <Option value="STYLIST">Thợ cắt tóc</Option>
+                    </Select>
                 </Form.Item>
 
                 <Form.Item>
