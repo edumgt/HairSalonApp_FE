@@ -34,12 +34,6 @@ function AddCombo() {
             rules: [{required: true, message: 'Vui lòng nhập Tên!'}]
         },
         {
-            label: 'Giá',
-            name:'price',
-            isInput: true,
-            rules: [{required: true, message: 'Vui lòng nhập Giá!'}]
-        },
-        {
             label: 'Mô tả',
             name:'description',
             isInput: true,
@@ -85,6 +79,11 @@ function AddCombo() {
                     return response
                 } catch (error) {
                     console.log(error);
+                    notification.error({
+                      message: 'Thất bại',
+                      description: error.response.data.message,
+                      duration: 2
+                    });
                 }
             },
             footer: (_, { OkBtn, CancelBtn }) => (
