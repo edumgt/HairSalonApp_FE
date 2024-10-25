@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space } from 'antd';
+import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider } from 'antd';
 import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './index.scss';
+import moment from 'moment';
+import 'moment/locale/vi';
+import vi_VN from 'antd/lib/locale/vi_VN';
+
+// Đặt locale cho moment
+moment.locale('vi');
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -17,11 +23,18 @@ function ShineHistory() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
+  const [isRescheduleModalVisible, setIsRescheduleModalVisible] = useState(false);
+  const [newDate, setNewDate] = useState('');
+  const [newSlotId, setNewSlotId] = useState(null);
+  const [slots, setSlots] = useState([]);
+  const [originalDate, setOriginalDate] = useState(null);
+  const [originalSlotId, setOriginalSlotId] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchBookingHistory();
+    fetchSlots();
   }, []);
 
   const fetchBookingHistory = async () => {
@@ -67,7 +80,7 @@ function ShineHistory() {
 
   const handleDelete = () => {
     confirm({
-      title: 'Xác nhận hủy lịch',
+      title: 'Xác nhận hy lịch',
       content: 'Anh thật sự muốn hủy lịch à :<',
       okText: 'Đúng vậy',
       cancelText: 'Không, tôi đổi ý rồi',
@@ -104,9 +117,11 @@ function ShineHistory() {
   };
 
   const handleUpdate = () => {
-    // Xử lý logic cập nhật booking
-    message.success('Đã cập nhật đặt lịch');
-    setIsModalVisible(false);
+    if (selectedBooking) {
+      setNewDate(selectedBooking.date); // Giả sử selectedBooking.date là string dạng 'YYYY-MM-DD'
+      setNewSlotId(selectedBooking.slot.id);
+      setIsRescheduleModalVisible(true);
+    }
   };
 
   const handlePayment = () => {
@@ -198,10 +213,10 @@ function ShineHistory() {
       title: 'Ngày',
       dataIndex: 'date',
       key: 'date',
-      render: (text, record) => (
+      render: (text) => (
         <span>
           <CalendarOutlined style={{ marginRight: 8 }} />
-          {text} {record.slot.timeStart}
+          {moment(text).format('DD-MM-YYYY')}
         </span>
       ),
     },
@@ -274,6 +289,83 @@ function ShineHistory() {
     }
   ];
 
+  const fetchSlots = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để xem khung giờ');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:8080/api/v1/slot', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.code === 200 && Array.isArray(response.data.result)) {
+        setSlots(response.data.result);
+      } else {
+        throw new Error('Dữ liệu khung giờ không hợp lệ');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách khung giờ:', error);
+      message.error('Không thể tải danh sách khung giờ. Vui lòng thử lại sau.');
+    }
+  };
+
+  const handleReschedule = async () => {
+    if (!newDate || !newSlotId) {
+      message.error('Vui lòng nhập ngày và chọn khung giờ mới');
+      return;
+    }
+
+    // Kiểm tra định dạng ngày
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
+      message.error('Vui lòng nhập ngày theo định dạng YYYY-MM-DD');
+      return;
+    }
+
+    // Kiểm tra nếu thời gian mới là trong quá khứ
+    const now = moment();
+    const newBookingTime = moment(`${newDate} ${slots.find(slot => slot.id === newSlotId)?.timeStart}`, 'YYYY-MM-DD HH:mm:ss');
+
+    if (newBookingTime.isBefore(now)) {
+      message.error('Không thể dời lịch về thời điểm trong quá khứ');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để dời lịch');
+        return;
+      }
+
+      const response = await axios.put('http://localhost:8080/api/v1/booking', {
+        bookingId: selectedBooking.id,
+        slotId: newSlotId,
+        date: newDate
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.code === 0) {
+        message.success(response.data.message);
+        setIsRescheduleModalVisible(false);
+        setIsModalVisible(false); // Đóng modal chi tiết đặt lịch
+        fetchBookingHistory(); // Cập nhật lại danh sách đặt lịch
+      } else {
+        throw new Error(response.data.message || 'Dời lịch thất bại');
+      }
+    } catch (error) {
+      console.error('Lỗi khi dời lịch:', error);
+      message.error(error.message || 'Không thể dời lịch. Vui lòng thử lại sau.');
+    }
+  };
+
   if (loading) {
     return <Spin size="large" />;
   }
@@ -319,6 +411,33 @@ function ShineHistory() {
             placeholder="Nhập phản hồi của bạn..."
           />
         </div>
+      </Modal>
+      <Modal
+        title="Dời lịch"
+        visible={isRescheduleModalVisible}
+        onOk={handleReschedule}
+        onCancel={() => setIsRescheduleModalVisible(false)}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Input
+            style={{ width: '100%' }}
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            placeholder="Nhập ngày mới (YYYY-MM-DD)"
+          />
+          <Select
+            style={{ width: '100%' }}
+            value={newSlotId}
+            onChange={(value) => setNewSlotId(value)}
+            placeholder="Chọn khung giờ mới"
+          >
+            {slots.map(slot => (
+              <Select.Option key={slot.id} value={slot.id}>
+                {slot.timeStart.slice(0, 5)}
+              </Select.Option>
+            ))}
+          </Select>
+        </Space>
       </Modal>
     </div>
   );
