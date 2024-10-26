@@ -29,6 +29,7 @@ function ShineHistory() {
   const [slots, setSlots] = useState([]);
   const [originalDate, setOriginalDate] = useState(null);
   const [originalSlotId, setOriginalSlotId] = useState(null);
+  const [feedbackId, setFeedbackId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -65,9 +66,50 @@ function ShineHistory() {
     }
   };
 
-  const showModal = (booking) => {
+  const showModal = async (booking) => {
     setSelectedBooking(booking);
     setIsModalVisible(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để xem chi tiết');
+        return;
+      }
+
+      // Lấy feedback ID
+      const feedbackResponse = await axios.get(`http://localhost:8080/api/v1/booking/feedback/${booking.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      console.log('Feedback ID Response:', feedbackResponse.data);
+
+      if (feedbackResponse.data.code === 0 && feedbackResponse.data.result) {
+        const feedbackId = feedbackResponse.data.result;
+        setFeedbackId(feedbackId);
+
+        // Lấy thông tin feedback chi tiết
+        const feedbackDetailResponse = await axios.get(`http://localhost:8080/api/v1/feedback/${feedbackId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        console.log('Feedback Detail Response:', feedbackDetailResponse.data);
+
+        if (feedbackDetailResponse.data.code === 0 && feedbackDetailResponse.data.result) {
+          const feedbackDetail = feedbackDetailResponse.data.result;
+          setRating(parseInt(feedbackDetail.rate) || 0);
+          setFeedback(feedbackDetail.feedback || '');
+        }
+      } else {
+        // Nếu không có feedback, reset các giá trị
+        setFeedbackId(null);
+        setRating(0);
+        setFeedback('');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin feedback:', error);
+      message.error('Không thể lấy thông tin đánh giá. Vui lòng thử lại sau.');
+    }
   };
 
   const handleOk = () => {
@@ -78,9 +120,16 @@ function ShineHistory() {
     setIsModalVisible(false);
   };
 
+  const isBookingEditable = (status) => status === "RECEIVED";
+
   const handleDelete = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể hủy lịch ở trạng thái hiện tại');
+      return;
+    }
+    
     confirm({
-      title: 'Xác nhận hy lịch',
+      title: 'Xác nhận hủy lịch',
       content: 'Anh thật sự muốn hủy lịch à :<',
       okText: 'Đúng vậy',
       cancelText: 'Không, tôi đổi ý rồi',
@@ -117,8 +166,13 @@ function ShineHistory() {
   };
 
   const handleUpdate = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể dời lịch ở trạng thái hiện tại');
+      return;
+    }
+    
     if (selectedBooking) {
-      setNewDate(selectedBooking.date); // Giả sử selectedBooking.date là string dạng 'YYYY-MM-DD'
+      setNewDate(selectedBooking.date);
       setNewSlotId(selectedBooking.slot.id);
       setIsRescheduleModalVisible(true);
     }
@@ -139,6 +193,11 @@ function ShineHistory() {
   };
 
   const handleCancelPeriodic = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể hủy định kỳ ở trạng thái hiện tại');
+      return;
+    }
+    
     confirm({
       title: 'Xác nhận hủy đặt lịch định kỳ',
       icon: <ExclamationCircleOutlined />,
@@ -185,21 +244,37 @@ function ShineHistory() {
         return;
       }
 
-      const response = await axios.post('http://localhost:8080/api/v1/feedback', {
-        id: `F${selectedBooking.id.slice(1)}`, // Tạo ID feedback từ booking ID
+      // Nếu chưa có feedbackId, lấy nó từ API
+      if (!feedbackId) {
+        const feedbackIdResponse = await axios.get(`http://localhost:8080/api/v1/booking/feedback/${selectedBooking.id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (feedbackIdResponse.data.code === 0 && feedbackIdResponse.data.result) {
+          setFeedbackId(feedbackIdResponse.data.result);
+        } else {
+          throw new Error('Không thể lấy mã feedback');
+        }
+      }
+
+      const feedbackData = {
+        id: feedbackId,
         rate: rating.toString(),
         feedback: feedback
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      };
+
+      console.log('Sending feedback data:', feedbackData);
+
+      const response = await axios.post('http://localhost:8080/api/v1/feedback', feedbackData, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      console.log('Submit Feedback Response:', response.data);
 
       if (response.data.code === 0) {
         message.success('Cảm ơn bạn đã gửi đánh giá!');
-        setRating(0);
-        setFeedback('');
-        // Có thể thêm logic để cập nhật UI hoặc đóng modal
+        // Cập nhật state nếu cần
+        setRating(parseInt(response.data.result.rate) || 0);
+        setFeedback(response.data.result.feedback || '');
       } else {
         throw new Error(response.data.message || 'Gửi đánh giá thất bại');
       }
@@ -219,6 +294,8 @@ function ShineHistory() {
       return 'Không';
     };
 
+    const isEditable = isBookingEditable(selectedBooking.status);
+
     return (
       <div className="booking-details">
         <h3>Chi tiết đặt lịch</h3>
@@ -231,7 +308,12 @@ function ShineHistory() {
         <p><strong>Trạng thái:</strong> {selectedBooking.status}</p>
         <p><strong>Đặt lịch định kỳ:</strong> {renderPeriodInfo()}</p>
         {selectedBooking.period > 0 && (
-          <Button onClick={handleCancelPeriodic} type="primary" danger>
+          <Button 
+            onClick={handleCancelPeriodic} 
+            type="primary" 
+            danger 
+            disabled={!isEditable}
+          >
             Hủy định kỳ
           </Button>
         )}
@@ -240,7 +322,8 @@ function ShineHistory() {
         
         <div className="rating-feedback">
           <h4>Đánh giá dịch vụ</h4>
-          <Rate value={rating} onChange={setRating} />
+          <p>{feedbackId ? 'Đánh giá:' : 'Thêm đánh giá mới:'}</p>
+          <Rate value={rating} onChange={(value) => setRating(value)} />
           <TextArea
             rows={4}
             value={feedback}
@@ -249,7 +332,7 @@ function ShineHistory() {
             style={{ marginTop: '10px', marginBottom: '10px' }}
           />
           <Button type="primary" onClick={handleSubmitFeedback}>
-            Gửi đánh giá
+            {feedbackId ? 'Cập nhật đánh giá' : 'Gửi đánh giá'}
           </Button>
         </div>
       </div>
@@ -441,14 +524,28 @@ function ShineHistory() {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <Button key="delete" onClick={handleDelete} danger>
+          <Button 
+            key="delete" 
+            onClick={handleDelete} 
+            danger 
+            disabled={!isBookingEditable(selectedBooking?.status)}
+          >
             Hủy lịch
           </Button>,
-          <Button key="update" onClick={handleUpdate}>
+          <Button 
+            key="update" 
+            onClick={handleUpdate}
+            disabled={!isBookingEditable(selectedBooking?.status)}
+          >
             Dời lịch
           </Button>,
-          <Button key="payment" type="primary" onClick={handlePayment}>
-            Thanh toán
+          <Button 
+            key="payment" 
+            type="primary" 
+            onClick={handlePayment}
+            disabled={selectedBooking?.status === "COMPLETED"}
+          >
+            {selectedBooking?.status === "COMPLETED" ? "Đã thanh toán" : "Thanh toán"}
           </Button>,
         ]}
         width={700}
