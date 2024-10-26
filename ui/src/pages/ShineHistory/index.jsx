@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider } from 'antd';
+import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider, Divider } from 'antd';
 import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -127,11 +127,15 @@ function ShineHistory() {
   const handlePayment = () => {
     if (selectedBooking.status === "SUCCESS") {
       // Chuyển hướng đến trang thanh toán với thông tin booking
-      navigate(`/payment/${selectedBooking.id}`, { state: { booking: selectedBooking } });
+      navigate(`/payment/${selectedBooking.id}`, { 
+        state: { 
+          bookingInfo: selectedBooking
+        } 
+      });
+      setIsModalVisible(false);
     } else {
       message.error('Chỉ có thể thanh toán cho các đặt lịch có trạng thái SUCCESS');
     }
-    setIsModalVisible(false);
   };
 
   const handleCancelPeriodic = () => {
@@ -173,6 +177,38 @@ function ShineHistory() {
     });
   };
 
+  const handleSubmitFeedback = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để gửi đánh giá');
+        return;
+      }
+
+      const response = await axios.post('http://localhost:8080/api/v1/feedback', {
+        id: `F${selectedBooking.id.slice(1)}`, // Tạo ID feedback từ booking ID
+        rate: rating.toString(),
+        feedback: feedback
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.code === 0) {
+        message.success('Cảm ơn bạn đã gửi đánh giá!');
+        setRating(0);
+        setFeedback('');
+        // Có thể thêm logic để cập nhật UI hoặc đóng modal
+      } else {
+        throw new Error(response.data.message || 'Gửi đánh giá thất bại');
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi đánh giá:', error);
+      message.error(error.message || 'Không thể gửi đánh giá. Vui lòng thử lại sau.');
+    }
+  };
+
   const renderBookingDetails = () => {
     if (!selectedBooking) return null;
 
@@ -199,6 +235,23 @@ function ShineHistory() {
             Hủy định kỳ
           </Button>
         )}
+        
+        <Divider />
+        
+        <div className="rating-feedback">
+          <h4>Đánh giá dịch vụ</h4>
+          <Rate value={rating} onChange={setRating} />
+          <TextArea
+            rows={4}
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="Nhập phản hồi của bạn..."
+            style={{ marginTop: '10px', marginBottom: '10px' }}
+          />
+          <Button type="primary" onClick={handleSubmitFeedback}>
+            Gửi đánh giá
+          </Button>
+        </div>
       </div>
     );
   };
@@ -392,7 +445,7 @@ function ShineHistory() {
             Hủy lịch
           </Button>,
           <Button key="update" onClick={handleUpdate}>
-            Cập nhật
+            Dời lịch
           </Button>,
           <Button key="payment" type="primary" onClick={handlePayment}>
             Thanh toán
@@ -401,16 +454,6 @@ function ShineHistory() {
         width={700}
       >
         {renderBookingDetails()}
-        <div className="rating-feedback">
-          <h4>Đánh giá dịch vụ</h4>
-          <Rate value={rating} onChange={setRating} />
-          <TextArea
-            rows={4}
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Nhập phản hồi của bạn..."
-          />
-        </div>
       </Modal>
       <Modal
         title="Dời lịch"
