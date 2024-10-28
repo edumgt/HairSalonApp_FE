@@ -123,7 +123,7 @@ function Header() {
       <Menu.Item key="4" icon={<KeyOutlined />}>
       <Link to="/shine-history">Lịch sử tỏa sáng</Link>
       </Menu.Item>
-      {(userRole === 'ADMIN' || userRole === 'admin') && (
+      {(userRole === 'ADMIN' || userRole === 'admin' || userRole === 'MANAGER' || userRole === 'manager' || userRole === 'STAFF' || userRole === 'staff') && (
         <Menu.Item key="5" icon={<UserOutlined />}>
           <Link to="/admin/adminprofile">Cổng Admin</Link>
         </Menu.Item>
