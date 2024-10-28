@@ -84,7 +84,7 @@ const filteredCombos = combo.filter((item) =>
         <td className={styles.info}>{price.toLocaleString()} VND</td>
         <td className={styles.info}>{description}</td>
         <td>
-          <EditButton id={id} forPage='updateCombo' handleDelete={handleDelete} item={{ id, name, services, price, description }} />
+          <EditButton id={id} forPage='updateCombo' handleDelete={handleDelete} item={{ id, name, services, description }} />
         </td>
       </tr>
     );

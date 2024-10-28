@@ -37,6 +37,8 @@ const BookingComponent = () => {
   const [selectedCombosDetails, setSelectedCombosDetails] = useState([]);
   const [isServiceModalVisible, setIsServiceModalVisible] = useState(false);
 
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
+
   // Remove service
   const handleRemoveService = (index) => {
     const newServices = [...selectedServices];
@@ -255,6 +257,28 @@ const BookingComponent = () => {
     }
   };
 
+  const fetchUnavailableSlots = useCallback(async (date) => {
+    if (!date) return;
+    try {
+      const formattedDate = date.format('YYYY-MM-DD');
+      const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && response.data.code === 200) {
+        setUnavailableSlots(response.data.result);
+      }
+    } catch (error) {
+      console.error('Error fetching unavailable slots:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate) {
+      fetchUnavailableSlots(selectedDate.date);
+    }
+  }, [selectedDate, fetchUnavailableSlots]);
 
   return (
     <div className="booking-wrapper">
@@ -722,19 +746,17 @@ const DateTimeSelectionStep = ({
   const [isStylistLoading, setIsStylistLoading] = useState(false);
   const [stylistError, setStylistError] = useState(null);
   const [formError, setFormError] = useState('');
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
 
   const fetchTimeSlots = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:8080/api/v1/slot', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-
-      console.log('Time slots response:', response.data); // Log the response
 
       if (response.data.code === 200) {
         setTimeSlots(response.data.result);
@@ -750,42 +772,41 @@ const DateTimeSelectionStep = ({
   };
 
   useEffect(() => {
-    fetchTimeSlots();
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate && selectedTime) {
-      fetchAvailableStylists(selectedTime, selectedDate.date);
+    if (selectedDate) {
+      fetchTimeSlots();
+      fetchUnavailableSlots();
     }
-  }, [selectedDate, selectedTime]);
+  }, [selectedDate]);
 
-  const fetchAvailableStylists = async (slotId, date) => {
-    setIsStylistLoading(true);
-    setStylistError(null);
+  const fetchUnavailableSlots = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get('http://localhost:8080/api/v1/staff/stylist', {
-        params: {
-          slotId: slotId,
-          date: formattedDate
-        },
+      const formattedDate = moment(selectedDate.date).format('YYYY-MM-DD');
+      const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-
-      if (response.data.code === 200) {
-        setAvailableStylists(response.data.result);
-      } else {
-        throw new Error(response.data.message || 'Không thể lấy danh sách stylist có sẵn');
+      if (response.data && response.data.code === 200) {
+        setUnavailableSlots(response.data.result);
       }
     } catch (error) {
-      console.error('Lỗi khi lấy danh sách stylist có sẵn:', error);
-      setStylistError('Không thể tải danh sách stylist có sẵn. Vui lòng thử lại.');
-    } finally {
-      setIsStylistLoading(false);
+      console.error('Error fetching unavailable slots:', error);
     }
+  };
+
+  const isSlotUnavailable = (slotId) => {
+    return unavailableSlots.some(slot => slot.id === slotId);
+  };
+
+  const isTimeDisabled = (slot) => {
+    if (!selectedDate) return false;
+    
+    const [hours, minutes] = slot.timeStart.split(':').map(Number);
+    const selectedDateTime = new Date(selectedDate.date);
+    selectedDateTime.setHours(hours, minutes, 0, 0);
+
+    const now = new Date();
+    return selectedDateTime <= now || isSlotUnavailable(slot.id);
   };
 
   const handleDateSelect = (date) => {
@@ -808,6 +829,7 @@ const DateTimeSelectionStep = ({
     setSelectedTime(slot.id);
     setSelectedStylist(null);
     setFormError('');
+    fetchAvailableStylists(selectedDate.date, slot.id);
   };
 
   const handleStylistSelect = (stylist) => {
@@ -873,17 +895,6 @@ const DateTimeSelectionStep = ({
     return { morning, afternoon, evening };
   };
 
-  const isTimeDisabled = (timeStart) => {
-    if (!selectedDate) return false;
-    
-    const [hours, minutes] = timeStart.split(':').map(Number);
-    const selectedDateTime = new Date(selectedDate.date);
-    selectedDateTime.setHours(hours, minutes, 0, 0);
-
-    const now = new Date();
-    return selectedDateTime <= now;
-  };
-
   const renderTimeGroup = (groupName, slots) => (
     <div className="time-group" key={groupName}>
       <h5>{groupName}</h5>
@@ -891,9 +902,9 @@ const DateTimeSelectionStep = ({
         {slots.map((slot) => (
           <button
             key={slot.id}
-            className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot.timeStart) ? 'disabled' : ''}`}
-            onClick={() => !isTimeDisabled(slot.timeStart) && handleTimeSelect(slot)}
-            disabled={isTimeDisabled(slot.timeStart)}
+            className={`time-button ${selectedTime === slot.id ? 'selected' : ''} ${isTimeDisabled(slot) ? 'disabled' : ''}`}
+            onClick={() => !isTimeDisabled(slot) && handleTimeSelect(slot)}
+            disabled={isTimeDisabled(slot)}
           >
             {slot.timeStart.slice(0, 5)}
           </button>
@@ -936,6 +947,33 @@ const DateTimeSelectionStep = ({
       return false;
     }
     return true;
+  };
+
+  const fetchAvailableStylists = async (date, slotId) => {
+    if (!date || !slotId) return;
+
+    setIsStylistLoading(true);
+    setStylistError(null);
+
+    try {
+      const formattedDate = moment(date).format('YYYY-MM-DD');
+      const response = await axios.get(`http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.data.code === 200) {
+        setAvailableStylists(response.data.result);
+      } else {
+        setStylistError('Không thể lấy danh sách stylist: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching available stylists:', error);
+      setStylistError('Lỗi khi lấy danh sách stylist: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsStylistLoading(false);
+    }
   };
 
   return (
@@ -1001,7 +1039,7 @@ const DateTimeSelectionStep = ({
             <p>Đang tải danh sách stylist...</p>
           ) : stylistError ? (
             <p className="error-message">{stylistError}</p>
-          ) : (
+          ) : availableStylists.length > 0 ? (
             <div className="stylist-list">
               <div
                 className={`stylist-item ${selectedStylist === 'None' ? 'selected' : ''}`}
@@ -1030,6 +1068,8 @@ const DateTimeSelectionStep = ({
                 </div>
               ))}
             </div>
+          ) : (
+            <p>Không có stylist nào khả dụng cho khung giờ này.</p>
           )}
         </div>
       )}

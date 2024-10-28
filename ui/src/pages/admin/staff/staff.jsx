@@ -9,10 +9,11 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
 import EditButton from '../../../layouts/admin/components/table/button/editButton';
 import { Outlet } from 'react-router-dom';
+import { log } from 'util';
 
 const { Option } = Select;
 
-const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete }) => {
+const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete, canManageStaff }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -54,9 +55,11 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      <td className={styles.actionCell}>
-        <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
-      </td>
+      {canManageStaff && (
+        <td className={styles.actionCell}>
+          <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
+        </td>
+      )}
     </tr>
   );
 };
@@ -74,6 +77,14 @@ const Staff = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isRootPath = location.pathname === '/admin/staff';
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+  }, []);
+
+  const canManageStaff = userRole === 'ADMIN' || userRole === 'MANAGER';
 
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
@@ -138,6 +149,7 @@ const Staff = () => {
         yob: parseInt(values.yob),
         joinIn: values.joinIn.format('YYYY-MM-DD')
       };
+      console.log(updatedStaff)
       const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
       if (response.data && response.data.code === 200) {
         Modal.success({
@@ -195,13 +207,21 @@ const Staff = () => {
         <>
           <NavLink currentPage="Nhân viên" />
           <div className={styles.tableGroup}>
-            <HeaderButton 
-              text="Thêm nhân viên" 
-              add={true} 
-              onClick={handleAddStaff}
-              onSearch={handleSearch}
-              searchText='tên nhân viên'
-            />
+            {canManageStaff && (
+              <HeaderButton 
+                text="Thêm nhân viên" 
+                add={true} 
+                onClick={handleAddStaff}
+                onSearch={handleSearch}
+                searchText='tên nhân viên'
+              />
+            )}
+            {!canManageStaff && (
+              <HeaderButton 
+                onSearch={handleSearch}
+                searchText='tên nhân viên'
+              />
+            )}
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
@@ -215,7 +235,7 @@ const Staff = () => {
                     <HeaderColumn title="Ngày bắt đầu làm"  />
                     <HeaderColumn title="Vai trò"  />
                     <HeaderColumn title="Hình ảnh" />
-                    <HeaderColumn title="" />
+                    {canManageStaff && <HeaderColumn title="" />}
                   </tr>
                 </thead>
                 <tbody>
@@ -223,8 +243,9 @@ const Staff = () => {
                     <ListItem 
                       key={item.id} 
                       {...item} 
-                      onEdit={handleEditStaff}
-                      onDelete={handleDeleteStaff}
+                      onEdit={canManageStaff ? handleEditStaff : undefined}
+                      onDelete={canManageStaff ? handleDeleteStaff : undefined}
+                      canManageStaff={canManageStaff}
                     />
                   ))}
                 </tbody>

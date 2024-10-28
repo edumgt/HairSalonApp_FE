@@ -132,7 +132,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
       const data = await response.json();
       console.log('Response data:', data); // Debug log
       
-      if (response.ok && data.code === 0) {
+      if (data.code === 200) {
         message.success(`Cập nhật trạng thái thành ${newStatus} thành công`);
         if (typeof onStatusUpdate === 'function') {
           await onStatusUpdate();
