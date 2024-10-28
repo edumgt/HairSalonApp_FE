@@ -6,7 +6,7 @@ import EditButton from '../../../layouts/admin/components/table/button/editButto
 import { useState, useEffect } from 'react';
 import { Modal, message, Button, DatePicker, Select, Popconfirm } from 'antd';
 import moment from 'moment';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, UserOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -26,10 +26,15 @@ const ListItem = ({ booking, onClick, onRescheduleClick, onDeleteClick }) => {
         </div>
       </td>
       <td className={styles.info} onClick={() => onClick(booking)}>
-        <div className={styles.statusWrapper}>
-          <div className={`${booking.status === 'RECEIVED' ? styles.greenStatus : styles.redStatus}`}>{booking.status}</div>
-        </div>
-      </td>
+  <div className={styles.statusWrapper}>
+    <div className={`
+      ${booking.status === 'CANCELED' ? styles.redStatus : ''}
+      ${['CHECKED_IN', 'SUCCESS', 'RECEIVED'].includes(booking.status) ? styles.greenStatus : ''}
+    `}>
+      {booking.status}
+    </div>
+  </div>
+</td>
       <td onClick={(e) => e.stopPropagation()}>
         <EditButton 
           onEdit={() => {
@@ -51,6 +56,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
   const [userRole, setUserRole] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [cancelReason, setCancelReason] = useState(null);
+  const [localCancelReason, setLocalCancelReason] = useState(null);
 
   useEffect(() => {
     fetchFeedback();
@@ -158,7 +164,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
   });
 
   const handleCancelBooking = () => {
-    let localCancelReason = null; // Tạo biến local để lưu lý do hủy
+    let selectedReason = null; // Biến local để lưu lý do được chọn
 
     Modal.confirm({
       title: 'Xác nhận hủy lịch',
@@ -173,23 +179,13 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
             <p><strong>Stylist:</strong> {`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</p>
             <p><strong>Dịch vụ:</strong> {booking.services.map(service => service.serviceName).join(', ')}</p>
           </div>
-          <div className={styles.cancelWarning}>
-            <p>⚠️ Lưu ý:</p>
-            <ul>
-              <li>Hành động này không thể hoàn tác</li>
-              <li>Slot thời gian sẽ được mở lại cho khách hàng khác đặt</li>
-              {booking.paymentStatus === 'Paid' && (
-                <li>Khách hàng đã thanh toán - cần xử lý hoàn tiền</li>
-              )}
-            </ul>
-          </div>
           <div className={styles.cancelReason}>
             <p><strong>Lý do hủy:</strong></p>
             <Select
               style={{ width: '100%' }}
               placeholder="Chọn lý do hủy lịch"
               onChange={(value) => {
-                localCancelReason = value; // Cập nhật biến local
+                selectedReason = value; // Lưu giá trị được chọn vào biến local
                 console.log('Selected reason:', value); // Debug log
               }}
             >
@@ -204,43 +200,107 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
       okText: 'Xác nhận hủy',
       okType: 'danger',
       cancelText: 'Đóng',
-      onOk: async () => {
-        if (!localCancelReason) { // Kiểm tra biến local
+      onOk: () => {
+        if (!selectedReason) {
           message.error('Vui lòng chọn lý do hủy lịch');
-          return Promise.reject(); // Ngăn modal đóng lại
+          return false;
         }
 
+        setIsUpdating(true);
+        handleUpdateStatus('CANCELED', selectedReason)
+          .then(() => {
+            onClose();
+            message.success({
+              content: 'Đã hủy lịch thành công',
+              duration: 3,
+            });
+            
+            setTimeout(() => {
+              Modal.info({
+                title: 'Các bước tiếp theo',
+                content: (
+                  <div>
+                    <p>Vui lòng thực hiện các bước sau:</p>
+                    <ol>
+                      <li>Liên hệ với khách hàng để thông báo về việc hủy lịch
+                        <ul>
+                          <li>SĐT: {booking.account.username}</li>
+                          <li>Tên: {`${booking.account.firstName} ${booking.account.lastName}`}</li>
+                        </ul>
+                      </li>
+                      {booking.paymentStatus === 'Paid' && (
+                        <li>Xử lý hoàn tiền cho khách hàng</li>
+                      )}
+                      <li>Thông báo cho stylist về lịch bị hủy</li>
+                      <li>Cập nhật sổ đặt lịch của salon</li>
+                    </ol>
+                  </div>
+                ),
+                okText: 'Đã hiểu',
+                onOk: () => {
+                  window.location.reload();
+                },
+                maskClosable: false,
+                keyboard: false,
+              });
+            }, 1000);
+          })
+          .catch((error) => {
+            console.error('Error canceling booking:', error);
+            message.error({
+              content: 'Có lỗi xảy ra khi hủy lịch',
+              duration: 3,
+            });
+          })
+          .finally(() => {
+            setIsUpdating(false);
+          });
+      },
+      maskClosable: false,
+      keyboard: false,
+    });
+  };
+
+  const handleCheckIn = async () => {
+    Modal.confirm({
+      title: 'Xác nhận check-in',
+      content: (
+        <div>
+          <p>Xác nhận check-in cho khách hàng:</p>
+          <p><strong>Khách hàng:</strong> {`${booking.account.firstName} ${booking.account.lastName}`}</p>
+          <p><strong>Dịch vụ:</strong> {booking.services.map(service => service.serviceName).join(', ')}</p>
+          <p><strong>Stylist:</strong> {`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</p>
+        </div>
+      ),
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
         try {
-          setIsUpdating(true);
-          setCancelReason(localCancelReason); // Set state với giá trị đã chọn
+          await handleUpdateStatus('CHECKED_IN');
           
-          // Truyền lý do hủy trực tiếp vào hàm handleUpdateStatus
-          await handleUpdateStatus('CANCELED', localCancelReason);
-          
+          // Đóng modal chi tiết
           onClose();
+          
+          // Hiển thị thông báo thành công
           message.success({
-            content: 'Đã hủy lịch thành công',
+            content: 'Check-in thành công!',
             duration: 3,
           });
-          
+
+          // Đợi 1 giây trước khi hiển thị hướng dẫn tiếp theo
           setTimeout(() => {
-            Modal.info({
+            Modal.success({
               title: 'Các bước tiếp theo',
               content: (
                 <div>
-                  <p>Vui lòng thực hiện các bước sau:</p>
+                  <p>Thực hiện các bước sau khi khách hàng đã check in tại cửa hàng:</p>
                   <ol>
-                    <li>Liên hệ với khách hàng để thông báo về việc hủy lịch
-                      <ul>
-                        <li>SĐT: {booking.account.username}</li>
-                        <li>Tên: {`${booking.account.firstName} ${booking.account.lastName}`}</li>
-                      </ul>
-                    </li>
-                    {booking.paymentStatus === 'Paid' && (
-                      <li>Xử lý hoàn tiền cho khách hàng</li>
+                    <li>Hướng dẫn khách hàng chờ đợi tại khu vực chờ</li>
+                    <li>Thông báo cho stylist {`${booking.stylistId.firstName} ${booking.stylistId.lastName}`} về khách đã check-in</li>
+                    <li>Chuẩn bị dụng cụ và khu vực làm việc</li>
+                    {booking.paymentStatus !== 'Paid' && (
+                      <li>Nhắc khách hàng về việc thanh toán sau khi hoàn thành dịch vụ</li>
                     )}
-                    <li>Thông báo cho stylist về lịch bị hủy</li>
-                    <li>Cập nhật sổ đặt lịch của salon</li>
                   </ol>
                 </div>
               ),
@@ -249,24 +309,14 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
                 // Refresh lại trang sau khi đóng modal hướng dẫn
                 window.location.reload();
               },
-              maskClosable: false, // Không cho click outside để đóng
-              keyboard: false, // Không cho nhấn ESC để đóng
+              maskClosable: false,
+              keyboard: false,
             });
           }, 1000);
-
-          setCancelReason(null);
         } catch (error) {
-          console.error('Error canceling booking:', error);
-          message.error({
-            content: 'Có lỗi xảy ra khi hủy lịch',
-            duration: 3,
-          });
-        } finally {
-          setIsUpdating(false);
+          message.error('Có lỗi xảy ra khi check-in');
         }
       },
-      maskClosable: false, // Không cho click outside để đóng
-      keyboard: false, // Không cho nhấn ESC để đóng
     });
   };
 
@@ -303,36 +353,12 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
           {/* Nút Check-in */}
           <Button
             type="primary"
-            onClick={() => {
-              Modal.confirm({
-                title: 'Xác nhận check-in',
-                content: (
-                  <div>
-                    <p>Xác nhận check-in cho khách hàng:</p>
-                    <p><strong>Khách hàng:</strong> {`${booking.account.firstName} ${booking.account.lastName}`}</p>
-                    <p><strong>Dịch vụ:</strong> {booking.services.map(service => service.serviceName).join(', ')}</p>
-                    <p><strong>Stylist:</strong> {`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</p>
-                  </div>
-                ),
-                okText: 'Xác nhận',
-                cancelText: 'Hủy',
-                onOk: async () => {
-                  await handleUpdateStatus('CHECKED_IN');
-                  Modal.success({
-                    title: 'Check-in thành công',
-                    content: (
-                      <div>
-                        <p>Check in thành công!!</p>
-                      </div>
-                    ),
-                  });
-                },
-              });
-            }}
+            onClick={handleCheckIn}
             disabled={!canCheckIn || isUpdating}
             loading={isUpdating}
+            icon={<UserOutlined />}
           >
-            Check-in
+            {isUpdating ? 'Đang xử lý...' : 'Check-in'}
           </Button>
 
           {/* Nút Success - chỉ hiện khi đã check-in */}
@@ -522,7 +548,7 @@ const RescheduleModal = ({ booking, visible, onClose, onReschedule }) => {
                     </Option>
                   ))
               ) : (
-                <Option disabled>Không có slot khả dụng</Option>
+                <Option disabled>Không có slot kh dụng</Option>
               )}
             </Select>
           </div>
