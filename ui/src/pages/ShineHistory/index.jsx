@@ -244,6 +244,12 @@ function ShineHistory() {
         return;
       }
 
+      // Kiểm tra trạng thái booking trước khi cho phép đánh giá
+      if (selectedBooking.status !== 'COMPLETED') {
+        message.error('Bạn không thể đánh giá khi chưa hoàn thành dịch vụ');
+        return;
+      }
+
       // Nếu chưa có feedbackId, lấy nó từ API
       if (!feedbackId) {
         const feedbackIdResponse = await axios.get(`http://localhost:8080/api/v1/booking/feedback/${selectedBooking.id}`, {
@@ -262,17 +268,12 @@ function ShineHistory() {
         feedback: feedback
       };
 
-      console.log('Sending feedback data:', feedbackData);
-
       const response = await axios.post('http://localhost:8080/api/v1/feedback', feedbackData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      console.log('Submit Feedback Response:', response.data);
-
       if (response.data.code === 0) {
         message.success('Cảm ơn bạn đã gửi đánh giá!');
-        // Cập nhật state nếu cần
         setRating(parseInt(response.data.result.rate) || 0);
         setFeedback(response.data.result.feedback || '');
       } else {
@@ -280,7 +281,7 @@ function ShineHistory() {
       }
     } catch (error) {
       console.error('Lỗi khi gửi đánh giá:', error);
-      message.error(error.message || 'Không thể gửi đánh giá. Vui lòng thử lại sau.');
+      message.error('Không thể gửi đánh giá. Vui lòng thử lại sau.');
     }
   };
 
@@ -322,7 +323,7 @@ function ShineHistory() {
         
         <div className="rating-feedback">
           <h4>Đánh giá dịch vụ</h4>
-          <p>{feedbackId ? 'Đánh giá:' : 'Thêm đánh giá mới:'}</p>
+          
           <Rate value={rating} onChange={(value) => setRating(value)} />
           <TextArea
             rows={4}
