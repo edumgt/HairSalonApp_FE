@@ -48,6 +48,7 @@ import ComboDetail from './layouts/Component/Combo/ComboDetail';
 import UpdateBooking from './pages/admin/booking/updateBooking';
 
 
+import Payment from './pages/Payment';
 
 const ScrollRestorationProvider = ({ children }) => {
   useScrollRestoration();
@@ -94,8 +95,8 @@ const router = createBrowserRouter([
       { path: "tat-ca-dich-vu", element: <AllServices /> },
       { path: "tat-ca-combo", element: <AllCombos /> },
       { path: "dich-vu/:serviceId", element: <ServiceDetail /> },
-      { path: "combo/:comboId", element: <ComboDetail /> }
-
+      { path: "combo/:comboId", element: <ComboDetail /> },
+      { path: "payment/:bookingId", element: <Payment /> },
     ],
   },
   {
