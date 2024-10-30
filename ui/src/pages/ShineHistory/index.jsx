@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider } from 'antd';
+import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider, Divider } from 'antd';
 import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,32 @@ const { TextArea } = Input;
 
 const { confirm } = Modal;
 
+// Thêm hàm formatPrice sau các import và trước component
+const formatPrice = (price) => {
+  return price.toLocaleString('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  });
+};
+
+// Giữ nguyên hàm getStatusColor
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'RECEIVED':
+      return 'processing';
+    case 'COMPLETED':
+      return 'success';
+    case 'CANCELLED':
+      return 'error';
+    case 'SUCCESS':
+      return 'warning';
+    case 'PAID':
+      return 'success';
+    default:
+      return 'default';
+  }
+};
+
 function ShineHistory() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +55,9 @@ function ShineHistory() {
   const [slots, setSlots] = useState([]);
   const [originalDate, setOriginalDate] = useState(null);
   const [originalSlotId, setOriginalSlotId] = useState(null);
+  const [feedbackId, setFeedbackId] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const navigate = useNavigate();
 
@@ -65,9 +94,55 @@ function ShineHistory() {
     }
   };
 
-  const showModal = (booking) => {
+  const showModal = async (booking) => {
     setSelectedBooking(booking);
     setIsModalVisible(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để xem chi tiết');
+        return;
+      }
+
+      // Lấy feedback ID từ booking
+      const feedbackResponse = await axios.get(
+        `http://localhost:8080/api/v1/booking/feedback/${booking.id}`, 
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (feedbackResponse.data.code === 0 && feedbackResponse.data.result) {
+        // Lấy chi tiết feedback bằng feedback ID
+        const feedbackDetailResponse = await axios.get(
+          `http://localhost:8080/api/v1/feedback/${feedbackResponse.data.result}`,
+          {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }
+        );
+
+        // Kiểm tra xem có dữ liệu feedback không
+        if (feedbackDetailResponse.data.code === 0 && 
+            feedbackDetailResponse.data.result && 
+            feedbackDetailResponse.data.result.rate) {
+          // Nếu có dữ liệu feedback, set state và disable form
+          setRating(parseInt(feedbackDetailResponse.data.result.rate) || 0);
+          setFeedback(feedbackDetailResponse.data.result.feedback || '');
+          setFeedbackSubmitted(true); // Đánh dấu là đã có feedback
+        } else {
+          // Nếu chưa có dữ liệu feedback, reset form
+          setRating(0);
+          setFeedback('');
+          setFeedbackSubmitted(false);
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin feedback:', error);
+      setRating(0);
+      setFeedback('');
+      setFeedbackSubmitted(false);
+    }
   };
 
   const handleOk = () => {
@@ -78,9 +153,16 @@ function ShineHistory() {
     setIsModalVisible(false);
   };
 
+  const isBookingEditable = (status) => status === "RECEIVED";
+
   const handleDelete = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể hủy lịch ở trạng thái hiện tại');
+      return;
+    }
+    
     confirm({
-      title: 'Xác nhận hy lịch',
+      title: 'Xác nhận hủy lịch',
       content: 'Anh thật sự muốn hủy lịch à :<',
       okText: 'Đúng vậy',
       cancelText: 'Không, tôi đổi ý rồi',
@@ -117,8 +199,13 @@ function ShineHistory() {
   };
 
   const handleUpdate = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể dời lịch ở trạng thái hiện tại');
+      return;
+    }
+    
     if (selectedBooking) {
-      setNewDate(selectedBooking.date); // Giả sử selectedBooking.date là string dạng 'YYYY-MM-DD'
+      setNewDate(selectedBooking.date);
       setNewSlotId(selectedBooking.slot.id);
       setIsRescheduleModalVisible(true);
     }
@@ -127,14 +214,23 @@ function ShineHistory() {
   const handlePayment = () => {
     if (selectedBooking.status === "SUCCESS") {
       // Chuyển hướng đến trang thanh toán với thông tin booking
-      navigate(`/payment/${selectedBooking.id}`, { state: { booking: selectedBooking } });
+      navigate(`/payment/${selectedBooking.id}`, { 
+        state: { 
+          bookingInfo: selectedBooking
+        } 
+      });
+      setIsModalVisible(false);
     } else {
       message.error('Chỉ có thể thanh toán cho các đặt lịch có trạng thái SUCCESS');
     }
-    setIsModalVisible(false);
   };
 
   const handleCancelPeriodic = () => {
+    if (!isBookingEditable(selectedBooking.status)) {
+      message.error('Không thể hủy định kỳ ở trạng thái hiện tại');
+      return;
+    }
+    
     confirm({
       title: 'Xác nhận hủy đặt lịch định kỳ',
       icon: <ExclamationCircleOutlined />,
@@ -145,7 +241,7 @@ function ShineHistory() {
         try {
           const token = localStorage.getItem('token');
           if (!token) {
-            message.error('Vui lòng đăng nhập để thực hiện thao tác này');
+            message.error('Vui lòng đăng nhập để thực hiện thao tác ny');
             return;
           }
 
@@ -167,10 +263,62 @@ function ShineHistory() {
           }
         } catch (error) {
           console.error('Lỗi khi hủy đặt lịch định kỳ:', error);
-          message.error(error.message || 'Không thể hủy đặt lịch định kỳ. Vui lòng thử lại sau.');
+          message.error(error.message || 'Không thể hủy đặt lịch định kỳ. Vui lng thử lại sau.');
         }
       },
     });
+  };
+
+  const handleSubmitFeedback = async () => {
+    setSubmitAttempted(true);
+    if (!rating) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Vui lòng đăng nhập để gửi đánh giá');
+        return;
+      }
+
+      // Lấy feedback ID từ API bằng booking ID
+      const feedbackIdResponse = await axios.get(
+        `http://localhost:8080/api/v1/booking/feedback/${selectedBooking.id}`, 
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (feedbackIdResponse.data.code === 0 && feedbackIdResponse.data.result) {
+        // Gửi feedback với feedback ID đã lấy được
+        const feedbackData = {
+          id: feedbackIdResponse.data.result,
+          rate: rating.toString(),
+          feedback: feedback || ''
+        };
+
+        const response = await axios.post('http://localhost:8080/api/v1/feedback', feedbackData, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.data.code === 0) {
+          message.success('Cảm ơn bạn đã gửi đánh giá!');
+          setFeedbackSubmitted(true); // Đánh dấu đã gửi feedback thành công
+          setSubmitAttempted(false);
+        } else {
+          throw new Error(response.data.message || 'Gửi đánh giá thất bại');
+        }
+      } else {
+        throw new Error('Không thể lấy mã feedback');
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi đánh giá:', error);
+      message.error('Không thể gửi đánh giá. Vui lòng thử lại sau.');
+    }
   };
 
   const renderBookingDetails = () => {
@@ -183,21 +331,174 @@ function ShineHistory() {
       return 'Không';
     };
 
+    const isEditable = isBookingEditable(selectedBooking.status);
+
+    // Tách và nhóm các dịch vụ theo loại (combo và dịch vụ lẻ)
+    const groupedServices = selectedBooking.services.reduce((acc, service) => {
+      if (service.isCombo) {
+        acc.combos.push(service);
+      } else {
+        const existingService = acc.services.find(s => 
+          (s.serviceId || s.id) === (service.serviceId || service.id)
+        );
+        if (existingService) {
+          existingService.quantity = (existingService.quantity || 1) + 1;
+        } else {
+          acc.services.push({ ...service, quantity: 1 });
+        }
+      }
+      return acc;
+    }, { services: [], combos: [] });
+
     return (
       <div className="booking-details">
-        <h3>Chi tiết đặt lịch</h3>
-        <p><strong>Mã đặt lịch:</strong> {selectedBooking.id}</p>
-        <p><strong>Ngày:</strong> {selectedBooking.date}</p>
-        <p><strong>Dịch vụ:</strong> {selectedBooking.services.map(s => s.serviceName).join(', ')}</p>
-        <p><strong>Tổng giá:</strong> {selectedBooking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
-        <p><strong>Stylist:</strong> {`${selectedBooking.stylistId.firstName} ${selectedBooking.stylistId.lastName}`}</p>
-        <p><strong>Thời gian:</strong> {selectedBooking.slot.timeStart}</p>
-        <p><strong>Trạng thái:</strong> {selectedBooking.status}</p>
-        <p><strong>Đặt lịch định kỳ:</strong> {renderPeriodInfo()}</p>
-        {selectedBooking.period > 0 && (
-          <Button onClick={handleCancelPeriodic} type="primary" danger>
-            Hủy định kỳ
-          </Button>
+        <div className="booking-info-section">
+          <h3>Thông tin đặt lịch</h3>
+          <div className="info-grid">
+            <div className="info-item">
+              <label>Mã đặt lịch:</label>
+              <span>{selectedBooking.id}</span>
+            </div>
+            <div className="info-item">
+              <label>Ngày:</label>
+              <span>{moment(selectedBooking.date).format('DD/MM/YYYY')}</span>
+            </div>
+            <div className="info-item">
+              <label>Thời gian:</label>
+              <span>{selectedBooking.slot.timeStart}</span>
+            </div>
+            <div className="info-item">
+              <label>Stylist:</label>
+              <span>{`${selectedBooking.stylistId.firstName} ${selectedBooking.stylistId.lastName}`}</span>
+            </div>
+            <div className="info-item">
+              <label>Trạng thái:</label>
+              <div className="status-tag">
+                <Tag color={getStatusColor(selectedBooking.status)}>
+                  {selectedBooking.status}
+                </Tag>
+              </div>
+            </div>
+            <div className="info-item periodic-booking">
+              <label>Đặt lịch định kỳ:</label>
+              <div className="periodic-content">
+                <span>{renderPeriodInfo()}</span>
+                {selectedBooking.period > 0 && (
+                  <Button 
+                    onClick={handleCancelPeriodic} 
+                    type="primary" 
+                    danger 
+                    disabled={!isEditable}
+                    size="small"
+                  >
+                    Hủy định kỳ
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="services-section">
+          <h3>Chi tiết dịch vụ</h3>
+          {groupedServices.services.length > 0 && (
+            <div className="service-group">
+              <h4>Dịch vụ đã chọn:</h4>
+              {groupedServices.services.map((service, index) => (
+                <div key={index} className="service-item">
+                  <div className="service-info">
+                    <span className="service-name">
+                      {service.serviceName} {service.quantity > 1 ? `(x${service.quantity})` : ''}
+                    </span>
+                    <span className="service-description">{service.description}</span>
+                  </div>
+                  <div className="service-price">
+                    <span>{formatPrice(service.price * service.quantity)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {groupedServices.combos.length > 0 && (
+            <div className="combo-group">
+              <h4>Combo đã chọn:</h4>
+              {groupedServices.combos.map((combo, index) => (
+                <div key={index} className="combo-item">
+                  <div className="combo-header">
+                    <span className="combo-name">
+                      {combo.serviceName} {combo.quantity > 1 ? `(x${combo.quantity})` : ''}
+                    </span>
+                    <span className="combo-price">
+                      {formatPrice(combo.price * (combo.quantity || 1))}
+                    </span>
+                  </div>
+                  {combo.services && (
+                    <div className="combo-services">
+                      <p>Bao gồm:</p>
+                      <ul>
+                        {combo.services.map((service, idx) => (
+                          <li key={idx}>
+                            {service.serviceName} - {formatPrice(service.price)}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="price-summary">
+            <div className="total-services">
+              <span>Tổng số dịch vụ lẻ: {groupedServices.services.length}</span>
+              <span>Tổng số combo: {groupedServices.combos.length}</span>
+            </div>
+            <div className="total-price">
+              <strong>Tổng thanh toán: {formatPrice(selectedBooking.price)}</strong>
+            </div>
+          </div>
+        </div>
+
+        <Divider />
+        
+        {selectedBooking.status === 'COMPLETED' && (
+          <div className="rating-feedback">
+            <h4>Đánh giá dịch vụ</h4>
+            <div className="feedback-form">
+              <div className="rating-section">
+                <div className="rating-header">
+                  <label>Đánh giá trải nghiệm của bạn</label>
+                  <Rate 
+                    value={rating} 
+                    onChange={(value) => setRating(value)}
+                    disabled={feedbackSubmitted}
+                  />
+                </div>
+                <TextArea
+                  rows={4}
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  placeholder="Chia sẻ cảm nhận của bạn về dịch vụ..."
+                  className="feedback-input"
+                  disabled={feedbackSubmitted}
+                />
+                {!rating && submitAttempted && !feedbackSubmitted && (
+                  <div className="rating-error">Vui lòng chọn số sao để đánh giá</div>
+                )}
+                {!feedbackSubmitted && (
+                  <Button 
+                    type="primary" 
+                    onClick={handleSubmitFeedback}
+                    className="submit-feedback-btn"
+                  >
+                    Gửi đánh giá
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     );
@@ -388,29 +689,33 @@ function ShineHistory() {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <Button key="delete" onClick={handleDelete} danger>
+          <Button 
+            key="delete" 
+            onClick={handleDelete} 
+            danger 
+            disabled={!isBookingEditable(selectedBooking?.status)}
+          >
             Hủy lịch
           </Button>,
-          <Button key="update" onClick={handleUpdate}>
-            Cập nhật
+          <Button 
+            key="update" 
+            onClick={handleUpdate}
+            disabled={!isBookingEditable(selectedBooking?.status)}
+          >
+            Dời lịch
           </Button>,
-          <Button key="payment" type="primary" onClick={handlePayment}>
-            Thanh toán
+          <Button 
+            key="payment" 
+            type="primary" 
+            onClick={handlePayment}
+            disabled={selectedBooking?.status === "COMPLETED"}
+          >
+            {selectedBooking?.status === "COMPLETED" ? "Đã thanh toán" : "Thanh toán"}
           </Button>,
         ]}
         width={700}
       >
         {renderBookingDetails()}
-        <div className="rating-feedback">
-          <h4>Đánh giá dịch vụ</h4>
-          <Rate value={rating} onChange={setRating} />
-          <TextArea
-            rows={4}
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Nhập phản hồi của bạn..."
-          />
-        </div>
       </Modal>
       <Modal
         title="Dời lịch"

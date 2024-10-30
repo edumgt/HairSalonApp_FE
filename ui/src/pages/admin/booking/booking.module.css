@@ -44,6 +44,8 @@
     text-overflow: ellipsis;
   }
 
+  
+
 
   .editGroup {
     display: flex;
@@ -99,3 +101,353 @@
     width: 100%;
     height: 100%;
   }
+
+  .row:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+
+/* Styles cho Modal */
+:global(.ant-modal-content) {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-modal-header) {
+  background-color: #f0f2f5;
+  border-bottom: 1px solid #e8e8e8;
+  border-radius: 8px 8px 0 0;
+  padding: 16px 24px;
+}
+
+:global(.ant-modal-title) {
+  color: #1890ff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+:global(.ant-modal-body) {
+  padding: 24px;
+}
+
+:global(.ant-modal-footer) {
+  border-top: 1px solid #e8e8e8;
+}
+
+/* Styles cho nội dung booking details */
+.bookingDetails {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bookingDetails p {
+  margin-bottom: 12px;
+}
+
+.bookingDetails strong {
+  color: #333;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.bookingDetails .label {
+  display: inline-block;
+  width: 150px;
+  color: #666;
+}
+
+.bookingDetails .value {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.statusReceived {
+  background-color: #52c41a;
+  color: white;
+}
+
+.statusNotImplemented {
+  background-color: #f5222d;
+  color: white;
+}
+
+.statusPending {
+  background-color: #faad14;
+  color: white;
+}
+
+.statusText {
+  font-weight: none;
+}
+
+.statusTextReceived {
+  color: #52c41a;
+}
+
+.statusTextNotImplemented {
+  color: #f5222d;
+}
+
+.feedbackSection {
+  margin: 20px 0;
+  padding: 20px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.feedbackSection h3 {
+  margin-bottom: 16px;
+}
+
+.noFeedback {
+  color: #999;
+  font-style: italic;
+}
+
+.infoSection {
+  margin-bottom: 20px;
+}
+
+.rescheduleSection {
+  margin-top: 20px;
+}
+
+/* Thêm các styles mới cho modal dời lịch */
+.rescheduleForm {
+  padding: 20px;
+}
+
+.currentBooking {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.currentBooking h3 {
+  color: #1890ff;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.currentBooking p {
+  margin: 8px 0;
+  color: #595959;
+}
+
+.currentBooking span {
+  font-weight: 500;
+  color: #262626;
+}
+
+.newBookingSection {
+  margin-top: 24px;
+}
+
+.newBookingSection h3 {
+  color: #1890ff;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dateTimeSelection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Tùy chỉnh các component của Ant Design */
+:global(.ant-modal-header) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+:global(.ant-modal-title) {
+  font-size: 18px;
+  color: #262626;
+}
+
+:global(.ant-select) {
+  min-width: 120px;
+}
+
+/* Tùy chỉnh modal xác nhận */
+:global(.ant-modal-confirm-content) {
+  margin-top: 16px !important;
+}
+
+:global(.ant-modal-confirm-content) p {
+  margin: 8px 0;
+}
+
+:global(.ant-modal-confirm-btns) {
+  margin-top: 24px;
+}
+
+.statusSection {
+  margin-top: 24px;
+  padding: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.statusSection h3 {
+  color: #1890ff;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.statusButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.statusButtons button {
+  min-width: 100px;
+}
+
+.checkInButton {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.checkInButton:hover:enabled {
+  background-color: #73d13d;
+  border-color: #73d13d;
+}
+
+.successButton {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.successButton:hover:enabled {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.cancelButton {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.cancelButton:hover:enabled {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+/* Styling cho disabled buttons */
+.statusButtons button:disabled {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+/* Style cho modal xác nhận */
+:global(.ant-modal-confirm-content) ol {
+  margin-top: 12px;
+  padding-left: 24px;
+}
+
+:global(.ant-modal-confirm-content) li {
+  margin-bottom: 8px;
+}
+
+.cancelDetails {
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+.cancelDetails p {
+  margin: 8px 0;
+}
+
+.cancelWarning {
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 4px;
+  animation: slideIn 0.3s ease;
+}
+
+.cancelWarning ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.cancelWarning li {
+  margin: 4px 0;
+  color: #ff4d4f;
+}
+
+.cancelReason {
+  margin-top: 16px;
+  animation: slideIn 0.3s ease;
+}
+
+.cancelReason p {
+  margin-bottom: 8px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Style cho modal */
+:global(.ant-modal-confirm-content) {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+:global(.ant-modal-confirm-content::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.ant-modal-confirm-content::-webkit-scrollbar-thumb) {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+:global(.ant-modal-confirm-btns) {
+  margin-top: 24px;
+}

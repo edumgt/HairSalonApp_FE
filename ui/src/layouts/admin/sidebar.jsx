@@ -104,9 +104,13 @@ const Sidebar = () => {
                     </>
                 )}
             </div>
-            <div className={styles.logout}>
-                <img className={styles.logoutIcon} alt="" src={logoutIcon} />
-                <div className={styles.logoutBtn}>Đăng xuất</div>
+
+            <div className={`${styles.logout} ${activeItem === 'logout' ? styles.active : ''}`} 
+                onClick={() => handleItem('./pages/Home', 'logout')}>
+                {/* <div className={styles.logout}> */}
+                    <img className={styles.logoutIcon} alt="" src={logoutIcon} />
+                    <div className={styles.logoutBtn}>Quay lại</div>
+                {/* </div> */}
             </div>
         </div>
     );

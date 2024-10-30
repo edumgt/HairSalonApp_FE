@@ -45,10 +45,10 @@ import AddSlot from './pages/admin/slot/addSlot';
 import UpdateSlot from './pages/admin/slot/updateSlot';
 
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
+import Payment from './pages/Payment';
 import UpdateBooking from './pages/admin/booking/updateBooking';
 
 
-import Payment from './pages/Payment';
 
 const ScrollRestorationProvider = ({ children }) => {
   useScrollRestoration();
