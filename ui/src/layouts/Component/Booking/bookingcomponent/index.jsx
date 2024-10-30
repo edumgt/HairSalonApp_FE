@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { message, Radio, Typography, Select, Modal } from 'antd';
+import { message, Radio, Typography, Select, Modal, Button } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
 import { DownOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -40,20 +40,28 @@ const BookingComponent = () => {
   const [unavailableSlots, setUnavailableSlots] = useState([]);
 
   // Remove service
-  const handleRemoveService = (serviceToRemove, newTotal) => {
-    if (serviceToRemove.isFromCombo) {
-      // Nếu là dịch vụ được thêm từ combo
-      setSelectedServices(prevServices => [...prevServices, serviceToRemove]);
-      setTotalPrice(newTotal || (prevTotal => prevTotal + (Number(serviceToRemove.price) || 0)));
+  const handleRemoveService = (serviceToRemove, newTotal, isAdding = false) => {
+    if (isAdding) {
+      // Nếu là thêm mới từ combo
+      const newService = {
+        ...serviceToRemove,
+        quantity: 1,
+        isFromCombo: true
+      };
+      setSelectedServices(prevServices => [...prevServices, newService]);
+      // Cập nhật tổng giá bằng cách thêm giá của dịch vụ mới
+      setTotalPrice(prevTotal => prevTotal + (serviceToRemove.price * (serviceToRemove.quantity || 1)));
     } else {
-      // Nếu là dịch vụ thông thường
+      // Nếu là xóa dịch vụ
       setSelectedServices(prevServices => 
         prevServices.filter(service => 
-          (service.serviceId || service.id) !== (serviceToRemove.serviceId || serviceToRemove.id)
+          (service.id || service.serviceId) !== (serviceToRemove.id || serviceToRemove.serviceId)
         )
       );
-      setTotalPrice(prevTotal => prevTotal - (Number(serviceToRemove.price) || 0));
+      setTotalPrice(prevTotal => prevTotal - (serviceToRemove.price * (serviceToRemove.quantity || 1)));
     }
+
+    // Gọi calculateTotalPrice để đảm bảo tổng giá được cập nhật chính xác
     calculateTotalPrice();
   };
 
@@ -169,21 +177,21 @@ const BookingComponent = () => {
   };
 
   const handleServiceConfirm = (allServices, selectedCombos, totalPrice) => {
-    // Lấy danh sách dịch vụ từ các combo đã chọn
-    const comboServices = selectedCombos.flatMap(combo => combo.services);
+    // Lấy các dịch vụ không phải từ combo
+    const standaloneServices = allServices.filter(service => !service.isCombo);
     
-    // Lấy danh sách dịch vụ đơn lẻ (không nằm trong combo)
-    const singleServices = allServices.filter(service => 
-      !comboServices.some(comboService => comboService.serviceId === service.serviceId)
-    );
-
-    setSelectedServices(singleServices);
+    // Cập nhật state
+    setSelectedServices(allServices);
     setSelectedCombosDetails(selectedCombos);
     setTotalPrice(totalPrice);
-
-    console.log('Danh sách dịch vụ trong combo:', comboServices);
-    console.log('Danh sách dịch vụ đơn lẻ:', singleServices);
-    console.log('Tất cả dịch vụ:', allServices);
+    
+    // Log để debug
+    console.log('Confirmed Services:', allServices);
+    console.log('Confirmed Combos:', selectedCombos);
+    console.log('Total Price:', totalPrice);
+    
+    // Đóng modal
+    hideModal();
   };
 
   const renderStepContent = () => {
@@ -290,9 +298,9 @@ const BookingComponent = () => {
     }
   }, [selectedDate, fetchUnavailableSlots]);
 
-  // Thêm hàm xử lý cập nhật số lượng
+  // Thm hàm xử lý cập nhật số lượng
   const handleUpdateQuantity = (item, newQuantity, isCombo = false) => {
-    if (newQuantity < 1 || newQuantity > 2) return;
+    if (newQuantity < 1 || newQuantity > 3) return;
 
     if (isCombo) {
       const updatedCombos = selectedCombos.map(combo => 
@@ -316,14 +324,26 @@ const BookingComponent = () => {
 
   // Cập nhật hàm tính tổng giá
   const calculateTotalPrice = () => {
-    const servicesTotal = selectedServices.reduce((total, service) => 
-      total + (service.price * (service.quantity || 1)), 0);
+    const servicesTotal = selectedServices.reduce((total, service) => {
+      const servicePrice = service.price * (service.quantity || 1);
+      console.log(`Service: ${service.name}, Price: ${servicePrice}`); // Debug log
+      return total + servicePrice;
+    }, 0);
     
-    const combosTotal = selectedCombos.reduce((total, combo) => 
-      total + (combo.price * (combo.quantity || 1)), 0);
+    const combosTotal = selectedCombosDetails.reduce((total, combo) => {
+      const comboPrice = combo.price * (combo.quantity || 1);
+      console.log(`Combo: ${combo.name}, Price: ${comboPrice}`); // Debug log
+      return total + comboPrice;
+    }, 0);
 
-    setTotalPrice(servicesTotal + combosTotal);
+    const newTotal = servicesTotal + combosTotal;
+    console.log(`Total: Services(${servicesTotal}) + Combos(${combosTotal}) = ${newTotal}`); // Debug log
+    setTotalPrice(newTotal);
   };
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [selectedServices, selectedCombosDetails]);
 
   return (
     <div className="booking-wrapper">
@@ -343,12 +363,12 @@ const BookingComponent = () => {
       </div>  
       <SelectedServicesModal
         visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
+        onClose={hideModal}
         selectedServices={selectedServices}
-        selectedCombos={selectedCombos}
+        selectedCombos={selectedCombosDetails}
         onRemoveService={handleRemoveService}
         onRemoveCombo={handleRemoveCombo}
-        onUpdateQuantity={handleUpdateQuantity} // Thêm prop này
+        onUpdateQuantity={handleUpdateQuantity}
         totalPrice={totalPrice}
         onConfirm={handleServiceConfirm}
       />
@@ -392,6 +412,10 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   const [combos, setCombos] = useState([]);
   const [selectedCombosDetails, setSelectedCombosDetails] = useState(initialCombos || []);
 
+  // Thêm state cho modal xác nhận
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [serviceToAdd, setServiceToAdd] = useState(null);
+
   const getImgurDirectUrl = useCallback((url) => {
     if (!url) {
       console.warn('Image URL is undefined');
@@ -432,7 +456,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
         setLoading(false);
       } catch (err) {
         console.error('Error loading data:', err);
-        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
+        setError("Không thể tải dữ liu. Vui lòng thử lại sau.");
         setLoading(false);
       }
     };
@@ -467,12 +491,22 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   const handleAddService = (service) => {
     const serviceId = service.serviceId || service.id;
     setSelectedServices(prevServices => {
-      const isServiceSelected = prevServices.some(s => (s.serviceId || s.id) === serviceId);
-      if (!isServiceSelected) {
-        // Thêm service mới với quantity mặc định là 1
-        return [...prevServices, { ...service, quantity: 1, isCombo: false }];
+      const existingService = prevServices.find(s => 
+        (s.serviceId || s.id) === serviceId
+      );
+
+      if (existingService) {
+        if (existingService.quantity >= 3) {
+          message.warning('Bạn chỉ có thể chọn tối đa 3 lần cho mỗi dịch vụ');
+          return prevServices;
+        }
+        return prevServices.map(s => 
+          (s.serviceId || s.id) === serviceId
+            ? { ...s, quantity: (s.quantity || 1) + 1 }
+            : s
+        );
       } else {
-        return prevServices.filter(s => (s.serviceId || s.id) !== serviceId);
+        return [...prevServices, { ...service, quantity: 1 }];
       }
     });
     calculateTotalPrice();
@@ -487,18 +521,16 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
     setSelectedCombos(prevCombos => {
       const existingCombo = prevCombos.find(c => c.id === combo.id);
       if (existingCombo) {
-        // Nếu combo đã tồn tại và số lượng < 2, tăng số lượng lên
-        if (existingCombo.quantity < 2) {
-          return prevCombos.map(c => 
-            c.id === combo.id 
-              ? { ...c, quantity: (c.quantity || 1) + 1 }
-              : c
-          );
+        if (existingCombo.quantity >= 3) {
+          message.warning('Bạn chỉ có thể chọn tối đa 3 lần cho mỗi combo');
+          return prevCombos;
         }
-        // Nếu đã đạt số lượng tối đa, xóa combo
-        return prevCombos.filter(c => c.id !== combo.id);
+        return prevCombos.map(c => 
+          c.id === combo.id 
+            ? { ...c, quantity: (c.quantity || 1) + 1 }
+            : c
+        );
       } else {
-        // Thêm combo mới với quantity mặc định là 1
         return [...prevCombos, { ...comboWithDetails, quantity: 1 }];
       }
     });
@@ -506,18 +538,15 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
     setSelectedCombosDetails(prevDetails => {
       const existingCombo = prevDetails.find(c => c.id === combo.id);
       if (existingCombo) {
-        // Nếu combo đã tồn tại và số lượng < 2, tăng số lượng lên
-        if (existingCombo.quantity < 2) {
-          return prevDetails.map(c => 
-            c.id === combo.id 
-              ? { ...c, quantity: (c.quantity || 1) + 1 }
-              : c
-          );
+        if (existingCombo.quantity >= 3) {
+          return prevDetails;
         }
-        // Nếu đã đạt số lượng tối đa, xóa combo
-        return prevDetails.filter(c => c.id !== combo.id);
+        return prevDetails.map(c => 
+          c.id === combo.id 
+            ? { ...c, quantity: (c.quantity || 1) + 1 }
+            : c
+        );
       } else {
-        // Thêm combo mới với quantity mặc định là 1
         return [...prevDetails, { ...comboWithDetails, quantity: 1 }];
       }
     });
@@ -658,14 +687,49 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   // Cập nhật hàm isServiceInCombo
   const isServiceInCombo = useCallback((serviceId) => {
     return selectedCombos.some(combo => 
-      combo.services && combo.services.some(service => service.serviceId === serviceId)
+      combo.services && combo.services.some(service => 
+        (service.serviceId || service.id) === serviceId
+      )
     );
   }, [selectedCombos]);
 
-  // Cập nhật hàm renderService
+  // Thêm hàm xử lý khi click vào nút thêm dịch vụ
+  const handleAddServiceClick = (service) => {
+    if (isServiceInCombo(service.serviceId || service.id)) {
+      // Nếu dịch vụ đã có trong combo, hiện modal xác nhận
+      setServiceToAdd(service);
+      setConfirmModalVisible(true);
+    } else {
+      // Nếu không, xử lý thêm dịch vụ bình thường
+      handleAddService(service);
+    }
+  };
+
+  // Thêm hàm xử lý xác nhận thêm dịch vụ
+  const handleConfirmAddService = () => {
+    if (serviceToAdd) {
+      handleAddService(serviceToAdd);
+      setConfirmModalVisible(false);
+      setServiceToAdd(null);
+    }
+  };
+
+  // Cập nhật lại hàm renderService
   const renderService = (service) => {
-    const isSelected = selectedServices.some(s => s.serviceId === service.serviceId);
-    const isDisabled = isServiceInCombo(service.serviceId);
+    const existingService = selectedServices.find(s => 
+      (s.serviceId || s.id) === (service.serviceId || service.id)
+    );
+    const quantity = existingService?.quantity || 0;
+    const isInCombo = isServiceInCombo(service.serviceId || service.id);
+    const isMaxQuantity = quantity >= 3;
+
+    const handleClick = () => {
+      if (isMaxQuantity) {
+        message.warning('Bạn chỉ có thể chọn tối đa 3 lần cho mỗi dịch vụ');
+        return;
+      }
+      handleAddServiceClick(service);
+    };
 
     return (
       <div key={service.serviceId} className="service-item">
@@ -674,13 +738,18 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
           <h3>{service.serviceName || service.name}</h3>
           <p>{service.description || ''}</p>
           <p className="price">{formatPrice(service.price || 0)}</p>
-          <button
-            className={`add-service ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-            onClick={() => !isDisabled && handleAddService(service)}
-            disabled={isDisabled}
-          >
-            {isSelected ? 'Đã thêm' : isDisabled ? 'Trong combo' : 'Thêm dịch vụ'}
-          </button>
+          {isMaxQuantity ? (
+            <button className="add-service disabled" disabled>
+              Đã đạt giới hạn
+            </button>
+          ) : (
+            <button
+              className={`add-service ${quantity > 0 ? 'selected' : ''} ${isInCombo ? 'in-combo' : ''}`}
+              onClick={handleClick}
+            >
+              {quantity > 0 ? `Đã thêm (${quantity})` : isInCombo ? 'Trong combo' : 'Thêm dịch vụ'}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -689,9 +758,17 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   // Thêm hàm render cho combo
   const renderCombo = (combo) => {
     const existingCombo = selectedCombos.find(c => c.id === combo.id);
-    const isSelected = existingCombo !== undefined;
     const quantity = existingCombo?.quantity || 0;
+    const isMaxQuantity = quantity >= 3;
     const comboWithDetails = comboDetails[combo.id] || combo;
+
+    const handleClick = () => {
+      if (isMaxQuantity) {
+        message.warning('Bạn chỉ có thể chọn tối đa 3 lần cho mỗi combo');
+        return;
+      }
+      handleAddCombo(comboWithDetails);
+    };
 
     return (
       <div key={combo.id} className="combo-item">
@@ -710,12 +787,18 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
           <h3>{comboWithDetails.name}</h3>
           <p>{comboWithDetails.description}</p>
           <p className="price">{formatPrice(comboWithDetails.price || 0)}</p>
-          <button
-            className={`add-service ${isSelected ? 'selected' : ''}`}
-            onClick={() => handleAddCombo(comboWithDetails)}
-          >
-            {isSelected ? `Đã thêm${quantity > 1 ? ` (x${quantity})` : ''}` : 'Thêm combo'}
-          </button>
+          {isMaxQuantity ? (
+            <button className="add-service disabled" disabled>
+              Đã đạt giới hạn
+            </button>
+          ) : (
+            <button
+              className={`add-service ${quantity > 0 ? 'selected' : ''}`}
+              onClick={handleClick}
+            >
+              {quantity > 0 ? `Đã thêm (${quantity})` : 'Thêm combo'}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -723,7 +806,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
 
   // Thêm hàm handleUpdateQuantity
   const handleUpdateQuantity = (item, newQuantity, isCombo = false) => {
-    if (newQuantity < 1 || newQuantity > 2) return;
+    if (newQuantity < 1 || newQuantity > 3) return;
 
     if (isCombo) {
       setSelectedCombosDetails(prevCombos => 
@@ -753,7 +836,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   };
 
   // Cập nhật hàm handleConfirmServices
-  const handleConfirmServices = (allServices, selectedCombos, totalPrice) => {
+  const handleServiceConfirm = (allServices, selectedCombos, totalPrice) => {
     // Chỉ lấy các dịch vụ không phải từ combo
     const standaloneServices = allServices.filter(service => !service.isCombo);
     setSelectedServices(standaloneServices);
@@ -764,7 +847,7 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
     hideModal();
   };
 
-  if (loading) return <div>Đang tải...</div>;
+  if (loading) return <div>Đang ti...</div>;
   if (error) return <div>{error}</div>;
 
   return (
@@ -829,11 +912,44 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
         selectedCombos={selectedCombosDetails}
         onRemoveService={handleRemoveService}
         onRemoveCombo={handleRemoveCombo}
-        onRemoveServiceFromCombo={handleBreakCombo}
         onUpdateQuantity={handleUpdateQuantity}
-        onConfirm={handleConfirmServices}
         totalPrice={totalPrice}
+        onConfirm={handleServiceConfirm}
       />
+      <Modal
+        title="Xác nhận thêm dịch vụ"
+        visible={confirmModalVisible}
+        onCancel={() => {
+          setConfirmModalVisible(false);
+          setServiceToAdd(null);
+        }}
+        footer={[
+          <Button 
+            key="cancel" 
+            onClick={() => {
+              setConfirmModalVisible(false);
+              setServiceToAdd(null);
+            }}
+          >
+            Hủy
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            onClick={handleConfirmAddService}
+          >
+            Xác nhận
+          </Button>
+        ]}
+      >
+        <p>
+          Dịch vụ "{serviceToAdd?.name || serviceToAdd?.serviceName}" đã có trong combo bạn đã chọn.
+        </p>
+        <p>
+          Bạn có muốn thêm dịch vụ này với giá{' '}
+          <strong>{formatPrice(serviceToAdd?.price || 0)}</strong> vào danh sách dịch vụ đã chọn không?
+        </p>
+      </Modal>
     </div>
   );
 };
