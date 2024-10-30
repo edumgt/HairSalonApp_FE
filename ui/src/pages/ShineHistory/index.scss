@@ -30,21 +30,254 @@
   p {
     margin-bottom: 10px;
   }
-}
 
-.rating-feedback {
-  h4 {
-    margin-bottom: 10px;
-    color: #1890ff;
+  .booking-info-section {
+    margin-bottom: 24px;
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        
+        label {
+          font-weight: bold;
+          color: #666;
+          margin-bottom: 4px;
+        }
+
+        .status-tag {
+          display: flex;
+          align-items: center;
+
+          .ant-tag {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            text-align: center;
+          }
+        }
+
+        &.periodic-booking {
+          .periodic-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            span {
+              flex: 1;
+            }
+
+            .ant-btn {
+              padding: 2px 8px;
+              height: 24px;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
   }
 
-  .ant-rate {
-    font-size: 24px;
-    margin-bottom: 15px;
+  .services-section {
+    .service-group, .combo-group {
+      margin-bottom: 20px;
+      
+      h4 {
+        color: #333;
+        margin-bottom: 12px;
+      }
+
+      .service-item, .combo-item {
+        background-color: #f9f9f9;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+
+        .service-info, .combo-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          .service-name, .combo-name {
+            font-weight: bold;
+            color: #333;
+          }
+
+          .service-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 4px;
+          }
+        }
+
+        .service-price, .combo-price {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #15397f;
+          font-weight: bold;
+        }
+      }
+
+      .combo-services {
+        margin-top: 8px;
+        padding-left: 16px;
+        
+        p {
+          color: #666;
+          margin-bottom: 4px;
+        }
+
+        ul {
+          list-style-type: none;
+          padding-left: 12px;
+          
+          li {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+          }
+        }
+      }
+    }
   }
 
-  .ant-input {
-    margin-top: 10px;
+  .price-summary {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+
+    .total-services {
+      display: flex;
+      justify-content: space-between;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .total-price {
+      text-align: right;
+      color: #15397f;
+      font-size: 1.2em;
+    }
+  }
+
+  .rating-feedback {
+    margin-top: 24px;
+    padding: 24px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+
+    h4 {
+      margin-bottom: 20px;
+      color: #1890ff;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .feedback-form {
+      .rating-section {
+        .rating-header {
+          text-align: center;
+          margin-bottom: 20px;
+
+          label {
+            display: block;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 16px;
+          }
+
+          .ant-rate {
+            font-size: 32px;
+          }
+        }
+
+        .feedback-input {
+          width: 100%;
+          margin: 20px 0;
+          border-radius: 8px;
+          padding: 12px;
+          resize: none;
+          border: 1px solid #d9d9d9;
+          transition: all 0.3s;
+
+          &:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+          }
+        }
+
+        .rating-error {
+          color: #ff4d4f;
+          text-align: center;
+          margin-bottom: 12px;
+          font-size: 14px;
+        }
+
+        .submit-feedback-btn {
+          display: block;
+          width: 200px;
+          height: 40px;
+          margin: 0 auto;
+          font-size: 16px;
+        }
+      }
+    }
+
+    .feedback-result {
+      text-align: center;
+
+      .rating-display {
+        margin-bottom: 20px;
+
+        label {
+          display: block;
+          margin-bottom: 12px;
+          color: #333;
+        }
+
+        .ant-rate {
+          font-size: 32px;
+        }
+      }
+
+      .feedback-content {
+        label {
+          display: block;
+          margin-bottom: 12px;
+          color: #333;
+        }
+
+        .feedback-text {
+          background-color: #fff;
+          padding: 16px;
+          border-radius: 8px;
+          border: 1px solid #e8e8e8;
+          color: #666;
+          font-style: italic;
+        }
+      }
+    }
+
+    .feedback-deadline {
+      text-align: center;
+      margin-top: 12px;
+      
+      small {
+        color: #666;
+        font-style: italic;
+      }
+    }
+  }
+
+  .cancel-periodic-btn {
+    margin-top: 16px;
   }
 }
 
