@@ -65,6 +65,13 @@ const Sidebar = () => {
                         <div className={styles.itemContent}>Nhân viên</div>
                     </div>
                 </div>
+                <div className={`${styles.item} ${activeItem === 'manager' ? styles.active : ''}`} 
+                    onClick={() => handleItem('/admin/manager', 'manager')}>
+                    <div className={styles.itemGroup}>
+                        <img className={styles.navIcon} alt="" src={staffIcon} />
+                        <div className={styles.itemContent}>Quản lý</div>
+                    </div>
+                </div>
                 <div className={`${styles.item} ${activeItem === 'booking' ? styles.active : ''}`} 
                     onClick={() => handleItem('/admin/historybooking', 'booking')}>
                     <div className={styles.itemGroup}>
