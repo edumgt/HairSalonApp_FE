@@ -13,7 +13,7 @@ import { log } from 'util';
 
 const { Option } = Select;
 
-const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete, canManageStaff }) => {
+const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, onEdit, onDelete, canManageStaff }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -43,6 +43,7 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
       <td className={styles.info}>{email}</td>
       <td className={styles.info}>{joinIn}</td>
       <td className={styles.info}>{role}</td>
+      <td className={styles.info}>{salons?.id ? `${salons?.id} - ${salons?.address} (Quận ${salons?.district})` : 'Chưa phân công'}</td>
       <td className={`${styles.info} ${styles.imageCell}`}>
         {!imageError ? (
           <img 
@@ -78,6 +79,7 @@ const Staff = () => {
   const navigate = useNavigate();
   const isRootPath = location.pathname === '/admin/staff';
   const [userRole, setUserRole] = useState('');
+  const [salons, setSalons] = useState([]);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -89,7 +91,11 @@ const Staff = () => {
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/v1/staff');
+      const response = await axios.get('http://localhost:8080/api/v1/staff', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data && Array.isArray(response.data.result)) {
         setStaffList(response.data.result);
         setFilteredStaff(response.data.result);
@@ -125,7 +131,11 @@ const Staff = () => {
 
   const handleEditStaff = async (code) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/${code}`);
+      const response = await axios.get(`http://localhost:8080/api/v1/staff/${code}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data && response.data.code === 200) {
         setEditingStaff(response.data.result);
         form.setFieldsValue({
@@ -147,10 +157,15 @@ const Staff = () => {
       const updatedStaff = {
         ...values,
         yob: parseInt(values.yob),
-        joinIn: values.joinIn.format('YYYY-MM-DD')
+        joinIn: values.joinIn.format('YYYY-MM-DD'),
+        salonId: values.salonId
       };
       console.log(updatedStaff)
-      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
+      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data && response.data.code === 200) {
         Modal.success({
           content: 'Cập nhật nhân viên thành công',
@@ -174,7 +189,11 @@ const Staff = () => {
       content: 'Bạn sẽ không thể khôi phục lại sau khi xóa.',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8080/api/v1/staff/${code}`);
+          await axios.delete(`http://localhost:8080/api/v1/staff/${code}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
           Modal.success({
             content: 'Xóa nhân viên thành công',
           });
@@ -197,6 +216,28 @@ const Staff = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, fetchStaff, navigate]);
+
+  useEffect(() => {
+    const fetchSalons = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/salon', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (response.data && response.data.code === 0) {
+          setSalons(response.data.result);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách salon:', error);
+        Modal.error({
+          content: 'Không thể lấy danh sách salon'
+        });
+      }
+    };
+
+    fetchSalons();
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -234,6 +275,7 @@ const Staff = () => {
                     <HeaderColumn title="Email"  />
                     <HeaderColumn title="Ngày bắt đầu làm"  />
                     <HeaderColumn title="Vai trò"  />
+                    <HeaderColumn title="Chi nhánh" />
                     <HeaderColumn title="Hình ảnh" />
                     {canManageStaff && <HeaderColumn title="" />}
                   </tr>
@@ -276,6 +318,20 @@ const Staff = () => {
             <div className={styles.formGrid}>
               <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
                 <Input disabled />
+              </Form.Item>
+              <Form.Item
+                name="salonId"
+                label="Chi nhánh"
+                rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+                className={styles.formItem}
+              >
+                <Select placeholder="Chọn chi nhánh">
+                  {salons.map(salon => (
+                    <Option key={salon.id} value={salon.id}>
+                      {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />

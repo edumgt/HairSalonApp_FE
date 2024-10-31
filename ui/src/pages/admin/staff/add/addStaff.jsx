@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Select, DatePicker, Button, message, InputNumber } from 'antd';
 import NavLink from "../../../../layouts/admin/components/link/navLink"
 import styles from './addStaff.module.css';
 
-
 const { Option } = Select;
 
 function AddStaff() {
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const [salons, setSalons] = useState([]);
+
+    useEffect(() => {
+        const fetchSalons = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/salon', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                if (response.data && response.data.code === 0) {
+                    setSalons(response.data.result);
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách salon:', error);
+                message.error('Không thể lấy danh sách salon');
+            }
+        };
+
+        fetchSalons();
+    }, []);
 
     const handleSubmit = async (values) => {
         try {
@@ -23,10 +43,15 @@ function AddStaff() {
                 email: values.email,
                 joinIn: values.joinIn.format('YYYY-MM-DD'),
                 role: values.role,
-                image: values.image
+                image: values.image,
+                salonId: values.salonId
             };
 
-            const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues);
+            const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             
             if (response.data && response.data.code === 200) {
                 message.success(response.data.message || 'Thêm nhân viên thành công');
@@ -36,7 +61,7 @@ function AddStaff() {
             }
         } catch (error) {
             console.error('Lỗi thêm nhân viên:', error);
-            message.error(error.message || 'Có lỗi xảy ra khi thêm nhân viên');
+            message.error(error.response?.data?.message || 'Có lỗi xảy ra khi thêm nhân viên');
         }
     };
 
@@ -49,6 +74,20 @@ function AddStaff() {
                 onFinish={handleSubmit}
                 className={styles.form}
             >
+                <Form.Item
+                    name="salonId"
+                    label="Chi nhánh"
+                    rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+                >
+                    <Select placeholder="Chọn chi nhánh">
+                        {salons.map(salon => (
+                            <Option key={salon.id} value={salon.id}>
+                                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+
                 <Form.Item
                     name="firstName"
                     label="Họ"
