@@ -13,7 +13,7 @@ import { log } from 'util';
 
 const { Option } = Select;
 
-const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, onEdit, onDelete, canManageStaff }) => {
+const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -44,6 +44,7 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
       <td className={styles.info}>{joinIn}</td>
       <td className={styles.info}>{role}</td>
       <td className={styles.info}>{salons?.id ? `${salons?.id} - ${salons?.address} (Quận ${salons?.district})` : 'Chưa phân công'}</td>
+      <td className={styles.info}>{status ? 'Đang làm việc' : 'Đã nghỉ việc'}</td>
       <td className={`${styles.info} ${styles.imageCell}`}>
         {!imageError ? (
           <img 
@@ -57,9 +58,22 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
         )}
       </td>
       {canManageStaff && (
+        <>
         <td className={styles.actionCell}>
           <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
         </td>
+        <td className={styles.actionCell}>
+          {role !== 'MANAGER' && (
+            <Button 
+              type="primary"
+              onClick={() => onPromote(code, salons.id)}
+              disabled={role === 'MANAGER'}
+            >
+              Thăng chức
+            </Button>
+          )}
+        </td>
+        </>
       )}
     </tr>
   );
@@ -209,6 +223,43 @@ const Staff = () => {
     });
   };
 
+  const handlePromote = (code, salonId) => {
+    Modal.confirm({
+      title: 'Xác nhận thăng chức',
+      content: 'Bạn có chắc chắn muốn thăng chức cho nhân viên này?',
+      onOk: async () => {
+        try {
+          const response = await axios.put(`http://localhost:8080/api/v1/staff/promote/${code}`, {salonId: salonId}, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+
+          if (response.data && response.data.code === 200) {
+            Modal.success({
+              content: 'Thăng chức thành công',
+            });
+            fetchStaff(); // Refresh danh sách nhân viên
+          } else {
+            throw new Error('Thăng chức thất bại');
+          }
+        } catch (error) {
+          console.error('Lỗi thăng chức:', error);
+          Modal.error({
+            title: 'Lỗi',
+            content: error.response?.data?.message || 'Thăng chức thất bại. Vui lòng thử lại',
+          });
+        }
+      },
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <>
+          <CancelBtn />
+          <OkBtn />
+        </>
+      ),
+    });
+  };
+
   useEffect(() => {
     if (location.state?.refreshData) {
       fetchStaff();
@@ -276,7 +327,9 @@ const Staff = () => {
                     <HeaderColumn title="Ngày bắt đầu làm"  />
                     <HeaderColumn title="Vai trò"  />
                     <HeaderColumn title="Chi nhánh" />
+                    <HeaderColumn title="Trạng thái" />
                     <HeaderColumn title="Hình ảnh" />
+                    {canManageStaff && <HeaderColumn title="" />}
                     {canManageStaff && <HeaderColumn title="" />}
                   </tr>
                 </thead>
@@ -287,6 +340,7 @@ const Staff = () => {
                       {...item} 
                       onEdit={canManageStaff ? handleEditStaff : undefined}
                       onDelete={canManageStaff ? handleDeleteStaff : undefined}
+                      onPromote={canManageStaff ? handlePromote : undefined}
                       canManageStaff={canManageStaff}
                     />
                   ))}
