@@ -6,7 +6,7 @@ import HeaderButton from "../../../layouts/admin/components/table/buttonv2/heade
 import HeaderColumn from "../../../layouts/admin/components/table/headerColumn";
 import EditButton from "../../../layouts/admin/components/table/buttonv2/editButton";
 import { Modal, notification } from "antd";
-import { deleteById, getAll } from "../services/salonService";
+import { getAll, switchStatus } from "../services/salonService";
 import AddSalonForm from './addSalon'
 import UpdateSalonForm from './updateSalon';
 
@@ -41,16 +41,16 @@ function Salon() {
     item.id.toString().includes(searchText)
   );
 // Delete
-const handleDelete = async (id) => {
+const handleSwitchStatus = async (id) => {
     Modal.confirm({
       title: 'Xác nhận',
-      content: 'Bạn có muốn xóa chi nhánh này ?',
+      content: 'Bạn có muốn đổi trạng thái chi nhánh này ?',
       onOk: async () => {
         try {
-          const response = await deleteById(id);
+          const response = await switchStatus(id);
           notification.success({
             message: 'Thành công',
-            description: 'Chi nhánh đã được xóa',
+            description: 'Trạng thái chi nhánh đã được đổi',
             duration: 2
           });
           loadData();
@@ -59,7 +59,7 @@ const handleDelete = async (id) => {
           console.error(error);
           Modal.error({
             title: 'Thất bại',
-            content: 'Xóa chi nhánh thất bại. Vui lòng thử lại',
+            content: 'Đổi trạng thái chi nhánh thất bại. Vui lòng thử lại',
           });
         }
       },
@@ -81,9 +81,9 @@ const handleDelete = async (id) => {
         <td>
           <EditButton 
             id={id} 
-            handleDelete={handleDelete}
+            handleDelete={handleSwitchStatus}
             isModal={true}
-            handleUpdate={() => showUpdateModal({ id, address, district, open })}
+            handleUpdate={() => showUpdateModal({ id, address, district })}
           />
         </td>
       </tr>
