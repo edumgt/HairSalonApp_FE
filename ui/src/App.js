@@ -39,6 +39,7 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+import Salon from './pages/admin/salon/salon';
 
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
@@ -126,6 +127,7 @@ const router = createBrowserRouter([
       { path: "slot", element: <Slot /> },
       { path: "slot/addSlot", element: <AddSlot /> },
       { path: "slot/updateSlot/", element: <UpdateSlot /> },
+      { path: "salon", element: <Salon /> },
     ],
   },
   {
