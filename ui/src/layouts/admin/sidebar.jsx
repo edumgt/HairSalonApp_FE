@@ -76,6 +76,7 @@ const Sidebar = () => {
                 {forAdminAndManager && (
                     <>
                         {!forManager && (
+                            <>
                             <div className={`${styles.item} ${activeItem === 'manager' ? styles.active : ''}`} 
                                 onClick={() => handleItem('/admin/manager', 'manager')}>
                                 <div className={styles.itemGroup}>
@@ -83,43 +84,42 @@ const Sidebar = () => {
                                 <div className={styles.itemContent}>Quản lý</div>
                                 </div>
                             </div>
-                        )}
-                        <div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/combo', 'combo')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={comboIcon} />
-                                <div className={styles.itemContent}>Combo</div>
-                            </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'slot' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/slot', 'slot')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={slotIcon} />
-                                <div className={styles.itemContent}>Khung giờ</div>
-                            </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/service', 'service')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={serviceIcon} />
-                                <div className={styles.itemContent}>Dịch vụ</div>
-                            </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/category', 'category')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={categoryIcon} />
-                                <div className={styles.itemContent}>Danh mục</div>
-                            </div>
-                        </div>
-                        {!forManager && (
-                            <div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
-                                onClick={() => handleItem('/admin/salon', 'salon')}>
+                            <div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/combo', 'combo')}>
                                 <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={salonIcon} />
-                                <div className={styles.itemContent}>Chi nhánh</div>
+                                    <img className={styles.navIcon} alt="" src={comboIcon} />
+                                    <div className={styles.itemContent}>Combo</div>
                                 </div>
                             </div>
+                            <div className={`${styles.item} ${activeItem === 'slot' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/slot', 'slot')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={slotIcon} />
+                                    <div className={styles.itemContent}>Khung giờ</div>
+                                </div>
+                            </div>
+                            <div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/service', 'service')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={serviceIcon} />
+                                    <div className={styles.itemContent}>Dịch vụ</div>
+                                </div>
+                            </div>
+                            <div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/category', 'category')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={categoryIcon} />
+                                    <div className={styles.itemContent}>Danh mục</div>
+                                </div>
+                            </div>
+                                <div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
+                                    onClick={() => handleItem('/admin/salon', 'salon')}>
+                                    <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={salonIcon} />
+                                    <div className={styles.itemContent}>Chi nhánh</div>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </>
                 )}
