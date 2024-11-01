@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { message, Radio, Typography, Select, Modal, Button } from 'antd';
+import { message, Radio, Typography, Select, Modal, Button, Card, Tabs, List, Spin } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, EnvironmentOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { fetchServices } from '../../../../data/hairservice';
 import { fetchCombos } from '../../../../data/comboservice';
 import moment from 'moment';
+import TabPane from 'antd/es/tabs/TabPane';
 
 
 
@@ -38,6 +39,66 @@ const BookingComponent = () => {
   const [isServiceModalVisible, setIsServiceModalVisible] = useState(false);
 
   const [unavailableSlots, setUnavailableSlots] = useState([]);
+
+  // Thêm state mới cho salon
+  const [modalVisible, setModalVisible] = useState(false);
+  const [salons, setSalons] = useState([]);
+  const [salonLoading, setSalonLoading] = useState(false);
+  const [salonError, setSalonError] = useState(null);
+  const [districts, setDistricts] = useState([]);
+
+  // Thêm useEffect để fetch danh sách salon
+  useEffect(() => {
+    if (modalVisible) {
+      fetchSalons();
+    }
+  }, [modalVisible]);
+
+  // Thêm hàm fetchSalons
+  const fetchSalons = async () => {
+    setSalonLoading(true);
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/salon', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && response.data.code === 0) {
+        const salonsWithId = response.data.result.map(salon => ({
+          ...salon,
+          id: salon.salonId || salon.id,
+          salonId: salon.salonId || salon.id
+        }));
+        setSalons(salonsWithId);
+        const uniqueDistricts = [...new Set(salonsWithId.map(salon => salon.district))];
+        setDistricts(uniqueDistricts);
+      } else {
+        message.error('Không thể lấy thông tin salon');
+      }
+    } catch (error) {
+      console.error('Error fetching salons:', error);
+      message.error('Không thể tải danh sách salon');
+    } finally {
+      setSalonLoading(false);
+    }
+  };
+
+  // Thêm hàm handleSalonSelect
+  const handleSalonSelect = (salon) => {
+    if (!salon.salonId && !salon.id) {
+      message.error('Thông tin salon không hợp lệ');
+      return;
+    }
+    
+    const formattedSalon = {
+      ...salon,
+      salonId: salon.salonId || salon.id,
+      id: salon.salonId || salon.id
+    };
+    
+    setSelectedSalon(formattedSalon);
+    setModalVisible(false);
+  };
 
   // Remove service
   const handleRemoveService = (serviceToRemove, newTotal, isAdding = false) => {
@@ -71,18 +132,6 @@ const BookingComponent = () => {
     setSelectedCombos(newCombos);
     setTotalPrice(prevTotal => prevTotal - parseInt(removedCombo.price.replace(/\D/g, '')));
   };
-
-  // Set fixed salon address
-  const fixedSalon = {
-    id: 1,
-    address: "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000",
-    description: "Chi nhánh duy nhất của chúng tôi",
-    image: "path/to/salon/image.jpg" // Add an appropriate image path
-  };
-
-  useEffect(() => {
-    setSelectedSalon(fixedSalon);
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -132,6 +181,7 @@ const BookingComponent = () => {
       const serviceIds = allServices.map(service => service.serviceId || service.id);
 
       const bookingData = {
+        salonId: selectedSalon.salonId,
         date: moment(selectedDate.date).format('YYYY-MM-DD'),
         stylistId: selectedStylist === 'None' ? 'None' : selectedStylist, // Thay đổi ở đây
         slotId: parseInt(selectedTime),
@@ -201,10 +251,96 @@ const BookingComponent = () => {
           <div className="booking-steps">
             <div className="step">
               <h3>1. Địa chỉ salon</h3>
-              <div className="option">
-                <span className="icon">🏠</span>
-                <span>{fixedSalon.address}</span>
+              <div className="salon-address" onClick={() => setModalVisible(true)}>
+                <Card className="address-card">
+                  <div className="address-content">
+                    <div className="selected-address">
+                      <EnvironmentOutlined />
+                      {selectedSalon ? (
+                        <span>{selectedSalon.address}, Quận {selectedSalon.district}</span>
+                      ) : (
+                        <span className="select-prompt">Chọn chi nhánh</span>
+                      )}
+                    </div>
+                  </div>
+                </Card>
               </div>
+
+              <Modal
+                title="Chọn Salon"
+                open={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                width={800}
+                footer={null}
+                className="salon-modal"
+              >
+                {salonLoading ? (
+                  <div className="loading-container">
+                    <Spin size="large" />
+                  </div>
+                ) : (
+                  <Tabs defaultActiveKey="all" className="salon-tabs">
+                    <TabPane tab="Tất cả" key="all">
+                      <List
+                        dataSource={salons}
+                        renderItem={salon => (
+                          <List.Item 
+                            className={`salon-item ${selectedSalon?.id === salon.id ? 'selected' : ''}`}
+                            onClick={() => handleSalonSelect(salon)}
+                          >
+                            <div className="salon-info">
+                              <h4>30Shine {salon.district}</h4>
+                              <p>
+                                <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
+                              </p>
+                              {salon.open && (
+                                <span className="status-open">
+                                  <CheckCircleOutlined /> Đang mở cửa
+                                </span>
+                              )}
+                            </div>
+                            <Button 
+                              type={selectedSalon?.id === salon.id ? "primary" : "default"}
+                            >
+                              {selectedSalon?.id === salon.id ? "Đã chọn" : "Chọn"}
+                            </Button>
+                          </List.Item>
+                        )}
+                      />
+                    </TabPane>
+                    {districts.map(district => (
+                      <TabPane tab={`Quận ${district}`} key={district}>
+                        <List
+                          dataSource={salons.filter(salon => salon.district === district)}
+                          renderItem={salon => (
+                            <List.Item 
+                              className={`salon-item ${selectedSalon?.id === salon.id ? 'selected' : ''}`}
+                              onClick={() => handleSalonSelect(salon)}
+                            >
+                              <div className="salon-info">
+                                <h4>30Shine {salon.district}</h4>
+                                <p>
+                                  <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
+                                </p>
+                                {salon.open && (
+                                  <span className="status-open">
+                                    <CheckCircleOutlined /> Đang mở cửa
+                                  </span>
+                                )}
+                              </div>
+                              <Button 
+                                type={selectedSalon?.id === salon.id ? "primary" : "default"}
+                              >
+                                {selectedSalon?.id === salon.id ? "Đã chọn" : "Chọn"}
+                              </Button>
+                            </List.Item>
+                          )}
+                        />
+                      </TabPane>
+                    ))}
+                  </Tabs>
+                )}
+              </Modal>
             </div>
             <div className="step">
               <h3>2. Chọn dịch vụ</h3>
@@ -1322,4 +1458,3 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
-

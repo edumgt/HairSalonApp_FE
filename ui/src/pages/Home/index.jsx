@@ -11,6 +11,7 @@ import ComboServices from "../../layouts/Component/Combo/ComboService";
 
 
 import "./index.scss";
+import SalonServices from '../../layouts/Component/Salons/SalonServices';
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -473,9 +474,11 @@ function Home() {
       </Row>
       <HairServices />
       <ComboServices />
+      <SalonServices />
       <BrandAmbassadors />
       <TopStylists />
       <LatestNews />
+      
     </div>
   );
 }
