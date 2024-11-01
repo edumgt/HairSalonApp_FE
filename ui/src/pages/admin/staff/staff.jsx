@@ -150,10 +150,15 @@ const Staff = () => {
         }
       });
       if (response.data && response.data.code === 200) {
-        setEditingStaff(response.data.result);
+        const staffData = response.data.result;
+        setEditingStaff(staffData);
         form.setFieldsValue({
-          ...response.data.result,
-          joinIn: response.data.result.joinIn ? dayjs(response.data.result.joinIn) : null
+          ...staffData,
+          joinIn: staffData.joinIn ? dayjs(staffData.joinIn) : null,
+          role: {
+            value: staffData.role,
+            disabled: staffData.role === 'MANAGER'
+          }
         });
         setIsEditModalVisible(true);
       }
@@ -414,10 +419,20 @@ const Staff = () => {
               <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
               </Form.Item>
-              <Form.Item name="role" label="Chức vụ" rules={[{ required: true }]} className={styles.formItem}>
-                <Select>
+              <Form.Item 
+                name="role" 
+                label="Chức vụ" 
+                rules={[{ required: true }]} 
+                className={styles.formItem}
+              >
+                <Select
+                  disabled={editingStaff?.role === 'MANAGER'}
+                >
                   <Option value="STAFF">Nhân viên</Option>
                   <Option value="STYLIST">Thợ cắt tóc</Option>
+                  {editingStaff?.role === 'MANAGER' && (
+                    <Option value="MANAGER">Quản lý</Option>
+                  )}
                 </Select>
               </Form.Item>
               <Form.Item>
