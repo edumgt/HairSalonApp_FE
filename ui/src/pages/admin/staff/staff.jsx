@@ -10,9 +10,28 @@ import HeaderButton from '../../../layouts/admin/components/table/button/headerB
 import EditButton from '../../../layouts/admin/components/table/button/editButton';
 import { Outlet } from 'react-router-dom';
 
-const { Option } = Select;
 
-const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff }) => {
+
+const Staff = () => {
+  const [staffList, setStaffList] = useState([]);
+  const [filteredStaff, setFilteredStaff] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingStaff, setEditingStaff] = useState(null);
+  const [refreshData, setRefreshData] = useState(false);
+  const [form] = Form.useForm();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isRootPath = location.pathname === '/admin/staff';
+  const [userRole, setUserRole] = useState('');
+  const [salons, setSalons] = useState([]);
+  const [currentUserPhone, setCurrentUserPhone] = useState('');
+
+  const { Option } = Select;
+
+const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff, currentUserPhone }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -31,6 +50,14 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
   };
 
   const imageUrl = getImgurDirectUrl(image);
+
+  // Thêm logic kiểm tra manager
+  const isCurrentManager = role === 'MANAGER' && phone === currentUserPhone;
+
+  // Kiểm tra xem salon của staff này đã có manager chưa
+  const hasManager = staffList.some(staff => 
+    staff.role === 'MANAGER' && staff.salons?.id === salons?.id
+  );
 
   return (
     <tr className={styles.row}>
@@ -56,17 +83,23 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      {canManageStaff && (
+      {canManageStaff && !isCurrentManager && (
+        <td className={styles.actionCell}>
+          <EditButton 
+            onEdit={() => onEdit(code)} 
+            onDelete={() => onDelete(code)}
+          />
+        </td>
+      )}
+      {canManageStaff && forAdmin && (
         <>
         <td className={styles.actionCell}>
-          <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
-        </td>
-        <td className={styles.actionCell}>
-          {role !== 'MANAGER' && (
+          {role !== 'MANAGER' && salons?.id && (
             <Button 
               type="primary"
               onClick={() => onPromote(code, salons.id)}
-              disabled={role === 'MANAGER'}
+              disabled={role === 'MANAGER' || hasManager}
+              title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
             >
               Thăng chức
             </Button>
@@ -78,28 +111,13 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
   );
 };
 
-const Staff = () => {
-  const [staffList, setStaffList] = useState([]);
-  const [filteredStaff, setFilteredStaff] = useState([]);
-  const [searchText, setSearchText] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [editingStaff, setEditingStaff] = useState(null);
-  const [refreshData, setRefreshData] = useState(false);
-  const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isRootPath = location.pathname === '/admin/staff';
-  const [userRole, setUserRole] = useState('');
-  const [salons, setSalons] = useState([]);
-
   useEffect(() => {
     const role = localStorage.getItem('userRole');
     setUserRole(role);
   }, []);
 
   const canManageStaff = userRole === 'ADMIN' || userRole === 'MANAGER';
+  const forAdmin = userRole === 'ADMIN' || userRole === 'admin';
 
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
@@ -155,10 +173,6 @@ const Staff = () => {
         form.setFieldsValue({
           ...staffData,
           joinIn: staffData.joinIn ? dayjs(staffData.joinIn) : null,
-          role: {
-            value: staffData.role,
-            disabled: staffData.role === 'MANAGER'
-          }
         });
         setIsEditModalVisible(true);
       }
@@ -228,16 +242,32 @@ const Staff = () => {
   };
 
   const handlePromote = (code, salonId) => {
+    // Kiểm tra xem salon đã có manager chưa
+    const hasManager = staffList.some(staff => 
+      staff.role === 'MANAGER' && staff.salons?.id === salonId
+    );
+
+    if (hasManager) {
+      Modal.error({
+        title: 'Không thể thăng chức',
+        content: 'Chi nhánh này đã có quản lý. Không thể thăng chức thêm.',
+      });
+      return;
+    }
+
     Modal.confirm({
       title: 'Xác nhận thăng chức',
       content: 'Bạn có chắc chắn muốn thăng chức cho nhân viên này?',
       onOk: async () => {
         try {
-          const response = await axios.put(`http://localhost:8080/api/v1/staff/promote/${code}`, {salonId: salonId}, {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
+          const response = await axios.put(`http://localhost:8080/api/v1/staff/promote/${code}`, 
+            { salonId: salonId },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
             }
-          });
+          );
 
           if (response.data && response.data.code === 200) {
             Modal.success({
@@ -294,6 +324,26 @@ const Staff = () => {
     fetchSalons();
   }, []);
 
+  // Thêm useEffect để fetch thông tin user hiện tại
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/profile/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (response.data && response.data.code === 200) {
+          setCurrentUserPhone(response.data.result.phone);
+        }
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -346,6 +396,7 @@ const Staff = () => {
                       onDelete={canManageStaff ? handleDeleteStaff : undefined}
                       onPromote={canManageStaff ? handlePromote : undefined}
                       canManageStaff={canManageStaff}
+                      currentUserPhone={currentUserPhone}
                     />
                   ))}
                 </tbody>

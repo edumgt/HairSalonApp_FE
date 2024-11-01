@@ -23,7 +23,7 @@ function Login() {
       detail: { 
         role: userRole || '',
         firstName: firstName || '',
-        lastName: lastName || ''
+        lastName: lastName || '',
       } 
     }));
   };
@@ -65,7 +65,7 @@ function Login() {
               const userRole = profileData.result.role || '';
               const firstName = profileData.result.firstName || '';
               const lastName = profileData.result.lastName || '';
-              
+
               saveUserData(data.result.token, username, userRole, firstName, lastName);
               
               message.success({
