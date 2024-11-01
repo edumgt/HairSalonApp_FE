@@ -9,7 +9,6 @@ import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
 import EditButton from '../../../layouts/admin/components/table/button/editButton';
 import { Outlet } from 'react-router-dom';
-import { log } from 'util';
 
 const { Option } = Select;
 

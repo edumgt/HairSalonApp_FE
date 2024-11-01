@@ -76,7 +76,11 @@ const Service = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/service')
+            const response = await axios.get('http://localhost:8080/api/v1/service', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
             if (response.data && response.data.code === 0) {
                 setServices(response.data.result)
                 setFilteredServices(response.data.result)

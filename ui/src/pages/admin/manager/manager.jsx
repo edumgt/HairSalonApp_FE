@@ -5,8 +5,9 @@ import styles from './manager.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink';
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn';
 import HeaderButton from '../../../layouts/admin/components/table/buttonv2/headerButton';
-import EditButton from '../../../layouts/admin/components/table/buttonv2/editButton';
-import { getAll } from '../services/managerService';
+import EditButton from '../../../layouts/admin/components/table/button/editButton';
+import { getAll, demoteById } from '../services/managerService';
+import UpdateManagerForm from './updateManager';
 
 const ListItem = ({ id, staff, onEdit, onDelete, canManage }) => {
   const [imageError, setImageError] = useState(false);
@@ -53,8 +54,8 @@ const ListItem = ({ id, staff, onEdit, onDelete, canManage }) => {
       {canManage && (
         <td className={styles.actionCell}>
           <EditButton 
-            onEdit={() => onEdit(staff?.code)} 
-            onDelete={() => onDelete(staff?.code)}
+            onEdit={() => onEdit(id)} 
+            onDelete={() => onDelete(id)}
           />
         </td>
       )}
@@ -66,9 +67,8 @@ function Manager() {
   const [filteredManager, setFilteredManager] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [form] = Form.useForm();
+  const [selectedManager, setSelectedManager] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const isRootPath = location.pathname === '/admin/manager';
   const [userRole, setUserRole] = useState('');
 
@@ -102,29 +102,49 @@ function Manager() {
     setSearchText(e.target.value);
   };
 
-  const handleEditManager = async (code) => {
-    // Implement edit functionality if needed
-    console.log('Edit manager:', code);
+  const handleEditManager = async (id) => {
+    const manager = filteredManager.find(m => m.id === id);
+    if (manager) {
+      setSelectedManager(manager);
+      setIsEditModalVisible(true);
+    }
+  };
+
+  const handleModalCancel = () => {
+    setIsEditModalVisible(false);
+    setSelectedManager(null);
+  };
+
+  const handleUpdateSuccess = () => {
+    setIsEditModalVisible(false);
+    setSelectedManager(null);
+    loadData();
   };
 
   const handleDeleteManager = (code) => {
     Modal.confirm({
-      title: 'Xác nhận xóa',
-      content: 'Bạn có chắc chắn muốn xóa quản lý này?',
+      title: 'Xác nhận giáng chức',
+      content: 'Bạn có chắc chắn muốn giáng chức quản lý này?',
       onOk: async () => {
         try {
-          await deleteManager(code);
+          await demoteById(code);
           Modal.success({
-            content: 'Xóa quản lý thành công'
+            content: 'Giáng chức quản lý thành công'
           });
           loadData();
         } catch (error) {
           Modal.error({
             title: 'Lỗi',
-            content: 'Xóa quản lý thất bại. Vui lòng thử lại'
+            content: 'Giáng chức quản lý thất bại. Vui lòng thử lại'
           });
         }
-      }
+      },
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <>
+          <CancelBtn />
+          <OkBtn />
+        </>
+      ),
     });
   };
 
@@ -173,6 +193,13 @@ function Manager() {
               </table>
             </div>
           </div>
+
+          <UpdateManagerForm 
+            visible={isEditModalVisible}
+            onCancel={handleModalCancel}
+            onSuccess={handleUpdateSuccess}
+            initialValues={selectedManager}
+          />
         </>
       ) : (
         <Outlet/>

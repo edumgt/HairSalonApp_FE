@@ -35,7 +35,11 @@ function Category() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/category');
+            const response = await axios.get('http://localhost:8080/api/v1/category', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             if (response.data && Array.isArray(response.data.result)) {
                 setCategories(response.data.result);
             } else {
