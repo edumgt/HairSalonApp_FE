@@ -34,8 +34,8 @@ const Sidebar = () => {
         setIsVisible(!isVisible);
     };
 
-    const canAccessAllTabs = userRole === 'ADMIN' || userRole === 'MANAGER' || userRole === 'admin' || userRole === 'manager';
-
+    const forAdminAndManager = userRole === 'ADMIN' || userRole === 'MANAGER' || userRole === 'admin' || userRole === 'manager';
+    const forManager = userRole === 'MANAGER' || userRole === 'manager';
     return (
         <div className={`${styles.nav} ${isVisible ? '' : styles.toggle}`}>
             <div className={styles.brand}>
@@ -43,7 +43,7 @@ const Sidebar = () => {
                 <i className={styles.brandsName}>30Shine</i>
             </div>
             <div className={styles.navs}>
-                {canAccessAllTabs && (
+                {forAdminAndManager && (
                     <div className={styles.item}>
                         <div className={styles.itemGroup}>
                             <img className={styles.navIcon} alt="" src={dashboardIcon}  />
@@ -65,13 +65,7 @@ const Sidebar = () => {
                         <div className={styles.itemContent}>Nhân viên</div>
                     </div>
                 </div>
-                <div className={`${styles.item} ${activeItem === 'manager' ? styles.active : ''}`} 
-                    onClick={() => handleItem('/admin/manager', 'manager')}>
-                    <div className={styles.itemGroup}>
-                        <img className={styles.navIcon} alt="" src={staffIcon} />
-                        <div className={styles.itemContent}>Quản lý</div>
-                    </div>
-                </div>
+                
                 <div className={`${styles.item} ${activeItem === 'booking' ? styles.active : ''}`} 
                     onClick={() => handleItem('/admin/historybooking', 'booking')}>
                     <div className={styles.itemGroup}>
@@ -79,8 +73,17 @@ const Sidebar = () => {
                         <div className={styles.itemContent}>Đặt lịch</div>
                     </div>
                 </div>
-                {canAccessAllTabs && (
+                {forAdminAndManager && (
                     <>
+                        {!forManager && (
+                            <div className={`${styles.item} ${activeItem === 'manager' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/manager', 'manager')}>
+                                <div className={styles.itemGroup}>
+                                <img className={styles.navIcon} alt="" src={staffIcon} />
+                                <div className={styles.itemContent}>Quản lý</div>
+                                </div>
+                            </div>
+                        )}
                         <div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
                             onClick={() => handleItem('/admin/combo', 'combo')}>
                             <div className={styles.itemGroup}>
@@ -109,13 +112,15 @@ const Sidebar = () => {
                                 <div className={styles.itemContent}>Danh mục</div>
                             </div>
                         </div>
-                        <div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/salon', 'salon')}>
-                            <div className={styles.itemGroup}>
+                        {!forManager && (
+                            <div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/salon', 'salon')}>
+                                <div className={styles.itemGroup}>
                                 <img className={styles.navIcon} alt="" src={salonIcon} />
                                 <div className={styles.itemContent}>Chi nhánh</div>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </>
                 )}
             </div>
