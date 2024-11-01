@@ -54,7 +54,9 @@ const BookingSuccess = () => {
             <h3>Combo đã chọn:</h3>
             {selectedCombos.map((combo, index) => (
               <div key={index} className="combo-item">
-                <h4>{combo.name} - {formatPrice(combo.price)}</h4>
+                <h4>
+                  {combo.name} {combo.quantity > 1 ? `(x${combo.quantity})` : ''} - {formatPrice(combo.price * (combo.quantity || 1))}
+                </h4>
                 <ul>
                   {combo.services.map((service, serviceIndex) => (
                     <li key={serviceIndex}>{service.serviceName}</li>
@@ -69,7 +71,9 @@ const BookingSuccess = () => {
             <h3>Dịch vụ đơn lẻ đã chọn:</h3>
             <ul>
               {selectedServices.map((service, index) => (
-                <li key={index}>{service.serviceName} - {formatPrice(service.price)}</li>
+                <li key={index}>
+                  {service.serviceName} {service.quantity > 1 ? `(x${service.quantity})` : ''} - {formatPrice(service.price * (service.quantity || 1))}
+                </li>
               ))}
             </ul>
           </div>

@@ -353,6 +353,16 @@
           border: none;
         }
       }
+
+      &.in-combo {
+        background-color: #f5f5f5;
+        color: #666;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #e8e8e8;
+        }
+      }
     }
   }
 

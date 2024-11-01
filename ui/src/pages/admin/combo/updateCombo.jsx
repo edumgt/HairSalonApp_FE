@@ -29,7 +29,6 @@ function UpdateCombo() {
         id: combo?.id,
         name: combo?.name,
         services: combo?.services?.map(service => service.serviceId),
-        price: combo?.price,
         description: combo?.description
     };
     const onSelect = (value) => {
@@ -69,12 +68,6 @@ function UpdateCombo() {
             onChange: onSelect
         },
         {
-            label: 'Giá',
-            name:'price',
-            isInput: true,
-            rules: [{required: true, message: 'Vui lòng nhập giá!'}]
-        },
-        {
             label: 'Mô tả',
             name:'description',
             isInput: true,
@@ -100,6 +93,11 @@ function UpdateCombo() {
                     return response
                 } catch (error) {
                     console.log(error);
+                    notification.error({
+                      message: 'Thất bại',
+                      description: error.response.data.message,
+                      duration: 2
+                    });
                 }
             },
             footer: (_, { OkBtn, CancelBtn }) => (

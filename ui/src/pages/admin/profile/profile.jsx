@@ -35,28 +35,28 @@ const Profile = () => {
 	}
   	return (
     		<div className={styles.main}>
-      			<NavLink currentPage="Profile" />
+      			<NavLink currentPage="Thông tin cá nhân" />
       			<div className={styles.mainContent}>
         				<img className={styles.profileAvatar} alt="" src={avatar} />
         				<div className={styles.profileParent}>
 							<div className={styles.profileHeader}>Về tôi</div>
           					<div className={styles.infoGroup}>
 								<div className={styles.infoChild}>
-									<Info title='ID' info={profile.id}/>
-									<Info title='Full name' info={`${profile.firstName} ${profile.lastName}`}/>
-									<Info title='Role' info={profile.role}/>
+									{/* <Info title='ID' info={profile.id}/> */}
+									<Info title='Họ và tên' info={`${profile.firstName} ${profile.lastName}`}/>
+									<Info title='Vai trò' info={profile.role}/>
 									<Info title='Email' info={profile.email}/>
-									<Info title='Phone number' info={profile.phone}/>
+									<Info title='Số điện thoại' info={profile.phone}/>
 								</div>
           					</div>
 							
 								<Button type='primary'
 									className={styles.editProfileButton} onClick={() => navigate('editProfile', { state: { profile } })}>
-											<div className={styles.changePassword}>Edit profile</div>
+											<div className={styles.changePassword}>Cập nhật</div>
           						</Button>
 								  <Button type='primary'
 							 		className={styles.changePasswordButton} onClick={() => navigate('changePassword')}>
-            						<div className={styles.changePassword}>Change password</div>
+            						<div className={styles.changePassword}>Đổi mật khẩu</div>
           					</Button>
         				</div>
       			</div>

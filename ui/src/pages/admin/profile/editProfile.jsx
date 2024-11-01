@@ -65,13 +65,13 @@ const EditProfile = () => {
             onFinish={editProfile}
             className={styles.form}
           >
-            <Form.Item
+            {/* <Form.Item
               label="ID"
               name="id"
               rules={[{ required: true, message: 'Vui lòng nhập ID!' }]}
             >
               <Input disabled />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Họ"

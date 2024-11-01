@@ -10,6 +10,38 @@
     &:last-child {
       border-bottom: none;
     }
+
+    .service-name, .combo-name {
+      flex: 2;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 16px;
+
+      .quantity-display {
+        min-width: 30px;
+        text-align: center;
+        user-select: none;
+      }
+
+      .ant-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .service-price, .combo-price {
+      flex: 1;
+      text-align: right;
+      margin-right: 16px;
+    }
   }
 
   .selected-combo-item {
@@ -27,7 +59,7 @@
 
     .combo-services {
       list-style-type: none;
-      padding-left: 1px;
+      padding-left: 20px;
       width: 100%;
       margin: 0;
 
@@ -38,6 +70,36 @@
         padding: 5px 0;
         font-size: 0.9em;
         color: #666;
+
+        .service-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .ant-btn {
+            min-width: 80px;
+            height: 28px;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+
+            &[disabled] {
+              background-color: #f5f5f5;
+              color: #d9d9d9;
+              cursor: not-allowed;
+
+              &:hover {
+                opacity: 0.8;
+              }
+            }
+
+            .anticon {
+              font-size: 12px;
+            }
+          }
+        }
       }
     }
   }
@@ -55,4 +117,10 @@
     font-size: 16px;
     font-weight: bold;
   }
+}
+
+// Thêm tooltip style
+.service-tooltip {
+  max-width: 200px;
+  text-align: center;
 }
