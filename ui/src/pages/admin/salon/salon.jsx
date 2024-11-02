@@ -4,8 +4,8 @@ import styles from './salon.module.css'
 import NavLink from "../../../layouts/admin/components/link/navLink";
 import HeaderButton from "../../../layouts/admin/components/table/buttonv2/headerButton";
 import HeaderColumn from "../../../layouts/admin/components/table/headerColumn";
-import EditButton from "../../../layouts/admin/components/table/buttonv2/editButton";
-import { Modal, notification } from "antd";
+import editIcon from '../../../assets/admin/pencil-fiiled.svg'
+import { Button, Modal, notification, Space } from "antd";
 import { getAll, switchStatus } from "../services/salonService";
 import AddSalonForm from './addSalon'
 import UpdateSalonForm from './updateSalon';
@@ -44,7 +44,7 @@ function Salon() {
 const handleSwitchStatus = async (id) => {
     Modal.confirm({
       title: 'Xác nhận',
-      content: 'Bạn có muốn đổi trạng thái chi nhánh này ?',
+      content: `Bạn có muốn ${open ? 'mở cửa' : 'đóng cửa'} chi nhánh này ?`,
       onOk: async () => {
         try {
           const response = await switchStatus(id);
@@ -79,12 +79,14 @@ const handleSwitchStatus = async (id) => {
         <td className={styles.info}>{district}</td>
         <td className={`${open ? styles.greenStatus : styles.redStatus}`}>{open ? 'Đang hoạt động' : 'Đóng cửa'}</td>
         <td>
-          <EditButton 
-            id={id} 
-            handleDelete={handleSwitchStatus}
-            isModal={true}
-            handleUpdate={() => showUpdateModal({ id, address, district })}
-          />
+          <Space justify="end">
+            <Button color="primary" variant="outlined" size='small' onClick={() => showUpdateModal({ id, address, district })}>
+              <img className='editIcon' src={editIcon} alt="" />
+            </Button>
+            <Button color={open ? 'danger' : 'primary'} variant="outlined" size='small' onClick={() => handleSwitchStatus(id)}>
+              {open ? 'Đóng cửa' : 'Mở cửa'}
+            </Button>
+          </Space>
         </td>
       </tr>
     );

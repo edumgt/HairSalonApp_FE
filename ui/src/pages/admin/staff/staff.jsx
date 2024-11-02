@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal, Form, Input, Select, DatePicker, Button, InputNumber } from 'antd';
+import { Modal, Form, Input, Select, DatePicker, Button, InputNumber, Space } from 'antd';
 import dayjs from 'dayjs';
 import styles from './staff.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
-import EditButton from '../../../layouts/admin/components/table/button/editButton';
+import editIcon from '../../../assets/admin/pencil-fiiled.svg'
+
 import { Outlet } from 'react-router-dom';
 
 
@@ -87,37 +88,25 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
       </td>
       {canManageStaff && !isCurrentManager && (
         <td className={styles.actionCell}>
-          <EditButton 
-            onEdit={() => onEdit(code)} 
-            onDelete={() => onDelete(code)}
-          />
-        </td>
-      )}
-      {canManageStaff && forAdmin && (
-        <>
-        <td className={styles.actionCell}>
-          {role !== 'MANAGER' && salons?.id && (
-            <Button 
-              type="primary"
-              onClick={() => onPromote(code, salons.id)}
-              disabled={hasManager}
-              title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
-              size="small"
-              style={{ 
-                fontSize: '12px',
-                padding: '0 8px',
-                height: '24px',
-                minWidth: '70px',
-                opacity: hasManager ? 0.5 : 1,
-                cursor: hasManager ? 'not-allowed' : 'pointer',
-                pointerEvents: hasManager ? 'none' : 'auto'
-              }}
-            >
-              Thăng chức
+          <Space>
+            <Button color="primary" variant="outlined" size='small' onClick={() => onEdit(code)}>
+              <img className='editIcon' src={editIcon} alt="" />
             </Button>
-          )}
+            <Button color="danger" variant="outlined" size='small' onClick={() => onDelete(code)}>
+              Thôi việc
+            </Button>
+            {role !== 'MANAGER' && salons?.id && (
+              <Button 
+                type="primary"
+                onClick={() => onPromote(code, salons.id)}
+                disabled={role === 'MANAGER' || hasManager}
+                title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
+              >
+                Thăng chức
+              </Button>
+            )}
+          </Space>
         </td>
-        </>
       )}
     </tr>
   );
@@ -239,7 +228,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
 
   const handleDeleteStaff = (code) => {
     Modal.confirm({
-      title: 'Bạn có muốn xóa nhân  viên này ?',
+      title: 'Bạn có muốn cho nhân viên này thôi việc ?',
       content: 'Bạn sẽ không thể khôi phục lại sau khi xóa.',
       onOk: async () => {
         try {
@@ -249,14 +238,14 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
             }
           });
           Modal.success({
-            content: 'Xóa nhân viên thành công',
+            content: 'Thôi việc nhân viên thành công',
           });
           fetchStaff(); // Refresh the staff list after deletion
         } catch (error) {
-          console.error('Lỗi xóa nhân viên:', error);
+          console.error('Lỗi thôi việc nhân viên:', error);
           Modal.error({
             title: 'Lỗi',
-            content: 'Xóa nhân viên thất bại. Vui lòng thử lại',
+            content: 'Thôi việc nhân viên thất bại. Vui lòng thử lại',
           });
         }
       },
@@ -272,7 +261,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
     if (hasManager) {
       Modal.error({
         title: 'Không thể thăng chức',
-        content: 'Chi nhánh này đ có quản lý. Không thể thăng chức thêm.',
+        content: 'Chi nhánh này đã có quản lý. Không thể thăng chức thêm.',
       });
       return;
     }
@@ -405,7 +394,6 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                     <HeaderColumn title="Chi nhánh" />
                     <HeaderColumn title="Trạng thái" />
                     <HeaderColumn title="Hình ảnh" />
-                    {canManageStaff && <HeaderColumn title="" />}
                     {canManageStaff && <HeaderColumn title="" />}
                   </tr>
                 </thead>

@@ -82,7 +82,7 @@ function AddStaff() {
                     <Select placeholder="Chọn chi nhánh">
                         {salons.map(salon => (
                             <Option key={salon.id} value={salon.id}>
-                                {`${salon.address} (Quận ${salon.district})`}
+                                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
                             </Option>
                         ))}
                     </Select>

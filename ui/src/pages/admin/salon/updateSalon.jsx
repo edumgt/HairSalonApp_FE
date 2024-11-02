@@ -41,6 +41,15 @@ const UpdateSalonForm = ({ visible, onCancel, onSuccess, initialValues }) => {
         {label: 'Bình Thạnh', value: 'Bình Thạnh'}
       ],
       rules: [{required: true, message: 'Quận không được bỏ trống'}],
+    },
+    {
+      label: 'Trạng thái',
+      name: 'open',
+      isSelect: true,
+      options: [
+        {label: 'Đóng cửa', value: false},
+        {label: 'Đang hoạt động', value: true}
+      ]
     }
   ];
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { Modal, Form } from 'antd';
+import { Modal, Form, Space, Button } from 'antd';
 import styles from './manager.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink';
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn';
 import HeaderButton from '../../../layouts/admin/components/table/buttonv2/headerButton';
-import EditButton from '../../../layouts/admin/components/table/button/editButton';
+import editIcon from '../../../assets/admin/pencil-fiiled.svg'
 import { getAll, demoteById } from '../services/managerService';
 import UpdateManagerForm from './updateManager';
 
@@ -53,10 +53,14 @@ const ListItem = ({ id, staff, onEdit, onDelete, canManage }) => {
       </td>
       {canManage && (
         <td className={styles.actionCell}>
-          <EditButton 
-            onEdit={() => onEdit(id)} 
-            onDelete={() => onDelete(id)}
-          />
+          <Space>
+            <Button color="primary" variant="outlined" size='small' onClick={() => onEdit(id)}>
+              <img className='editIcon' src={editIcon} alt="" />
+            </Button>
+            <Button color="danger" variant="outlined" size='small' onClick={() => onDelete(id)}>
+              Hạ chức
+            </Button>
+          </Space>
         </td>
       )}
     </tr>
@@ -102,8 +106,8 @@ function Manager() {
     setSearchText(e.target.value);
   };
 
-  const handleEditManager = async (id) => {
-    const manager = filteredManager.find(m => m.id === id);
+  const handleEditManager = async (code) => {
+    const manager = filteredManager.find(m => m.staff.code === code);
     if (manager) {
       setSelectedManager(manager);
       setIsEditModalVisible(true);
@@ -123,19 +127,19 @@ function Manager() {
 
   const handleDeleteManager = (code) => {
     Modal.confirm({
-      title: 'Xác nhận giáng chức',
-      content: 'Bạn có chắc chắn muốn giáng chức quản lý này?',
+      title: 'Xác nhận hạ chức',
+      content: 'Bạn có chắc chắn muốn hạ chức quản lý này?',
       onOk: async () => {
         try {
           await demoteById(code);
           Modal.success({
-            content: 'Giáng chức quản lý thành công'
+            content: 'Hạ chức quản lý thành công'
           });
           loadData();
         } catch (error) {
           Modal.error({
             title: 'Lỗi',
-            content: 'Giáng chức quản lý thất bại. Vui lòng thử lại'
+            content: 'Hạ chức quản lý thất bại. Vui lòng thử lại'
           });
         }
       },

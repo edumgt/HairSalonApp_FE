@@ -1177,7 +1177,7 @@ const DateTimeSelectionStep = ({
     return true;
   };
 
-  const fetchAvailableStylists = async (date, slotId) => {
+  const fetchAvailableStylists = useCallback(async (date, slotId) => {
     if (!date || !slotId) return;
 
     setIsStylistLoading(true);
@@ -1185,7 +1185,7 @@ const DateTimeSelectionStep = ({
 
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}`, {
+      const response = await axios.get(`http://localhost:8080/api/v1/stylist/available?date=${formattedDate}&slotId=${slotId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -1202,7 +1202,7 @@ const DateTimeSelectionStep = ({
     } finally {
       setIsStylistLoading(false);
     }
-  };
+  }, []);
 
   return (
     <div className="date-time-selection">

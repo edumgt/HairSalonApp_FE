@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Modal, notification } from "antd";
 import CUForm from "../../../layouts/admin/components/formv2/form";
 import { update } from '../services/managerService';
+import axios from 'axios';
 import styles from './updateManager.module.css';
-import { getAll } from '../services/salonService';
 
 const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
   const [availableSalons, setAvailableSalons] = useState([]);
@@ -11,7 +11,11 @@ const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
   useEffect(() => {
     const fetchAvailableSalons = async () => {
       try {
-        const response = await getAll();
+        const response = await axios.get('http://localhost:8080/api/v1/salon/available', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
         if (response.data && response.data.code === 0) {
           // Thêm salon hiện tại của manager vào danh sách (nếu có)
           const currentSalon = initialValues?.staff?.salons;
