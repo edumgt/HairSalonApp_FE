@@ -10,7 +10,7 @@ import { Modal, Form, Input, InputNumber, Select, Button } from 'antd'
 
 const { Option } = Select;
 
-const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit, onDelete }) => {
+const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, status, onEdit, onDelete }) => {
     const [imageError, setImageError] = useState(false);
 
     const handleImageError = () => {
@@ -38,6 +38,13 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
             <td className={styles.info}>{description}</td>
             <td className={styles.info}>{duration} phút</td>
             <td className={styles.info}>{price.toLocaleString()} VND</td>
+            <td className={styles.info}>
+                <div className={styles.statusWrapper}>
+                    <span className={status ? styles.openStatus : styles.closeStatus}>
+                        {status ? 'Kích hoạt' : 'Đóng'}
+                    </span>
+                </div>
+            </td>
             <td className={`${styles.info} ${styles.imageCell}`}>
                 {!imageError ? (
                     <img 
@@ -51,7 +58,11 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
                 )}
             </td>
             <td className={styles.actionCell}>
-                <EditButton onEdit={() => onEdit(serviceId)} onDelete={() => onDelete(serviceId)}/>
+                <EditButton 
+                    onEdit={() => onEdit(serviceId)} 
+                    onDelete={() => onDelete(serviceId)}
+                    deleteText="Chuyển trạng thái"
+                />
             </td>
         </tr>
     )
@@ -119,13 +130,17 @@ const Service = () => {
 
     const handleEditService = async (serviceId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/service/${serviceId}`)
+            const response = await axios.get(`http://localhost:8080/api/v1/service/${serviceId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             if (response.data && response.data.code === 0) {
                 const serviceData = response.data.result;
                 setEditingService(serviceData)
                 form.setFieldsValue({
                     ...serviceData,
-                    categoryId: serviceData.categories.categoryId // Đặt giá trị categoryId
+                    categoryId: serviceData.categories.categoryId
                 })
                 setIsEditModalVisible(true)
             }
@@ -149,7 +164,14 @@ const Service = () => {
                 image: values.image
             };
 
-            const response = await axios.put('http://localhost:8080/api/v1/service', updatedService);
+            const response = await axios.put('http://localhost:8080/api/v1/service', 
+                updatedService,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
             if (response.data && response.data.code === 0) {
                 Modal.success({
                     content: 'Cập nhật dịch vụ thành công',
@@ -169,19 +191,23 @@ const Service = () => {
 
     const handleDeleteService = (serviceId) => {
         Modal.confirm({
-            title: 'Xác nhận xóa dịch vụ',
-            content: 'Bạn có muốn xóa dịch vụ này ?',
+            title: 'Xác nhận chuyển trạng thái',
+            content: 'Bạn có muốn thay đổi trạng thái của dịch vụ này?',
             onOk: async () => {
                 try {
-                    await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`);
-                    Modal.success({
-                        content: 'Xóa dịch vụ thành công',
+                    await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
                     });
-                    fetchServices(); // Update the list after deletion
+                    Modal.success({
+                        content: 'Chuyển trạng thái dịch vụ thành công',
+                    });
+                    fetchServices();
                 } catch (error) {
-                    console.error('Error deleting service:', error);
+                    console.error('Error changing service status:', error);
                     Modal.error({
-                        content: 'Có lỗi xảy ra khi xóa dịch vụ',
+                        content: 'Có lỗi xảy ra khi chuyển trạng thái dịch vụ',
                     });
                 }
             },
@@ -216,6 +242,7 @@ const Service = () => {
                                 <HeaderColumn title="Mô tả" />
                                 <HeaderColumn title="Thời gian (Phút)" />
                                 <HeaderColumn title="Giá (VND)" sortable />
+                                <HeaderColumn title="Trạng thái" />
                                 <HeaderColumn title="Hình ảnh" className={styles.imageHeader} />
                                 <HeaderColumn title="" />
                             </tr>

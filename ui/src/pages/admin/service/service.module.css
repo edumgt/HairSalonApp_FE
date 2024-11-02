@@ -100,18 +100,18 @@
   }
   
   .openStatus {
-    font-size: 12px;
+    font-size: 14px;
     color: #14804A;
-    padding: 1px 10px;
+    padding: 2px 12px;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     background: var(--Green-0, #E1FCEF);
   }
   .closeStatus {
-    font-size: 12px;
+    font-size: 14px;
     color: #D12953;
-    padding: 1px 10px;
+    padding: 2px 12px;
     justify-content: center;
     align-items: center;
     border-radius: 10px;

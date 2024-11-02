@@ -18,7 +18,11 @@ function UpdateCategory() {
         const fetchCategory = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/category/${categoryId}`);
+                const response = await axios.get(`http://localhost:8080/api/v1/category/${categoryId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
                 if (response.data && response.data.code === 0 && response.data.result) {
                     setCategory(response.data.result);
                 } else {
@@ -53,11 +57,18 @@ function UpdateCategory() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/api/v1/category`, {
-                categoryId: category.categoryId,
-                categoryName: category.categoryName,
-                categoryDescription: category.categoryDescription
-            });
+            const response = await axios.put(`http://localhost:8080/api/v1/category`,
+                {
+                    categoryId: category.categoryId,
+                    categoryName: category.categoryName,
+                    categoryDescription: category.categoryDescription
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
 
             if (response.data && response.data.code === 0) {
                 setNotification({ message: 'Cập nhật danh mục thành công!', type: 'success' });

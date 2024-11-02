@@ -66,11 +66,15 @@ function Category() {
             content: 'Bạn có muốn xóa danh mục này ?',
             onOk: async () => {
                 try {
-                    await axios.delete(`http://localhost:8080/api/v1/category/${categoryId}`);
+                    await axios.delete(`http://localhost:8080/api/v1/category/${categoryId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
                     Modal.success({
                         content: 'Xóa danh mục thành công',
                     });
-                    fetchCategories(); // Update the list after deletion
+                    fetchCategories();
                 } catch (error) {
                     console.error('Error deleting category:', error);
                     Modal.error({

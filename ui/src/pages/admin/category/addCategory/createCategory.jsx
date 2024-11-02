@@ -19,14 +19,21 @@ function CreateCategory() {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/category', {
-                categoryName,
-                categoryDescription
-            });
+            const response = await axios.post('http://localhost:8080/api/v1/category', 
+                {
+                    categoryName,
+                    categoryDescription
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
 
             if (response.data.code === 0) {
                 setNotification({ message: 'Thêm danh mục thành công!', type: 'success' });
-                setTimeout(() => navigate('/admin/category'), 2000); // Redirect after 2 seconds
+                setTimeout(() => navigate('/admin/category'), 2000);
             } else {
                 setNotification({ message: 'Có lỗi xảy ra khi thêm danh mục.', type: 'error' });
             }
