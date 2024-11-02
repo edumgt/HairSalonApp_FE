@@ -31,7 +31,7 @@ const Staff = () => {
 
   const { Option } = Select;
 
-const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff, currentUserPhone }) => {
+const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff, currentUserPhone, staffList }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -56,7 +56,9 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
 
   // Kiểm tra xem salon của staff này đã có manager chưa
   const hasManager = staffList.some(staff => 
-    staff.role === 'MANAGER' && staff.salons?.id === salons?.id
+    staff.role === 'MANAGER' && 
+    staff.salons?.id === salons?.id && 
+    staff.status === true // Chỉ tính những manager đang còn làm việc
   );
 
   return (
@@ -69,7 +71,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
       <td className={styles.info}>{email}</td>
       <td className={styles.info}>{joinIn}</td>
       <td className={styles.info}>{role}</td>
-      <td className={styles.info}>{salons?.id ? `${salons?.id} - ${salons?.address} (Quận ${salons?.district})` : 'Chưa phân công'}</td>
+      <td className={styles.info}>{salons?.address ? `${salons.address} (Quận ${salons.district})` : 'Chưa phân công'}</td>
       <td className={styles.info}>{status ? 'Đang làm việc' : 'Đã nghỉ việc'}</td>
       <td className={`${styles.info} ${styles.imageCell}`}>
         {!imageError ? (
@@ -98,8 +100,18 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
             <Button 
               type="primary"
               onClick={() => onPromote(code, salons.id)}
-              disabled={role === 'MANAGER' || hasManager}
+              disabled={hasManager}
               title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
+              size="small"
+              style={{ 
+                fontSize: '12px',
+                padding: '0 8px',
+                height: '24px',
+                minWidth: '70px',
+                opacity: hasManager ? 0.5 : 1,
+                cursor: hasManager ? 'not-allowed' : 'pointer',
+                pointerEvents: hasManager ? 'none' : 'auto'
+              }}
             >
               Thăng chức
             </Button>
@@ -186,34 +198,44 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
 
   const handleUpdateStaff = async (values) => {
     try {
-      const updatedStaff = {
-        ...values,
-        yob: parseInt(values.yob),
-        joinIn: values.joinIn.format('YYYY-MM-DD'),
-        salonId: values.salonId
-      };
-      console.log(updatedStaff)
-      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        const updatedStaff = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            gender: values.gender,
+            yob: parseInt(values.yob),
+            phone: values.phone,
+            email: values.email,
+            image: values.image,
+            joinIn: values.joinIn.format('YYYY-MM-DD'),
+            role: values.role,
+            salonId: values.salonId
+        };
+
+        const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, 
+            updatedStaff,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        );
+
+        if (response.data && response.data.code === 200) {
+            Modal.success({
+                content: 'Cập nhật nhân viên thành công',
+            });
+            setIsEditModalVisible(false);
+            fetchStaff();
+        } else {
+            throw new Error('Cập nhật nhân viên thất bại');
         }
-      });
-      if (response.data && response.data.code === 200) {
-        Modal.success({
-          content: 'Cập nhật nhân viên thành công',
-        });
-        setIsEditModalVisible(false);
-        fetchStaff();
-      } else {
-        throw new Error('Cập nhật nhân viên thất bại');
-      }
     } catch (error) {
-      console.error('Lỗi cập nhật nhân viên:', error);
-      Modal.error({
-        content: 'Cập nhật nhân viên thất bại: ' + (error.response?.data?.message || error.message),
-      });
+        console.error('Lỗi cập nhật nhân viên:', error);
+        Modal.error({
+            content: 'Cập nhật nhân viên thất bại: ' + (error.response?.data?.message || error.message),
+        });
     }
-  };
+};
 
   const handleDeleteStaff = (code) => {
     Modal.confirm({
@@ -250,7 +272,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
     if (hasManager) {
       Modal.error({
         title: 'Không thể thăng chức',
-        content: 'Chi nhánh này đã có quản lý. Không thể thăng chức thêm.',
+        content: 'Chi nhánh này đ có quản lý. Không thể thăng chức thêm.',
       });
       return;
     }
@@ -397,6 +419,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                       onPromote={canManageStaff ? handlePromote : undefined}
                       canManageStaff={canManageStaff}
                       currentUserPhone={currentUserPhone}
+                      staffList={staffList}
                     />
                   ))}
                 </tbody>
@@ -437,7 +460,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                 <Select placeholder="Chọn chi nhánh">
                   {salons.map(salon => (
                     <Option key={salon.id} value={salon.id}>
-                      {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                      {`${salon.address} (Quận ${salon.district})`}
                     </Option>
                   ))}
                 </Select>
@@ -467,8 +490,13 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
               <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
-              <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
+              <Form.Item 
+                name="image" 
+                label="Liên kết hình ảnh (URL)" 
+                rules={[{ required: true, message: 'Vui lòng nhập URL hình ảnh!' }]} 
+                className={styles.formItem}
+              >
+                <Input placeholder="Nhập URL hình ảnh (Imgur)" />
               </Form.Item>
               <Form.Item 
                 name="role" 
