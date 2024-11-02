@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography, Spin, message, Tag, Modal, Rate, Input, Button, Space, DatePicker, Select, ConfigProvider, Divider } from 'antd';
-import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { CalendarOutlined, ScissorOutlined, DollarOutlined, UserOutlined, ClockCircleOutlined, ExclamationCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './index.scss';
@@ -360,6 +360,12 @@ function ShineHistory() {
               <span>{selectedBooking.id}</span>
             </div>
             <div className="info-item">
+              <label>Chi nhánh:</label>
+              <span>
+                {`${selectedBooking.stylistId.salons.address} (Quận ${selectedBooking.stylistId.salons.district})`}
+              </span>
+            </div>
+            <div className="info-item">
               <label>Ngày:</label>
               <span>{moment(selectedBooking.date).format('DD/MM/YYYY')}</span>
             </div>
@@ -509,6 +515,17 @@ function ShineHistory() {
       title: 'Mã đặt lịch',
       dataIndex: 'id',
       key: 'id',
+    },
+    {
+      title: 'Chi nhánh',
+      dataIndex: ['stylistId', 'salons', 'address'],
+      key: 'salon',
+      render: (_, record) => (
+        <span>
+          <EnvironmentOutlined style={{ marginRight: 8 }} />
+          {`${record.stylistId.salons.address} (Quận ${record.stylistId.salons.district})`}
+        </span>
+      ),
     },
     {
       title: 'Ngày',
