@@ -96,6 +96,12 @@ const BookingComponent = () => {
       id: salon.salonId || salon.id
     };
     
+    // Reset tất cả các thông tin đã chọn
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setSelectedStylist(null);
+    
+    // Cập nhật salon mới
     setSelectedSalon(formattedSalon);
     setModalVisible(false);
   };
@@ -181,23 +187,26 @@ const BookingComponent = () => {
       const serviceIds = allServices.map(service => service.serviceId || service.id);
 
       const bookingData = {
-        salonId: selectedSalon.salonId,
         date: moment(selectedDate.date).format('YYYY-MM-DD'),
-        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist, // Thay đổi ở đây
+        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist,
         slotId: parseInt(selectedTime),
         price: parseInt(totalPrice),
         serviceId: serviceIds,
-        period: recurringBooking ? parseInt(recurringBooking) : null
+        salonId: selectedSalon.salonId,
+        period: recurringBooking ? parseInt(recurringBooking) : 0
       };
 
       console.log('Sending booking data:', bookingData);
 
-      const response = await axios.post('http://localhost:8080/api/v1/booking', bookingData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await axios.post('http://localhost:8080/api/v1/booking', 
+        bookingData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       console.log('Received response:', response.data);
 
@@ -378,6 +387,7 @@ const BookingComponent = () => {
                 setRecurringBooking={setRecurringBooking}
                 selectedServices={selectedServices}
                 selectedCombos={selectedCombosDetails}
+                selectedSalon={selectedSalon}
               />
             </div>
           </div>
@@ -1100,7 +1110,8 @@ const DateTimeSelectionStep = ({
   recurringBooking,
   setRecurringBooking,
   selectedServices,
-  selectedCombos
+  selectedCombos,
+  selectedSalon
 }) => {
   const [isDateListOpen, setIsDateListOpen] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -1314,18 +1325,21 @@ const DateTimeSelectionStep = ({
   };
 
   const fetchAvailableStylists = async (date, slotId) => {
-    if (!date || !slotId) return;
+    if (!date || !slotId || !selectedSalon) return;
 
     setIsStylistLoading(true);
     setStylistError(null);
 
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}&salonId=${selectedSalon.salonId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
+      );
 
       if (response.data.code === 200) {
         setAvailableStylists(response.data.result);
