@@ -424,7 +424,7 @@ const BookingComponent = () => {
   const fetchUnavailableSlots = useCallback(async (date) => {
     if (!date) return;
     try {
-      const formattedDate = date.format('YYYY-MM-DD');
+      const formattedDate = date.format('yyyy-MM-dd');
       const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
