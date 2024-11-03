@@ -29,6 +29,6 @@ export const deleteById = async (id) => {
     return response
 }
 export const getServices = async () => {
-    const response = await BASE_URL.get('service')
+    const response = await BASE_URL.get('/booking/service')
     return response
 }
