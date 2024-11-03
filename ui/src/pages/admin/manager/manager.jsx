@@ -29,7 +29,10 @@ const ListItem = ({ id, staff, onEdit, onDelete, canManage }) => {
   const imageUrl = getImgurDirectUrl(staff?.image);
 
   return (
-    <tr className={styles.row}>
+    <tr 
+      className={`${styles.row} ${canManage ? styles.clickable : ''}`}
+      onClick={() => canManage && onEdit(id)}
+    >
       <td className={styles.info}>{id}</td>
       <td className={styles.info}>{`${staff?.firstName} ${staff?.lastName}`}</td>
       <td className={styles.info}>{staff?.gender}</td>
@@ -51,18 +54,6 @@ const ListItem = ({ id, staff, onEdit, onDelete, canManage }) => {
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      {canManage && (
-        <td className={styles.actionCell}>
-          <Space>
-            <Button color="primary" variant="outlined" size='small' onClick={() => onEdit(id)}>
-              <img className='editIcon' src={editIcon} alt="" />
-            </Button>
-            <Button color="danger" variant="outlined" size='small' onClick={() => onDelete(id)}>
-              Hạ chức
-            </Button>
-          </Space>
-        </td>
-      )}
     </tr>
   );
 };
@@ -203,6 +194,7 @@ function Manager() {
             onCancel={handleModalCancel}
             onSuccess={handleUpdateSuccess}
             initialValues={selectedManager}
+            onDelete={handleDeleteManager}
           />
         </>
       ) : (

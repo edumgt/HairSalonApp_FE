@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, notification } from "antd";
-import CUForm from "../../../layouts/admin/components/formv2/form";
+import { Modal, notification, Button, Form, Select, Input } from "antd";
 import { update } from '../services/managerService';
 import axios from 'axios';
 import styles from './updateManager.module.css';
 
-const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
+const { Option } = Select;
+
+const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues, onDelete }) => {
+  const [form] = Form.useForm();
   const [availableSalons, setAvailableSalons] = useState([]);
 
   useEffect(() => {
@@ -17,7 +19,6 @@ const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
           }
         });
         if (response.data && response.data.code === 0) {
-          // Thêm salon hiện tại của manager vào danh sách (nếu có)
           const currentSalon = initialValues?.staff?.salons;
           const salons = response.data.result;
           if (currentSalon) {
@@ -39,27 +40,12 @@ const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
 
     if (visible) {
       fetchAvailableSalons();
+      form.setFieldsValue({
+        id: initialValues?.id,
+        salonId: initialValues?.staff?.salons?.id
+      });
     }
-  }, [visible, initialValues]);
-
-  const inputs = [
-    {
-      label: 'ID',
-      name: 'id',
-      isInput: true,
-      isDisabled: true,
-    },
-    {
-      label: 'Chi nhánh',
-      name: 'salonId',
-      isSelect: true,
-      options: availableSalons.map(salon => ({
-        label: `${salon.id} - ${salon.address} (Quận ${salon.district})`,
-        value: salon.id
-      })),
-      rules: [{required: true, message: 'Chi nhánh không được bỏ trống'}],
-    }
-  ];
+  }, [visible, initialValues, form]);
 
   const handleUpdate = async (values) => {
     Modal.confirm({
@@ -105,14 +91,55 @@ const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
       className={styles.updateManagerModal}
       destroyOnClose={true}
     >
-      <CUForm 
-        inputs={inputs} 
-        handleSave={handleUpdate} 
-        initialValues={{
-          id: initialValues?.id,
-          salonId: initialValues?.staff?.salons?.id
-        }}
-      />
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleUpdate}
+      >
+        <Form.Item
+          name="id"
+          label="ID"
+        >
+          <Input disabled value={initialValues?.id} />
+        </Form.Item>
+
+        <Form.Item
+          name="salonId"
+          label="Chi nhánh"
+          rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+        >
+          <Select placeholder="Chọn chi nhánh">
+            {availableSalons.map(salon => (
+              <Option key={salon.id} value={salon.id}>
+                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <div className={styles.modalActions}>
+          <Button 
+            color="primary"
+            variant="outlined"
+            htmlType="submit"
+            className={styles.actionButton}
+          >
+            Cập nhật
+          </Button>
+
+          <Button 
+            color="danger"
+            variant="outlined"
+            onClick={() => {
+              onCancel();
+              onDelete(initialValues?.id);
+            }}
+            className={styles.actionButton}
+          >
+            Hạ chức
+          </Button>
+        </div>
+      </Form>
     </Modal>
   );
 }

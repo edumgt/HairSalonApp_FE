@@ -27,4 +27,17 @@
     :global(.ant-form-item) {
         margin-bottom: 20px;
     }
+}
+
+.modalActions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Chia đều thành 2 cột bằng nhau */
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.actionButton {
+    width: 100%;
+    min-width: 120px;
 } 
