@@ -234,7 +234,7 @@ function ShineHistory() {
     confirm({
       title: 'Xác nhận hủy đặt lịch định kỳ',
       icon: <ExclamationCircleOutlined />,
-      content: 'Bạn có chắc chắn muốn hủy đặt lịch định k�� này không?',
+      content: 'Bạn có chắc chắn muốn hủy đặt lịch định k này không?',
       okText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       onOk: async () => {
@@ -728,6 +728,9 @@ function ShineHistory() {
           </Button>,
         ].filter(Boolean)}
         width={700}
+        centered={true}
+        style={{ top: 20 }}
+        bodyStyle={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}
       >
         {renderBookingDetails()}
       </Modal>
