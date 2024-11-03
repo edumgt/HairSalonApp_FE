@@ -20,6 +20,8 @@ import ShineHistory from './pages/ShineHistory';
 import ChangePassword from './pages/ChangePassword';
 import AllServices from './layouts/Component/services/allservices';
 import ServiceDetail from './layouts/Component/services/ServiceDetails';
+import AllSalon from './layouts/Component/Salons/AllSalon';
+import SalonDetail from './layouts/Component/Salons/SalonDetail';
 
 
 // Admin pages
@@ -49,6 +51,7 @@ import ComboDetail from './layouts/Component/Combo/ComboDetail';
 import Payment from './pages/Payment';
 import UpdateBooking from './pages/admin/booking/updateBooking';
 import Manager from './pages/admin/manager/manager';
+
 
 
 
@@ -99,6 +102,8 @@ const router = createBrowserRouter([
       { path: "dich-vu/:serviceId", element: <ServiceDetail /> },
       { path: "combo/:comboId", element: <ComboDetail /> },
       { path: "payment/:bookingId", element: <Payment /> },
+      { path: "tat-ca-salon", element: <AllSalon /> },
+      { path: "salon/:id", element: <SalonDetail /> },
     ],
   },
   {

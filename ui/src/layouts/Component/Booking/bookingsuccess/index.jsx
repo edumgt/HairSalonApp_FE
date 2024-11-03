@@ -10,6 +10,7 @@ const BookingSuccess = () => {
   const selectedServices = location.state?.selectedServices || [];
   const selectedCombos = location.state?.selectedCombos || [];
   const [stylistName, setStylistName] = useState('');
+  const [salonInfo, setSalonInfo] = useState(null);
 
   useEffect(() => {
     const fetchStylistInfo = async () => {
@@ -35,6 +36,29 @@ const BookingSuccess = () => {
     };
 
     fetchStylistInfo();
+  }, [bookingInfo]);
+
+  useEffect(() => {
+    const fetchSalonInfo = async () => {
+      if (bookingInfo && bookingInfo.salonId) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get(`http://localhost:8080/api/v1/salon/${bookingInfo.salonId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.data && response.data.code === 0) {
+            setSalonInfo(response.data.result);
+          }
+        } catch (error) {
+          console.error('Error fetching salon info:', error);
+          setSalonInfo(null);
+        }
+      }
+    };
+
+    fetchSalonInfo();
   }, [bookingInfo]);
 
   if (!bookingInfo) return <div className="booking-success">Không tìm thấy thông tin đặt lịch.</div>;
@@ -90,6 +114,10 @@ const BookingSuccess = () => {
       <h1>Đặt lịch thành công!</h1>
       <div className="booking-details">
         <p><strong>Mã đặt lịch:</strong> {bookingInfo.id}</p>
+        <p><strong>Chi nhánh:</strong> {salonInfo ? 
+          `${salonInfo.address} (Quận ${salonInfo.district})` : 
+          'Đang tải...'
+        }</p>
         <p><strong>Ngày:</strong> {moment(bookingInfo.date).format('DD/MM/YYYY')}</p>
         <p><strong>Giờ:</strong> {bookingInfo.slot.timeStart}</p>
         <p><strong>Stylist:</strong> {stylistName || 'Đang tải...'}</p>

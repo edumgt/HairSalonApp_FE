@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./index.scss";
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosConfig';
 import moment from 'moment';
 
 const TopStylists = () => {
@@ -13,7 +13,7 @@ const TopStylists = () => {
   useEffect(() => {
     const fetchStylists = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/staff');
+        const response = await axiosInstance.get('/staff');
         const allStaff = response.data.result;
         const filteredStylists = allStaff.filter(staff => staff.role === "STYLIST");
         setStylists(filteredStylists);
