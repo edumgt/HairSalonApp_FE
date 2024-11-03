@@ -36,9 +36,9 @@ function Payment() {
           }
         });
 
-        if (response.data.code === 0 && response.data.result) {
-          setPaymentId(response.data.result);
-          console.log("Payment ID:", response.data.result); // In ra payment ID
+        if (response.data.code === 0 && response.data.result?.id) {
+          setPaymentId(response.data.result.id);
+          console.log("Payment ID:", response.data.result.id);
         } else {
           throw new Error('Không tìm thấy thông tin thanh toán cho đặt lịch này');
         }
@@ -75,7 +75,7 @@ function Payment() {
       if (response.data.code === 0) {
         message.success('Thanh toán thành công. Cảm ơn quý khách!');
         setTimeout(() => {
-          navigate('/'); // Chuyển hướng về trang chủ sau 2 giây
+          navigate('/shine-history');
         }, 2000);
       } else {
         throw new Error(response.data.message || 'Thanh toán thất bại');

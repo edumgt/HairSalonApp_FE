@@ -69,6 +69,13 @@ const HairServices = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError("Vui lòng đăng nhập để xem dịch vụ");
+          navigate('/login');
+          return;
+        }
+
         const response = await fetchServices();
         console.log('Raw services data:', JSON.stringify(response, null, 2));
 
@@ -94,16 +101,21 @@ const HairServices = () => {
           console.error('Services data is not an array:', servicesData);
           setError("Dữ liệu dịch vụ không hợp lệ.");
         }
-        setLoading(false);
       } catch (err) {
         console.error('Error loading data:', err);
-        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
+        if (err.message === 'Unauthorized access') {
+          setError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          navigate('/login');
+        } else {
+          setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
+        }
+      } finally {
         setLoading(false);
       }
     };
 
     loadData();
-  }, []);
+  }, [navigate]);
 
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>{error}</div>;
