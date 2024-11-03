@@ -92,10 +92,15 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
             <Button color="primary" variant="outlined" size='small' onClick={() => onEdit(code)}>
               <img className='editIcon' src={editIcon} alt="" />
             </Button>
-            <Button color="danger" variant="outlined" size='small' onClick={() => onDelete(code)}>
-              Thôi việc
+            <Button 
+              color={status ? "danger" : "primary"} 
+              variant="outlined" 
+              size='small' 
+              onClick={() => onDelete(code)}
+            >
+              {status ? 'Thôi việc' : 'Bắt đầu lại'}
             </Button>
-            {role !== 'MANAGER' && salons?.id && (
+            {role !== 'MANAGER' && salons?.id && status && (
               <Button 
                 type="primary"
                 onClick={() => onPromote(code, salons.id)}
@@ -227,9 +232,12 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
 };
 
   const handleDeleteStaff = (code) => {
+    const staff = staffList.find(s => s.code === code);
+    const isWorking = staff?.status;
+    
     Modal.confirm({
-      title: 'Bạn có muốn cho nhân viên này thôi việc ?',
-      content: 'Bạn sẽ không thể khôi phục lại sau khi xóa.',
+      title: isWorking ? 'Bạn có muốn cho nhân viên này thôi việc ?' : 'Bạn có muốn cho nhân viên này bắt đầu làm lại ?',
+      content: isWorking ? 'Bạn sẽ không thể khôi phục lại sau khi xóa.' : 'Nhân viên sẽ được đưa trở lại danh sách làm việc.',
       onOk: async () => {
         try {
           await axios.delete(`http://localhost:8080/api/v1/staff/${code}`, {
@@ -238,14 +246,14 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
             }
           });
           Modal.success({
-            content: 'Thôi việc nhân viên thành công',
+            content: isWorking ? 'Thôi việc nhân viên thành công' : 'Nhân viên đã bắt đầu làm lại',
           });
-          fetchStaff(); // Refresh the staff list after deletion
+          fetchStaff();
         } catch (error) {
-          console.error('Lỗi thôi việc nhân viên:', error);
+          console.error('Lỗi:', error);
           Modal.error({
             title: 'Lỗi',
-            content: 'Thôi việc nhân viên thất bại. Vui lòng thử lại',
+            content: isWorking ? 'Thôi việc nhân viên thất bại. Vui lòng thử lại' : 'Không thể cho nhân viên bắt đầu làm lại. Vui lòng thử lại',
           });
         }
       },
