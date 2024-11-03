@@ -4,19 +4,19 @@ import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton'
 import styles from './category.module.css'
-import EditButton from '../../../layouts/admin/components/table/button/editButton'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
+import UpdateCategoryForm from './updateCategory'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-const ListItem = ({categoryId, categoryName, categoryDescription, onEdit, onDelete}) => {
+const ListItem = ({categoryId, categoryName, categoryDescription, onEdit}) => {
     return(
-        <tr className={styles.row}>
+        <tr 
+            className={`${styles.row} ${styles.clickable}`}
+            onClick={() => onEdit({ categoryId, categoryName, categoryDescription })}
+        >
             <td className={styles.info}>{categoryId}</td>
             <td className={styles.info}>{categoryName}</td>
             <td className={styles.info}>{categoryDescription}</td>
-            <td className={styles.info} style={{ textAlign: 'center' }}>
-                <EditButton onEdit={() => onEdit(categoryId)} onDelete={() => onDelete(categoryId)}/>
-            </td>
         </tr>
     )
 }
@@ -24,14 +24,11 @@ const ListItem = ({categoryId, categoryName, categoryDescription, onEdit, onDele
 function Category() {
     const [categories, setCategories] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const location = useLocation()
-    const navigate = useNavigate()
-    
-    const isRootPath = location.pathname === '/admin/category'
-
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isRootPath = location.pathname === '/admin/category';
+    const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     const fetchCategories = async () => {
         try {
@@ -52,12 +49,28 @@ function Category() {
         }
     };
 
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
     const handleAddCategory = () => {
         navigate('/admin/category/addCategory/createCategory');
     };
 
-    const handleEditCategory = (categoryId) => {
-        navigate(`/admin/category/updateCategory/${categoryId}`);
+    const handleEditCategory = (category) => {
+        setSelectedCategory(category);
+        setIsUpdateModalVisible(true);
+    };
+
+    const handleUpdateModalCancel = () => {
+        setIsUpdateModalVisible(false);
+        setSelectedCategory(null);
+    };
+
+    const handleUpdateSuccess = () => {
+        setIsUpdateModalVisible(false);
+        setSelectedCategory(null);
+        fetchCategories();
     };
 
     const handleDeleteCategory = (categoryId) => {
@@ -82,6 +95,12 @@ function Category() {
                     });
                 }
             },
+            footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                    <CancelBtn />
+                    <OkBtn />
+                </>
+            ),
         });
     };
 
@@ -95,9 +114,9 @@ function Category() {
 
     return (
         <div className={styles.main}>
-            {isRootPath 
-                ? (
-                    <><NavLink currentPage="Danh mục" />
+            {isRootPath ? (
+                <>
+                    <NavLink currentPage="Danh mục" />
                     <div className={styles.tableGroup}>
                         <HeaderButton 
                             text="Thêm danh mục" 
@@ -113,7 +132,6 @@ function Category() {
                                         <HeaderColumn title="ID danh mục" sortable />
                                         <HeaderColumn title="Tên danh mục" sortable />
                                         <HeaderColumn title="Mô tả" />
-                                        <HeaderColumn title="" align="center" />
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -125,7 +143,6 @@ function Category() {
                                                 categoryName={category.categoryName}
                                                 categoryDescription={category.categoryDescription}
                                                 onEdit={handleEditCategory}
-                                                onDelete={handleDeleteCategory}
                                             />
                                         ))
                                     ) : (
@@ -136,12 +153,19 @@ function Category() {
                                 </tbody>
                             </table>
                         </div>
-                    </div></>
-                )
-                : (
-                    <Outlet/>
-                )
-            }
+                    </div>
+
+                    <UpdateCategoryForm 
+                        visible={isUpdateModalVisible}
+                        onCancel={handleUpdateModalCancel}
+                        onSuccess={handleUpdateSuccess}
+                        initialValues={selectedCategory}
+                        onDelete={handleDeleteCategory}
+                    />
+                </>
+            ) : (
+                <Outlet/>
+            )}
         </div>
     )
 }
