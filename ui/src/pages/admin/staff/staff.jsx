@@ -29,6 +29,7 @@ const Staff = () => {
   const [userRole, setUserRole] = useState('');
   const [salons, setSalons] = useState([]);
   const [currentUserPhone, setCurrentUserPhone] = useState('');
+  const [hasManager, setHasManager] = useState(false);
 
   const { Option } = Select;
 
@@ -59,11 +60,14 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
   const hasManager = staffList.some(staff => 
     staff.role === 'MANAGER' && 
     staff.salons?.id === salons?.id && 
-    staff.status === true // Chỉ tính những manager đang còn làm việc
+    staff.status === true
   );
 
   return (
-    <tr className={styles.row}>
+    <tr 
+      className={`${styles.row} ${canManageStaff && !isCurrentManager ? styles.clickable : ''}`}
+      onClick={() => canManageStaff && !isCurrentManager && onEdit(code)}
+    >
       <td className={styles.info}>{code}</td>
       <td className={styles.info}>{`${firstName} ${lastName}`}</td>
       <td className={styles.info}>{gender}</td>
@@ -86,33 +90,6 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      {canManageStaff && !isCurrentManager && (
-        <td className={styles.actionCell}>
-          <Space>
-            <Button color="primary" variant="outlined" size='small' onClick={() => onEdit(code)}>
-              <img className='editIcon' src={editIcon} alt="" />
-            </Button>
-            <Button 
-              color={status ? "danger" : "primary"} 
-              variant="outlined" 
-              size='small' 
-              onClick={() => onDelete(code)}
-            >
-              {status ? 'Thôi việc' : 'Bắt đầu lại'}
-            </Button>
-            {role !== 'MANAGER' && salons?.id && status && (
-              <Button 
-                type="primary"
-                onClick={() => onPromote(code, salons.id)}
-                disabled={role === 'MANAGER' || hasManager}
-                title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
-              >
-                Thăng chức
-              </Button>
-            )}
-          </Space>
-        </td>
-      )}
     </tr>
   );
 };
@@ -510,11 +487,53 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                   )}
                 </Select>
               </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                  Cập nhật nhân viên
-                </Button>
-              </Form.Item>
+              <div className={styles.modalActions}>
+                {editingStaff && (
+                  <>
+                    <Button 
+                      color="primary" 
+                      variant="outlined"
+                      htmlType="submit"
+                      className={styles.actionButton}
+                    >
+                      Cập nhật nhân viên
+                    </Button>
+                    
+                    <Button 
+                      color={editingStaff.status ? "danger" : "primary"}
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEditModalVisible(false);
+                        handleDeleteStaff(editingStaff.code);
+                      }}
+                      className={styles.actionButton}
+                    >
+                      {editingStaff.status ? 'Thôi việc' : 'Bắt đầu lại'}
+                    </Button>
+
+                    {editingStaff.role !== 'MANAGER' && editingStaff.salons?.id && editingStaff.status && (
+                      <Button 
+                        type="primary"
+                        onClick={() => {
+                          setIsEditModalVisible(false);
+                          handlePromote(editingStaff.code, editingStaff.salons.id);
+                        }}
+                        disabled={editingStaff.role === 'MANAGER' || 
+                          staffList.some(staff => 
+                            staff.role === 'MANAGER' && 
+                            staff.salons?.id === editingStaff.salons?.id &&
+                            staff.status === true
+                          )
+                        }
+                        title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
+                        className={styles.actionButton}
+                      >
+                        Thăng chức
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </Form>
         </div>
