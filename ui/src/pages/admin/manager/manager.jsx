@@ -106,8 +106,8 @@ function Manager() {
     setSearchText(e.target.value);
   };
 
-  const handleEditManager = async (code) => {
-    const manager = filteredManager.find(m => m.staff.code === code);
+  const handleEditManager = async (id) => {
+    const manager = filteredManager.find(m => m.id === id);
     if (manager) {
       setSelectedManager(manager);
       setIsEditModalVisible(true);
@@ -125,13 +125,13 @@ function Manager() {
     loadData();
   };
 
-  const handleDeleteManager = (code) => {
+  const handleDeleteManager = (id) => {
     Modal.confirm({
       title: 'Xác nhận hạ chức',
       content: 'Bạn có chắc chắn muốn hạ chức quản lý này?',
       onOk: async () => {
         try {
-          await demoteById(code);
+          await demoteById(id);
           Modal.success({
             content: 'Hạ chức quản lý thành công'
           });

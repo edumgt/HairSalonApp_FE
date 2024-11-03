@@ -11,7 +11,7 @@ const UpdateManagerForm = ({ visible, onCancel, onSuccess, initialValues }) => {
   useEffect(() => {
     const fetchAvailableSalons = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/salon/available', {
+        const response = await axios.get('http://localhost:8080/api/v1/salon', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
