@@ -234,7 +234,7 @@ function ShineHistory() {
     confirm({
       title: 'Xác nhận hủy đặt lịch định kỳ',
       icon: <ExclamationCircleOutlined />,
-      content: 'Bạn có chắc chắn muốn hủy đặt lịch định kỳ này không?',
+      content: 'Bạn có chắc chắn muốn hủy đặt lịch định k�� này không?',
       okText: 'Đồng ý',
       cancelText: 'Hủy bỏ',
       onOk: async () => {
@@ -385,22 +385,9 @@ function ShineHistory() {
                 </Tag>
               </div>
             </div>
-            <div className="info-item periodic-booking">
+            <div className="info-item">
               <label>Đặt lịch định kỳ:</label>
-              <div className="periodic-content">
-                <span>{renderPeriodInfo()}</span>
-                {selectedBooking.period > 0 && (
-                  <Button 
-                    onClick={handleCancelPeriodic} 
-                    type="primary" 
-                    danger 
-                    disabled={!isEditable}
-                    size="small"
-                  >
-                    Hủy định kỳ
-                  </Button>
-                )}
-              </div>
+              <span>{renderPeriodInfo()}</span>
             </div>
           </div>
         </div>
@@ -714,6 +701,16 @@ function ShineHistory() {
           >
             Hủy lịch
           </Button>,
+          selectedBooking?.period > 0 && (
+            <Button 
+              key="cancelPeriodic"
+              onClick={handleCancelPeriodic}
+              danger
+              disabled={!isBookingEditable(selectedBooking?.status)}
+            >
+              Hủy định kỳ
+            </Button>
+          ),
           <Button 
             key="update" 
             onClick={handleUpdate}
@@ -729,7 +726,7 @@ function ShineHistory() {
           >
             {selectedBooking?.status === "COMPLETED" ? "Đã thanh toán" : "Thanh toán"}
           </Button>,
-        ]}
+        ].filter(Boolean)}
         width={700}
       >
         {renderBookingDetails()}

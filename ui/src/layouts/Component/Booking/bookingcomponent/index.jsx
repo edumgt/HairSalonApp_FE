@@ -579,12 +579,15 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [servicesResponse, combosResponse] = await Promise.all([
-          fetchServices(),
-          fetchCombos()
-        ]);
+        const token = localStorage.getItem('token');
+        const servicesResponse = await axios.get('http://localhost:8080/api/v1/booking/service', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const combosResponse = await fetchCombos();
 
-        let servicesData = servicesResponse.result || servicesResponse;
+        let servicesData = servicesResponse.data.result;
         let combosData = combosResponse.result || combosResponse;
 
         if (Array.isArray(servicesData) && Array.isArray(combosData)) {
@@ -597,12 +600,12 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
           setCategories(['Tất cả dịch vụ', ...Array.from(categorySet)]);
         } else {
           console.error('Services or combos data is not an array:', { servicesData, combosData });
-          setError("Dữ liệu dịch vụ khng hợp lệ.");
+          setError("Dữ liệu dịch vụ không hợp lệ.");
         }
         setLoading(false);
       } catch (err) {
         console.error('Error loading data:', err);
-        setError("Không thể tải dữ liu. Vui lòng thử lại sau.");
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
         setLoading(false);
       }
     };
