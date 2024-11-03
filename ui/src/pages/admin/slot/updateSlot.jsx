@@ -1,104 +1,147 @@
 import React, { useEffect, useState } from 'react';
-import CUForm from "../../../layouts/admin/components/formv2/form";
-import NavLink from "../../../layouts/admin/components/link/navLink";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Modal, notification, Button, Form, TimePicker, Input } from "antd";
 import { getAll, update } from "../services/slotService";
-import moment from "moment";
-import { Modal, notification } from "antd";
+import styles from './updateSlot.module.css';
+import moment from 'moment';
 
-function UpdateSlot() {
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const initialSlot = location.state?.item;
-  const [selectedSlot, setSelectedSlot] = useState(initialSlot?.timeStart || null);
+const UpdateSlotForm = ({ visible, onCancel, onSuccess, initialValues, onDelete }) => {
+    const [form] = Form.useForm();
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(null);
 
-  useEffect(() => {
-    const loadSlots = async () => {
-      try {
-        const response = await getAll();
-        const slots = response.data.result.map(slot => ({
-          value: moment(slot.timeStart, 'HH:mm:ss').format('HH:mm')
-        }));
-        setAvailableSlots(slots.filter(slot => slot.value !== initialSlot?.timeStart));
-      } catch (error) {
-        console.error("Error loading slots:", error);
-      }
+    useEffect(() => {
+        const loadSlots = async () => {
+            try {
+                const response = await getAll();
+                const slots = response.data.result.map(slot => ({
+                    value: moment(slot.timeStart, 'HH:mm:ss').format('HH:mm')
+                }));
+                setAvailableSlots(slots);
+            } catch (error) {
+                console.error("Error loading slots:", error);
+            }
+        };
+        loadSlots();
+    }, []);
+
+    useEffect(() => {
+        if (visible && initialValues) {
+            form.setFieldsValue({
+                id: initialValues.id,
+                timeStart: moment(initialValues.timeStart, 'HH:mm')
+            });
+            setSelectedTime(moment(initialValues.timeStart, 'HH:mm'));
+        }
+    }, [visible, initialValues, form]);
+
+    const handleUpdate = async (values) => {
+        Modal.confirm({
+            title: 'Xác nhận',
+            content: 'Bạn có muốn cập nhật khung giờ này ?',
+            onOk: async () => {
+                try {
+                    const formattedValue = {
+                        id: initialValues.id,
+                        timeStart: values.timeStart.format('HH:mm')
+                    };
+                    
+                    const response = await update(formattedValue);
+                    notification.success({
+                        message: 'Thành công',
+                        description: 'Khung giờ đã được cập nhật!',
+                        duration: 2
+                    });
+                    onCancel();
+                    onSuccess();
+                    return response;
+                } catch (error) {
+                    console.error(error);
+                    notification.error({
+                        message: 'Thất bại',
+                        description: error.response?.data?.message || 'Cập nhật khung giờ thất bại!',
+                        duration: 2
+                    });
+                }
+            },
+            footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                    <CancelBtn />
+                    <OkBtn />
+                </>
+            ),
+        });
     };
-    loadSlots();
-  }, [initialSlot]);
 
-  const onSelect = (time) => {
-    if (time) {
-      setSelectedSlot(time);
-    } else {
-      setSelectedSlot(null);
-    }
-  };
+    return (
+        <Modal
+            title="Cập Nhật Khung Giờ"
+            visible={visible}
+            onCancel={onCancel}
+            footer={null}
+            width={600}
+            bodyStyle={{ height: '400px' }}
+            className={styles.updateSlotModal}
+            destroyOnClose={true}
+        >
+            <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleUpdate}
+            >
+                <Form.Item
+                    name="id"
+                    label="ID"
+                >
+                    <Input disabled />
+                </Form.Item>
 
-  const inputs = [
-    {
-      label: 'Thời gian',
-      name: 'timeStart',
-      isTime: true,
-      rules: [{
-        validator: (_, selectedSlot) => {
-          if (!selectedSlot) {
-            return Promise.reject('Thời gian không được bỏ trống');
-          }
-          if (availableSlots.some(slot => slot.value === selectedSlot.format('HH:mm'))) {
-            return Promise.reject('Thời gian này đã tồn tại');
-          }
-          return Promise.resolve();
-        }
-      }],
-      onChange: onSelect
-    }
-  ];
+                <Form.Item
+                    name="timeStart"
+                    label="Thời gian"
+                    rules={[
+                        { required: true, message: 'Vui lòng chọn thời gian!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.reject('Thời gian không được bỏ trống');
+                                }
+                                const timeString = value.format('HH:mm');
+                                if (availableSlots.some(slot => slot.value === timeString)) {
+                                    return Promise.reject('Thời gian này đã tồn tại');
+                                }
+                                return Promise.resolve();
+                            }
+                        }
+                    ]}
+                >
+                    <TimePicker format="HH:mm" />
+                </Form.Item>
 
-  const handleUpdate = async (values) => {
-    Modal.confirm({
-      title: 'Xác nhận',
-      content: 'Bạn có muốn cập nhật khung giờ này ?',
-      onOk: async () => {
-        try {
-          const formattedValue = {
-            id: initialSlot.id,
-            timeStart: values.timeStart
-          };
-          
-          const response = await update(formattedValue);
-          notification.success({
-            message: 'Thành công',
-            description: 'Khung giờ đã được cập nhật!',
-            duration: 2
-          });
-          setTimeout(() => {
-            navigate('/admin/slot', { state: { shouldReload: true } });
-          }, 1000);
-          return response;
-        } catch (error) {
-          console.error(error);
-          notification.error({
-            message: 'Thất bại',
-            description: 'Cập nhật khung giờ thất bại!',
-            duration: 2
-          });
-        }
-      },
-    });
-  };
+                <div className={styles.modalActions}>
+                    <Button 
+                        color="primary"
+                        variant="outlined"
+                        htmlType="submit"
+                        className={styles.actionButton}
+                    >
+                        Cập nhật
+                    </Button>
 
-  return (
-    <>
-      <NavLink currentPage='Cập nhật khung giờ' />
-      <CUForm 
-        inputs={inputs} 
-        handleSave={handleUpdate} 
-        initialValues={{ timeStart: moment(selectedSlot, 'HH:mm') }} 
-      />
-    </>
-  );
-}
+                    <Button 
+                        color="danger"
+                        variant="outlined"
+                        onClick={() => {
+                            onCancel();
+                            onDelete(initialValues?.id);
+                        }}
+                        className={styles.actionButton}
+                    >
+                        Xóa
+                    </Button>
+                </div>
+            </Form>
+        </Modal>
+    );
+};
 
-export default UpdateSlot;
+export default UpdateSlotForm;

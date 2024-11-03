@@ -8,12 +8,15 @@ import { deleteById, getAll } from "../services/slotService";
 import EditButton from "../../../layouts/admin/components/table/buttonv2/editButton";
 import { Modal, notification } from "antd";
 import moment from 'moment' // Thêm moment để định dạng thời gian
+import UpdateSlotForm from './updateSlot';
 
 function Slot() {
     const location = useLocation();
     const isRootPath = location.pathname === '/admin/slot';
     const [slot, setSlot] = useState([]);
     const [searchText, setSearchText] = useState('');
+    const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
     // Load data
   const loadData = async () => {
@@ -67,22 +70,35 @@ const handleDelete = async (id) => {
       ),
     });
   };
+
+  const handleEditSlot = (slot) => {
+    setSelectedSlot(slot);
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleUpdateModalCancel = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedSlot(null);
+  };
+
+  const handleUpdateSuccess = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedSlot(null);
+    loadData();
+  };
+
   const ListItem = ({ id, timeStart }) => {
     return (
-      <tr className={styles.row}>
+      <tr 
+        className={`${styles.row} ${styles.clickable}`}
+        onClick={() => handleEditSlot({ id, timeStart: moment(timeStart, 'HH:mm:ss').format('HH:mm') })}
+      >
         <td className={styles.info}>{id}</td>
         <td className={styles.info}>{moment(timeStart, 'HH:mm:ss').format('HH:mm')}</td>
-        <td>
-          <EditButton 
-            id={id} 
-            forPage='updateSlot' 
-            handleDelete={handleDelete} 
-            item={{ id, timeStart: moment(timeStart, 'HH:mm:ss').format('HH:mm') }} 
-          />
-        </td>
       </tr>
     );
   };
+
   return (
     <div className={styles.main}>
       {isRootPath ? (
@@ -102,7 +118,6 @@ const handleDelete = async (id) => {
                   <tr className={styles.columnHeaderParent}>
                     <HeaderColumn title="ID" />
                     <HeaderColumn title="Thời gian" />
-                    <HeaderColumn title="" />
                   </tr>
                 </thead>
                 <tbody>
@@ -117,6 +132,14 @@ const handleDelete = async (id) => {
               </table>
             </div>
           </div>
+
+          <UpdateSlotForm 
+            visible={isUpdateModalVisible}
+            onCancel={handleUpdateModalCancel}
+            onSuccess={handleUpdateSuccess}
+            initialValues={selectedSlot}
+            onDelete={handleDelete}
+          />
         </>
       ) : (
         <Outlet />
