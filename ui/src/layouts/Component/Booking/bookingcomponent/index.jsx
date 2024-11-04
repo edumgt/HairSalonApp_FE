@@ -1438,6 +1438,9 @@ const DateTimeSelectionStep = ({
                   <img src={getImgurDirectUrl(stylist.image)} alt={`${stylist.firstName} ${stylist.lastName}`} />
                   <div className="stylist-info">
                     <p className="stylist-name">{`${stylist.firstName} ${stylist.lastName}`}</p>
+                    <div className="stylist-rating">
+                      <span className="rating-badge">OVR: {stylist.ovrRating.toFixed(1)}</span>
+                    </div>
                   </div>
                   {selectedStylist === stylist.code && (
                     <div className="check-icon">✓</div>
