@@ -1,6 +1,8 @@
 .addSalonModal {
     :global(.ant-modal-content) {
         border-radius: 8px;
+        max-width: 800px;
+        /* justify-content: center; */
     }
 
     :global(.ant-modal-header) {
@@ -20,7 +22,7 @@
     }
 
     :global(.ant-form) {
-        max-width: 500px;
+        max-width: 300px;
         margin: 0 auto;
     }
 

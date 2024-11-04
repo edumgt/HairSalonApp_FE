@@ -56,3 +56,38 @@
   .redStatus{
     color: red;
   }
+  .clickable{
+    cursor: pointer;;
+  }
+  .imageCell {
+    width: 220px;
+    padding: 10px;
+    height: 220px; /* Tăng chiều cao của cell */
+}
+
+  .salonImage {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+      display: block; /* Đảm bảo hình ảnh hiển thị như một block */
+      margin: 0 auto; /* Căn giữa hình ảnh */
+  }
+
+  .salonImage:hover {
+      transform: scale(1.05);
+  }
+
+  .imagePlaceholder {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #666;
+      margin: 0 auto; /* Căn giữa placeholder */
+  }

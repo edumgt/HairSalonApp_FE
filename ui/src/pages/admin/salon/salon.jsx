@@ -4,8 +4,7 @@ import styles from './salon.module.css'
 import NavLink from "../../../layouts/admin/components/link/navLink";
 import HeaderButton from "../../../layouts/admin/components/table/buttonv2/headerButton";
 import HeaderColumn from "../../../layouts/admin/components/table/headerColumn";
-import editIcon from '../../../assets/admin/pencil-fiiled.svg'
-import { Button, Modal, notification, Space } from "antd";
+import { Modal, notification, Space } from "antd";
 import { getAll, switchStatus } from "../services/salonService";
 import AddSalonForm from './addSalon'
 import UpdateSalonForm from './updateSalon';
@@ -38,56 +37,78 @@ function Salon() {
     setSearchText(e.target.value);
   };
   const filteredSalon = salon.filter((item) =>
-    item.id.toString().includes(searchText)
+    item.address.toString().includes(searchText)
   );
-// Delete
-const handleSwitchStatus = async (id) => {
-    Modal.confirm({
-      title: 'Xác nhận',
-      content: `Bạn có muốn ${open ? 'mở cửa' : 'đóng cửa'} chi nhánh này ?`,
-      onOk: async () => {
-        try {
-          const response = await switchStatus(id);
-          notification.success({
-            message: 'Thành công',
-            description: 'Trạng thái chi nhánh đã được đổi',
-            duration: 2
-          });
-          loadData();
-          return response
-        } catch (error) {
-          console.error(error);
-          Modal.error({
-            title: 'Thất bại',
-            content: 'Đổi trạng thái chi nhánh thất bại. Vui lòng thử lại',
-          });
-        }
-      },
-      footer: (_, { OkBtn, CancelBtn }) => (
-        <>
-          <CancelBtn />
-          <OkBtn />
-        </>
-      ),
-    });
-  };
-  const ListItem = ({ id, address, district, open }) => {
+
+  const handleSwitchStatus = async (id) => {
+      Modal.confirm({
+        title: 'Xác nhận',
+        content: `Bạn có muốn ${open ? 'mở cửa' : 'đóng cửa'} chi nhánh này ?`,
+        onOk: async () => {
+          try {
+            const response = await switchStatus(id);
+            notification.success({
+              message: 'Thành công',
+              description: 'Trạng thái chi nhánh đã được đổi',
+              duration: 2
+            });
+            handleUpdateSuccess();
+            return response
+          } catch (error) {
+            console.error(error);
+            Modal.error({
+              title: 'Thất bại',
+              content: 'Đổi trạng thái chi nhánh thất bại. Vui lòng thử lại',
+            });
+          }
+        },
+        footer: (_, { OkBtn, CancelBtn }) => (
+          <>
+            <CancelBtn />
+            <OkBtn />
+          </>
+        ),
+      });
+    };
+  const ListItem = ({ id, address, district, hotline, image, open }) => {
+    const [imageError, setImageError] = useState(false);
+
+    const handleImageError = () => {
+      setImageError(true);
+    };
+
+    const getImgurDirectUrl = (url) => {
+      if (!url) return '';
+      const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+      const match = url.match(imgurRegex);
+      if (match && match[1]) {
+        return `https://i.imgur.com/${match[1]}.jpg`;
+      }
+      return url;
+    };
+
+    const imageUrl = getImgurDirectUrl(image);
     return (
-      <tr className={styles.row}>
+      <tr className={`${styles.row} ${styles.clickable}`}
+          onClick={() => showUpdateModal({ open, id, address, district, hotline, image })}
+      >
         <td className={styles.info}>{id}</td>
         <td className={styles.info}>{address}</td>
         <td className={styles.info}>{district}</td>
+        <td className={styles.info}>{hotline}</td>
+        <td className={`${styles.info} ${styles.imageCell}`}>
+        {!imageError ? (
+          <img 
+            src={imageUrl} 
+            // alt={{image}} 
+            className={styles.salonImage} 
+            onError={handleImageError}
+          />
+        ) : (
+          <div className={styles.imagePlaceholder}>No Image</div>
+        )}
+      </td>
         <td className={`${open ? styles.greenStatus : styles.redStatus}`}>{open ? 'Đang hoạt động' : 'Đóng cửa'}</td>
-        <td>
-          <Space justify="end">
-            <Button color="primary" variant="outlined" size='small' onClick={() => showUpdateModal({ id, address, district })}>
-              <img className='editIcon' src={editIcon} alt="" />
-            </Button>
-            <Button color={open ? 'danger' : 'primary'} variant="outlined" size='small' onClick={() => handleSwitchStatus(id)}>
-              {open ? 'Đóng cửa' : 'Mở cửa'}
-            </Button>
-          </Space>
-        </td>
       </tr>
     );
   };
@@ -142,8 +163,9 @@ const handleSwitchStatus = async (id) => {
                     <HeaderColumn title="ID" />
                     <HeaderColumn title="Địa chỉ" />
                     <HeaderColumn title="Quận" />
+                    <HeaderColumn title="Hotline" />
+                    <HeaderColumn title="Hình ảnh" />
                     <HeaderColumn title="Trạng thái" />
-                    <HeaderColumn title="" />
                   </tr>
                 </thead>
                 <tbody>
@@ -170,6 +192,7 @@ const handleSwitchStatus = async (id) => {
             onCancel={handleUpdateModalCancel}
             onSuccess={handleUpdateSuccess}
             initialValues={selectedSalon}
+            handleSwitchStatus={handleSwitchStatus}
           />
         </>
       ) : (

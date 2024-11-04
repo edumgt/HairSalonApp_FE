@@ -1,6 +1,7 @@
 .updateSalonModal {
     :global(.ant-modal-content) {
         border-radius: 8px;
+        max-width: 600px;
     }
 
     :global(.ant-modal-header) {
@@ -17,14 +18,27 @@
 
     :global(.ant-modal-body) {
         padding: 24px;
+        height: 600px;
     }
 
     :global(.ant-form) {
-        max-width: 500px;
+        max-width: 300px;
         margin: 0 auto;
     }
 
     :global(.ant-form-item) {
         margin-bottom: 20px;
     }
+}
+.modalActions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Chia đều thành 2 cột bằng nhau */
+    gap: 5px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.actionButton {
+    width: 100%;
+    min-width: 100px;
 } 
