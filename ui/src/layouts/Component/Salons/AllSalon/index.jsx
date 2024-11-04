@@ -4,39 +4,33 @@ import { fetchSalons } from "../../../../data/salonService";
 import "./index.scss";
 import { message } from "antd";
 
-// Import ảnh local
-import bacninh_1 from '../../../../assets/imageHome/Salon/88_BacNinh.jpg';
-import bacninh_2 from '../../../../assets/imageHome/Salon/201_BacNinh.jpg';
-import dongnai_1 from '../../../../assets/imageHome/Salon/DongNai1.jpg';
-import dongnai_2 from '../../../../assets/imageHome/Salon/DongNai2.jpg';
-import dongnai_3 from '../../../../assets/imageHome/Salon/DongNai3.jpg';
-import dongnai_4 from '../../../../assets/imageHome/Salon/DongNai4.jpg';
-
-const SALON_IMAGES = {
-  '10': [bacninh_1],
-  '9': [bacninh_2],
-  'Tân bình': [dongnai_1, dongnai_2],
-  'Bình Tân': [dongnai_3, dongnai_4],
-  'default': [dongnai_1]
-};
-
-const getSalonImage = (district) => {
-  const districtImages = SALON_IMAGES[district] || SALON_IMAGES['default'];
-  return districtImages[0];
+// Hàm helper để xử lý URL imgur
+const getImgurDirectUrl = (url) => {
+  if (!url) return null;
+  
+  const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+  const match = url.match(imgurRegex);
+  
+  if (match && match[1]) {
+    return `https://i.imgur.com/${match[1]}.jpg`;
+  }
+  return url;
 };
 
 const SalonCard = ({ salon }) => {
   return (
     <div className="salon-card">
       <Link to={`/salon/${salon.id}`} className="salon-image-link">
-        <img
-          src={getSalonImage(salon.district)}
-          alt={`30Shine Quận ${salon.district}`}
-          className="salon-image"
-        />
+        {salon.image && (
+          <img
+            src={getImgurDirectUrl(salon.image)}
+            alt={`30Shine ${salon.district}`}
+            className="salon-image"
+          />
+        )}
       </Link>
       <div className="salon-content">
-        <h3 className="salon-title">30Shine Quận {salon.district}</h3>
+        <h3 className="salon-title">30Shine {salon.district}</h3>
         <p className="salon-address">
           <i className="fas fa-map-marker-alt"></i> {salon.address}
         </p>
@@ -62,6 +56,7 @@ const AllSalon = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('Tất cả');
+  const [showOpenOnly, setShowOpenOnly] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,14 +64,14 @@ const AllSalon = () => {
       try {
         setLoading(true);
         const response = await fetchSalons();
-        console.log('Salon Response:', response);
         
         if (response && response.code === 0) {
-          const salonsData = response.result.map(salon => ({
-            ...salon,
-            salonId: salon.id
-          }));
-          console.log('Processed salon data:', salonsData);
+          const salonsData = response.result
+            .filter(salon => salon.open === true)
+            .map(salon => ({
+              ...salon,
+              salonId: salon.id
+            }));
           setSalons(salonsData);
         } else {
           setError(response?.message || "Không thể tải dữ liệu salon");
@@ -113,10 +108,7 @@ const AllSalon = () => {
   };
 
   const filteredSalons = salons.filter(salon => {
-    // Chuẩn hóa chuỗi tìm kiếm và loại bỏ chữ "quận" nếu có
     const normalizedSearch = searchTerm.toLowerCase().replace(/quận\s*/g, '').trim();
-    
-    // Chuẩn hóa địa chỉ và district để tìm kiếm
     const normalizedAddress = salon.address.toLowerCase();
     const normalizedDistrict = salon.district.toLowerCase();
     
@@ -132,11 +124,14 @@ const AllSalon = () => {
 
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>{error}</div>;
-  if (salons.length === 0) return <div>Không có salon nào để hiển thị.</div>;
+  if (salons.length === 0) return <div>Không có salon nào đang mở cửa.</div>;
 
   return (
     <div className="all-salons">
-      <h1>Hệ Thống Salon</h1>
+      <h1>Hệ Thống Salon Đang Mở Cửa</h1>
+      <div className="salon-count">
+        <span>Hiện có {salons.length} salon đang hoạt động</span>
+      </div>
       <div className="search-bar">
         <input
           type="text"
@@ -152,14 +147,14 @@ const AllSalon = () => {
             onClick={() => setSelectedDistrict(district)}
             className={selectedDistrict === district ? 'active' : ''}
           >
-          {district === 'Tất cả' ? district : `Quận ${district}`}
+            {district === 'Tất cả' ? district : `${district}`}
           </button>
         ))}
       </div>
       <div className="salons-grid">
         {filteredSalons.map((salon) => (
           <SalonCard
-            key={salon.salonId}
+            key={salon.id}
             salon={salon}
           />
         ))}

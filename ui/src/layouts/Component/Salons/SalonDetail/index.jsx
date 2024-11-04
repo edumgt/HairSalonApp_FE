@@ -4,23 +4,17 @@ import { fetchSalons } from '../../../../data/salonService';
 import './index.scss';
 import { message } from 'antd';
 
-// Import ảnh local
-import bacninh_1 from '../../../../assets/imageHome/Salon/88_BacNinh.jpg';
-import bacninh_2 from '../../../../assets/imageHome/Salon/201_BacNinh.jpg';
-import dongnai_1 from '../../../../assets/imageHome/Salon/DongNai1.jpg';
-import dongnai_2 from '../../../../assets/imageHome/Salon/DongNai2.jpg';
-
-const SALON_IMAGES = {
-  '10': [bacninh_1],
-  '9': [bacninh_2],
-  'Tân bình': [dongnai_1],
-  'Bình Tân': [dongnai_2],
-  'default': [dongnai_1]
-};
-
-const getSalonImage = (district) => {
-  const districtImages = SALON_IMAGES[district] || SALON_IMAGES['default'];
-  return districtImages[0];
+// Hàm helper để xử lý URL imgur
+const getImgurDirectUrl = (url) => {
+  if (!url) return null;
+  
+  const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+  const match = url.match(imgurRegex);
+  
+  if (match && match[1]) {
+    return `https://i.imgur.com/${match[1]}.jpg`;
+  }
+  return url;
 };
 
 const SalonDetail = () => {
@@ -82,11 +76,14 @@ const SalonDetail = () => {
 
   return (
     <div className="salon-detail">
-      <h2>30Shine Quận {salon.district}</h2>
-      <img 
-        src={getSalonImage(salon.district)} 
-        alt={`30Shine Quận ${salon.district}`} 
-      />
+      <h2>30Shine {salon.district}</h2>
+      {salon.image && (
+        <img 
+          src={getImgurDirectUrl(salon.image)} 
+          alt={`30Shine ${salon.district}`}
+          className="salon-detail__image"
+        />
+      )}
       
       <div className="salon-info">
         <div className="info-item">
@@ -105,7 +102,7 @@ const SalonDetail = () => {
 
         <div className="info-item">
           <i className="fas fa-phone"></i>
-          <p>Hotline: 1800.28.28.30</p>
+          <p>Hotline: {salon.hotline}</p>
         </div>
 
         <div className="info-item">

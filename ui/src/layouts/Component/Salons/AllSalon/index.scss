@@ -185,6 +185,17 @@
       }
     }
   }
+
+  .all-salons {
+    .salon-count {
+      text-align: center;
+      margin: 10px 0 20px;
+      color: #666;
+      font-size: 0.9em;
+    }
+  }
+
+  
   
   // Animation cho các card
   @keyframes fadeInUp {
