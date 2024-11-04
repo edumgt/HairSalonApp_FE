@@ -64,14 +64,22 @@ const BookingComponent = () => {
         }
       });
       if (response.data && response.data.code === 0) {
-        const salonsWithId = response.data.result.map(salon => ({
-          ...salon,
-          id: salon.salonId || salon.id,
-          salonId: salon.salonId || salon.id
-        }));
-        setSalons(salonsWithId);
-        const uniqueDistricts = [...new Set(salonsWithId.map(salon => salon.district))];
+        const openSalons = response.data.result
+          .filter(salon => salon.open === true)
+          .map(salon => ({
+            ...salon,
+            id: salon.salonId || salon.id,
+            salonId: salon.salonId || salon.id
+          }));
+
+        setSalons(openSalons);
+        
+        const uniqueDistricts = [...new Set(openSalons.map(salon => salon.district))];
         setDistricts(uniqueDistricts);
+
+        if (openSalons.length === 0) {
+          message.info('Hiện tại không có salon nào đang mở cửa');
+        }
       } else {
         message.error('Không thể lấy thông tin salon');
       }
@@ -302,11 +310,9 @@ const BookingComponent = () => {
                               <p>
                                 <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
                               </p>
-                              {salon.open && (
-                                <span className="status-open">
-                                  <CheckCircleOutlined /> Đang mở cửa
-                                </span>
-                              )}
+                              <span className="status-open">
+                                <CheckCircleOutlined /> Đang mở cửa
+                              </span>
                             </div>
                             <Button 
                               type={selectedSalon?.id === salon.id ? "primary" : "default"}
@@ -331,11 +337,9 @@ const BookingComponent = () => {
                                 <p>
                                   <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
                                 </p>
-                                {salon.open && (
-                                  <span className="status-open">
-                                    <CheckCircleOutlined /> Đang mở cửa
-                                  </span>
-                                )}
+                                <span className="status-open">
+                                  <CheckCircleOutlined /> Đang mở cửa
+                                </span>
                               </div>
                               <Button 
                                 type={selectedSalon?.id === salon.id ? "primary" : "default"}
