@@ -51,15 +51,27 @@ const AllCombos = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Tất cả combo');
+    const [userRole, setUserRole] = useState('');
+
+    useEffect(() => {
+      const storedUserRole = localStorage.getItem('userRole');
+      setUserRole(storedUserRole || '');
+    }, []);
 
     const handleBookingClick = () => {
       const token = localStorage.getItem('token');
-      if (token) {
-        navigate('/booking');
-      } else {
+      if (!token) {
         message.info('Vui lòng đăng nhập để đặt lịch');
         navigate('/login', { state: { from: '/booking' } });
+        return;
       }
+
+      if (userRole && userRole !== 'MEMBER') {
+        message.error('Chỉ thành viên mới có thể đặt lịch');
+        return;
+      }
+
+      navigate('/booking');
     };
 
   const navigate = useNavigate();
@@ -175,7 +187,14 @@ const AllCombos = () => {
           />
         ))}
       </div>
-      <button className="all-combos__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
+      <button 
+        className="all-combos__book-button" 
+        onClick={handleBookingClick}
+        disabled={userRole && userRole !== 'MEMBER'}
+        title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
+        ĐẶT LỊCH NGAY
+      </button>
     </div>
   );
 };

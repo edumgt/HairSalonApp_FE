@@ -14,12 +14,18 @@ const ListItem = ({ booking, onClick, onRescheduleClick, onDeleteClick }) => {
   return (
     <tr className={styles.row}>
       <td className={styles.info} onClick={() => onClick(booking)}>{booking.id}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
-      <td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>
+        {booking.stylistId?.salons ? 
+          `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận${booking.stylistId.salons.district})` : ''}`
+          : 'Chưa có thông tin'
+        }
+      </td>
+<td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
+<td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
       <td onClick={() => onClick(booking)}>
         <div className={styles.statusWrapper}>
           <div className={`${booking.paymentStatus === 'Paid' ? styles.greenStatus : styles.redStatus}`}>{booking.paymentStatus || 'Not implemented'}</div>
@@ -190,7 +196,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
               }}
             >
               <Option value="customer_request">Khách hàng yêu cầu hủy</Option>
-              <Option value="stylist_unavailable">Stylist không khả dụng</Option>
+              <Option value="stylist_unavailable">Stylist không kh��� dụng</Option>
               <Option value="salon_emergency">Salon có việc khẩn cấp</Option>
               <Option value="other">Lý do khác</Option>
             </Select>
@@ -327,7 +333,12 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
         <p><span className={styles.label}>ID đặt lịch:</span> <span className={styles.value}>{booking.id}</span></p>
         <p><span className={styles.label}>Ngày đặt lịch:</span> <span className={styles.value}>{booking.date}</span></p>
         <p><span className={styles.label}>Giờ đặt lịch:</span> <span className={styles.value}>{booking.slot.timeStart}</span></p>
-        <p><span className={styles.label}>Stylist:</span> <span className={styles.value}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</span></p>
+        <p>
+          <span className={styles.label}>Địa chỉ salon:</span> 
+          <span className={styles.value}>
+            {`${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` ( Quận${booking.stylistId.salons.district})` : ''}`}
+          </span>
+        </p>        <p><span className={styles.label}>Stylist:</span> <span className={styles.value}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</span></p>
         <p><span className={styles.label}>Khách hàng:</span> <span className={styles.value}>{`${booking.account.firstName} ${booking.account.lastName}`}</span></p>
         <p><span className={styles.label}>Dịch vụ:</span> <span className={styles.value}>{booking.services.map(service => service.serviceName).join(', ')}</span></p>
         <p><span className={styles.label}>Giá:</span> <span className={styles.value}>{booking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>
@@ -742,6 +753,7 @@ const HistoryBooking = () => {
                 <HeaderColumn title="ID đặt lịch" sortable />
                 <HeaderColumn title="Tên khách hàng" sortable />
                 <HeaderColumn title="Tên stylist" sortable />
+                <HeaderColumn title="Địa chỉ salon" sortable />
                 <HeaderColumn title="Tên dịch vụ" sortable />
                 <HeaderColumn title="Ngày đặt lịch" sortable />
                 <HeaderColumn title="Giờ đặt lịch" sortable />

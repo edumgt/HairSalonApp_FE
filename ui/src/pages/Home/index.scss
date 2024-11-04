@@ -186,6 +186,12 @@ body {
 .booking-button {
   height: 40px; // Match height with input
   font-size: 16px; // Increase font size
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #fff;
+  }
 }
 
 .feedback-title {
@@ -257,6 +263,8 @@ input[type="radio"]:checked + span::after {
   background-color: #888; /* Màu của thanh cuộn */
   border-radius: 4px; /* Bo góc thanh cuộn */
 }
+
+
 
 // Responsive adjustments
 @media (max-width: 1024px) {

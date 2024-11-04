@@ -13,18 +13,27 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const storedUserRole = localStorage.getItem('userRole');
+    setUserRole(storedUserRole || '');
+  }, []);
 
   const handleBookingClick = () => {
-    // Kiểm tra xem người dùng đã đăng nhập chưa
     const token = localStorage.getItem('token');
-    if (token) {
-      // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
-      navigate('/booking');
-    } else {
-      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
-      navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+      navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+
+    if (userRole && userRole !== 'MEMBER') {
+      message.error('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   useEffect(() => {
@@ -93,7 +102,14 @@ const ServiceDetail = () => {
           </ol>
         </>
       )}
-      <button className="service-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
+      <button 
+        className="service-detail__book-button" 
+        onClick={handleBookingClick}
+        disabled={userRole && userRole !== 'MEMBER'}
+        title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
+        ĐẶT LỊCH NGAY
+      </button>
     </div>
     
   );

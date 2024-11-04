@@ -24,6 +24,13 @@
         &:hover {
           background-color: #0f2b5e;
         }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          pointer-events: none;
+          
+        }
       }
   
     h2 {

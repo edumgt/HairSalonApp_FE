@@ -14,6 +14,13 @@ const ComboDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const storedUserRole = localStorage.getItem('userRole');
+    setUserRole(storedUserRole || '');
+  }, []);
+
   useEffect(() => {
     const loadComboDetail = async () => {
       try {
@@ -57,12 +64,18 @@ const ComboDetail = () => {
 
   const handleBookingClick = () => {
     const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/booking');
-    } else {
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
       navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+
+    if (userRole && userRole !== 'MEMBER') {
+      message.error('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   const totalDuration = combo.services.reduce((total, service) => total + parseInt(service.duration), 0);
@@ -95,7 +108,14 @@ const ComboDetail = () => {
       <p className="combo-savings">
         Tiết kiệm: {(combo.services.reduce((total, service) => total + service.price, 0) - combo.price).toLocaleString('vi-VN')} đ
       </p>
-      <button className="combo-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
+      <button 
+        className="combo-detail__book-button" 
+        onClick={handleBookingClick}
+        disabled={userRole && userRole !== 'MEMBER'}
+        title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
+        ĐẶT LỊCH NGAY
+      </button>
     </div>
   );
 };

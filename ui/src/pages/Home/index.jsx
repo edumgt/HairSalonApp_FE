@@ -27,6 +27,12 @@ function Home() {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const storedUserRole = localStorage.getItem('userRole');
+    setUserRole(storedUserRole || '');
+  }, []);
 
   useEffect(() => {
 
@@ -367,6 +373,8 @@ function Home() {
                         className="booking-button"
                         block
                         htmlType="submit"
+                        disabled={isLoggedIn && userRole && userRole !== 'MEMBER'}
+                        title={isLoggedIn && userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
                       >
                         ĐẶT LỊCH NGAY
                       </Button>
