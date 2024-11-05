@@ -198,9 +198,11 @@
 
   .all-services__book-button {
     &:disabled {
-      opacity: 0.6;
+      background-color: #15397f;
       cursor: not-allowed;
-      pointer-events: none;
-      
+
+      &:hover {
+        background-color: #cccccc;
+      }
     }
   }

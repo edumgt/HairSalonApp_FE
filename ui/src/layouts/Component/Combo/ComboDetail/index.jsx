@@ -111,8 +111,8 @@ const ComboDetail = () => {
       <button 
         className="combo-detail__book-button" 
         onClick={handleBookingClick}
-        disabled={userRole && userRole !== 'MEMBER'}
-        title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
       >
         ĐẶT LỊCH NGAY
       </button>

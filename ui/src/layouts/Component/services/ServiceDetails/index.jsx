@@ -13,11 +13,11 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const storedUserRole = localStorage.getItem('userRole');
-    setUserRole(storedUserRole || '');
+    const role = localStorage.getItem('role');
+    setUserRole(role);
   }, []);
 
   const handleBookingClick = () => {
@@ -28,8 +28,8 @@ const ServiceDetail = () => {
       return;
     }
 
-    if (userRole && userRole !== 'MEMBER') {
-      message.error('Chỉ thành viên mới có thể đặt lịch');
+    if (userRole !== 'member') {
+      message.info('Chỉ thành viên mới có thể đặt lịch');
       return;
     }
 
@@ -41,20 +41,16 @@ const ServiceDetail = () => {
       try {
         setLoading(true);
         const services = await fetchServices();
-        console.log('Fetched services:', services); // Để debug
 
-        let servicesData = services;
-        if (services && services.result) {
-          servicesData = services.result;
-        }
+        let servicesData = services.result || services;
+        servicesData = servicesData.filter(service => service.status === true);
 
         const selectedService = servicesData.find(s => s.serviceId === serviceId);
-        console.log('Selected service:', selectedService); // Để debug
 
         if (selectedService) {
           setService(selectedService);
         } else {
-          setError('Không tìm thấy thông tin dịch vụ.');
+          setError('Không tìm thấy thông tin dịch vụ hoặc dịch vụ không khả dụng.');
         }
       } catch (err) {
         console.error('Error loading service detail:', err);
@@ -103,10 +99,10 @@ const ServiceDetail = () => {
         </>
       )}
       <button 
-        className="service-detail__book-button" 
+        className={`service-detail__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
         onClick={handleBookingClick}
-        disabled={userRole && userRole !== 'MEMBER'}
-        title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
       >
         ĐẶT LỊCH NGAY
       </button>

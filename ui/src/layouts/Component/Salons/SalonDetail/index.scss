@@ -1,156 +1,165 @@
 .salon-detail {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Arial', sans-serif;
-    color: #333;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  
-    &__book-button {
-      display: block;
-      width: 200px;
-      margin: 4rem auto 0;
-      padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &__book-button {
+    display: block;
+    width: 200px;
+    margin: 4rem auto 0;
+    padding: 1rem;
+    background-color: #15397f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0f2b5e;
+    }
+
+    &.disabled {
       background-color: #15397f;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-  
+      cursor: not-allowed;
+
       &:hover {
-        background-color: #0f2b5e;
+        background-color: #cccccc;
       }
     }
-  
-    h2 {
-      font-size: 2.5rem;
-      color: #2c3e50;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
     }
-  
-    img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-  
-      &:hover {
-        transform: scale(1.02);
+  }
+
+  .salon-info {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      i {
+        font-size: 1.5rem;
+        color: #15397f;
+        margin-right: 1rem;
+        width: 30px;
+        text-align: center;
       }
-    }
-  
-    .salon-info {
-      background-color: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  
-      .info-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-  
-        i {
-          font-size: 1.5rem;
-          color: #15397f;
-          margin-right: 1rem;
-          width: 30px;
-          text-align: center;
+
+      p {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        margin-left: 0.5rem;
+        font-weight: 500;
+
+        &.open {
+          background-color: #e8f5e9;
+          color: #2e7d32;
         }
-  
-        p {
-          font-size: 1.1rem;
-          margin: 0;
-        }
-  
-        .status-badge {
-          display: inline-block;
-          padding: 0.3rem 1rem;
-          border-radius: 20px;
-          margin-left: 0.5rem;
-          font-weight: 500;
-  
-          &.open {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-          }
-  
-          &.closed {
-            background-color: #ffebee;
-            color: #c62828;
-          }
-        }
-      }
-    }
-  
-    .salon-facilities {
-      h3 {
-        font-size: 1.8rem;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #15397f;
-        padding-bottom: 0.5rem;
-      }
-  
-      ul {
-        list-style: none;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-  
-        li {
-          background-color: #fff;
-          padding: 1rem;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-          display: flex;
-          align-items: center;
-  
-          &::before {
-            content: '✓';
-            margin-right: 0.5rem;
-            color: #15397f;
-            font-weight: bold;
-          }
-        }
-      }
-    }
-  
-    @media (max-width: 768px) {
-      padding: 1rem;
-  
-      h2 {
-        font-size: 2rem;
-      }
-  
-      img {
-        height: 300px;
-      }
-  
-      .salon-info {
-        padding: 1rem;
-      }
-  
-      .salon-facilities {
-        h3 {
-          font-size: 1.5rem;
-        }
-  
-        ul {
-          grid-template-columns: 1fr;
+
+        &.closed {
+          background-color: #ffebee;
+          color: #c62828;
         }
       }
     }
   }
+
+  .salon-facilities {
+    h3 {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #15397f;
+      padding-bottom: 0.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+
+      li {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+
+        &::before {
+          content: '✓';
+          margin-right: 0.5rem;
+          color: #15397f;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    img {
+      height: 300px;
+    }
+
+    .salon-info {
+      padding: 1rem;
+    }
+
+    .salon-facilities {
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      ul {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

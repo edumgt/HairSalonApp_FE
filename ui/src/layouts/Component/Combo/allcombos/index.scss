@@ -186,10 +186,12 @@
       }
   
       &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        pointer-events: none;
         background-color: #15397f;
+        cursor: not-allowed;
+  
+        &:hover {
+          background-color: #cccccc;
+        }
       }
     }
   }

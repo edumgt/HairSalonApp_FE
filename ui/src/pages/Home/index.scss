@@ -172,6 +172,15 @@ body {
 .submit-rating-btn {
   width: 30%;
   margin-top: 5px;
+  &:disabled {
+    background-color: #fff;
+    cursor: not-allowed;
+    color: #15397f;
+
+    &:hover {
+      background-color: #cccccc;
+    }
+  }
 }
 
 .booking-form {
@@ -187,10 +196,13 @@ body {
   height: 40px; // Match height with input
   font-size: 16px; // Increase font size
   &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
     background-color: #fff;
+    cursor: not-allowed;
+    color: #15397f;
+
+    &:hover {
+      background-color: #cccccc;
+    }
   }
 }
 

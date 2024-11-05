@@ -4,23 +4,17 @@ import { fetchSalons } from '../../../../data/salonService';
 import './index.scss';
 import { message } from 'antd';
 
-// Import ảnh local
-import bacninh_1 from '../../../../assets/imageHome/Salon/88_BacNinh.jpg';
-import bacninh_2 from '../../../../assets/imageHome/Salon/201_BacNinh.jpg';
-import dongnai_1 from '../../../../assets/imageHome/Salon/DongNai1.jpg';
-import dongnai_2 from '../../../../assets/imageHome/Salon/DongNai2.jpg';
-
-const SALON_IMAGES = {
-  '10': [bacninh_1],
-  '9': [bacninh_2],
-  'Tân bình': [dongnai_1],
-  'Bình Tân': [dongnai_2],
-  'default': [dongnai_1]
-};
-
-const getSalonImage = (district) => {
-  const districtImages = SALON_IMAGES[district] || SALON_IMAGES['default'];
-  return districtImages[0];
+// Hàm helper để xử lý URL imgur
+const getImgurDirectUrl = (url) => {
+  if (!url) return null;
+  
+  const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+  const match = url.match(imgurRegex);
+  
+  if (match && match[1]) {
+    return `https://i.imgur.com/${match[1]}.jpg`;
+  }
+  return url;
 };
 
 const SalonDetail = () => {
@@ -33,15 +27,27 @@ const SalonDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+  }, []);
 
   const handleBookingClick = () => {
     const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/booking');
-    } else {
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
       navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+
+    if (userRole !== 'member') {
+      message.info('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   useEffect(() => {
@@ -83,10 +89,13 @@ const SalonDetail = () => {
   return (
     <div className="salon-detail">
       <h2>30Shine Quận {salon.district}</h2>
-      <img 
-        src={getSalonImage(salon.district)} 
-        alt={`30Shine Quận ${salon.district}`} 
-      />
+      {salon.image && (
+        <img 
+          src={getImgurDirectUrl(salon.image)} 
+          alt={`30Shine ${salon.district}`}
+          className="salon-detail__image"
+        />
+      )}
       
       <div className="salon-info">
         <div className="info-item">
@@ -105,7 +114,7 @@ const SalonDetail = () => {
 
         <div className="info-item">
           <i className="fas fa-phone"></i>
-          <p>Hotline: 1800.28.28.30</p>
+          <p>Hotline: {salon.hotline}</p>
         </div>
 
         <div className="info-item">
@@ -126,7 +135,12 @@ const SalonDetail = () => {
         </ul>
       </div>
 
-      <button className="salon-detail__book-button" onClick={handleBookingClick}>
+      <button 
+        className={`salon-detail__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
+        onClick={handleBookingClick}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
         ĐẶT LỊCH NGAY
       </button>
     </div>

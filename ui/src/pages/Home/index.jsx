@@ -322,6 +322,8 @@ function Home() {
                     type="primary"
                     onClick={handleSubmitRating}
                     className="submit-rating-btn"
+                    disabled={userRole !== 'member' && userRole !== 'MEMBER' }
+                    title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
                   >
                     Gửi đánh giá
                   </Button>
@@ -373,8 +375,8 @@ function Home() {
                         className="booking-button"
                         block
                         htmlType="submit"
-                        disabled={isLoggedIn && userRole && userRole !== 'MEMBER'}
-                        title={isLoggedIn && userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+                        disabled={ userRole !== 'member' && userRole !== 'MEMBER'}
+                        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
                       >
                         ĐẶT LỊCH NGAY
                       </Button>

@@ -44,11 +44,11 @@ const AllServices = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Tất cả dịch vụ');
-    const [userRole, setUserRole] = useState('');
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-      const storedUserRole = localStorage.getItem('userRole');
-      setUserRole(storedUserRole || '');
+      const role = localStorage.getItem('role');
+      setUserRole(role);
     }, []);
 
     const handleBookingClick = () => {
@@ -59,8 +59,8 @@ const AllServices = () => {
         return;
       }
 
-      if (userRole && userRole !== 'MEMBER') {
-        message.error('Chỉ thành viên mới có thể đặt lịch');
+      if (userRole !== 'member') {
+        message.info('Chỉ thành viên mới có thể đặt lịch');
         return;
       }
 
@@ -99,13 +99,16 @@ const AllServices = () => {
           let servicesData = response.result || response;
     
           if (Array.isArray(servicesData)) {
+            servicesData = servicesData.filter(service => service.status === true);
+            
             servicesData.forEach((service, index) => {
               console.log(`Service ${index}:`, {
                 id: service.serviceId,
                 name: service.serviceName,
                 image: service.image,
                 price: service.price,
-                categoryName: service.categories?.categoryName 
+                categoryName: service.categories?.categoryName,
+                status: service.status
               });
             });
             setServices(servicesData);
@@ -181,10 +184,10 @@ const AllServices = () => {
           ))}
         </div>
         <button 
-          className="all-services__book-button" 
+          className={`all-services__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
           onClick={handleBookingClick}
-          disabled={userRole && userRole !== 'MEMBER'}
-          title={userRole && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+          disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+          title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
         >
           ĐẶT LỊCH NGAY
         </button>

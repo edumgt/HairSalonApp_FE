@@ -85,14 +85,18 @@ const HairServices = () => {
         }
 
         if (Array.isArray(servicesData)) {
+          servicesData = servicesData.filter(service => service.status === true);
+          
           servicesData.forEach((service, index) => {
             console.log(`Service ${index}:`, {
               id: service.serviceId,
               name: service.serviceName,
               image: service.image,
-              price: service.price
+              price: service.price,
+              status: service.status
             });
           });
+          
           setServices(servicesData);
           if (servicesData.length > 0 && servicesData[0].categories) {
             setCategory(servicesData[0].categories);
