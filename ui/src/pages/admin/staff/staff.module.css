@@ -202,3 +202,25 @@ tr:hover{
     height: 220px; /* Đảm bảo tất cả các ô có cùng chiều cao */
     vertical-align: middle;
 }
+
+.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.modalActions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Chia đều thành 3 cột bằng nhau */
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.actionButton {
+    width: 100%; /* Đảm bảo nút lấp đầy không gian được chia */
+    min-width: 120px; /* Đặt chiều rộng tối thiểu */
+}

@@ -15,6 +15,17 @@ const getImgurDirectUrl = (url) => {
     return `https://i.imgur.com/${match[1]}.jpg`;
   }
   return url;
+// Hàm helper để xử lý URL imgur
+const getImgurDirectUrl = (url) => {
+  if (!url) return null;
+  
+  const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+  const match = url.match(imgurRegex);
+  
+  if (match && match[1]) {
+    return `https://i.imgur.com/${match[1]}.jpg`;
+  }
+  return url;
 };
 
 const SalonDetail = () => {
@@ -27,15 +38,27 @@ const SalonDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+  }, []);
 
   const handleBookingClick = () => {
     const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/booking');
-    } else {
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
       navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+
+    if (userRole !== 'member') {
+      message.info('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   useEffect(() => {
@@ -103,6 +126,7 @@ const SalonDetail = () => {
         <div className="info-item">
           <i className="fas fa-phone"></i>
           <p>Hotline: {salon.hotline}</p>
+          <p>Hotline: {salon.hotline}</p>
         </div>
 
         <div className="info-item">
@@ -123,7 +147,12 @@ const SalonDetail = () => {
         </ul>
       </div>
 
-      <button className="salon-detail__book-button" onClick={handleBookingClick}>
+      <button 
+        className={`salon-detail__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
+        onClick={handleBookingClick}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
         ĐẶT LỊCH NGAY
       </button>
     </div>

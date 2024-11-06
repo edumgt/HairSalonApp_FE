@@ -4,7 +4,7 @@ import filterIcon from '../../../../../assets/admin/filter.svg'
 import searchIcon from '../../../../../assets/admin/Search.svg'
 import './headerButton.css'
 
-const HeaderButton = ({text, add, linkToAdd, handleSearch, searchTarget}) => {
+const HeaderButton = ({text, add, linkToAdd, handleSearch, searchTarget, isModal, showAddModal}) => {
   const navigate = useNavigate();
   return (
         <div className="headerButton">
@@ -29,7 +29,7 @@ const HeaderButton = ({text, add, linkToAdd, handleSearch, searchTarget}) => {
                 }}
               /> */}
             {add && 
-              <div className="addButton" onClick={() => navigate(linkToAdd)}>
+              <div className="addButton" onClick={isModal ? showAddModal : () => navigate(linkToAdd)}>
                 <img className="arrowIcon" alt="" src={addIcon}  />
                 <div className="add">{text}</div>
               </div>

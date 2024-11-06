@@ -181,8 +181,7 @@ function Header() {
               Học cắt tóc
             </NavLink>
           </li>
-          <li>Nhượng quyền</li>
-          <li>Đối tác</li>
+         
         </ul>
       </div>
       <div className="header__right">

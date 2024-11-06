@@ -172,6 +172,15 @@ body {
 .submit-rating-btn {
   width: 30%;
   margin-top: 5px;
+  &:disabled {
+    background-color: #fff;
+    cursor: not-allowed;
+    color: #15397f;
+
+    &:hover {
+      background-color: #cccccc;
+    }
+  }
 }
 
 .booking-form {
@@ -186,6 +195,15 @@ body {
 .booking-button {
   height: 40px; // Match height with input
   font-size: 16px; // Increase font size
+  &:disabled {
+    background-color: #fff;
+    cursor: not-allowed;
+    color: #15397f;
+
+    &:hover {
+      background-color: #cccccc;
+    }
+  }
 }
 
 .feedback-title {
@@ -257,6 +275,8 @@ input[type="radio"]:checked + span::after {
   background-color: #888; /* Màu của thanh cuộn */
   border-radius: 4px; /* Bo góc thanh cuộn */
 }
+
+
 
 // Responsive adjustments
 @media (max-width: 1024px) {

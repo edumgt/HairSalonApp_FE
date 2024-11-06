@@ -27,6 +27,12 @@ function Home() {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const storedUserRole = localStorage.getItem('userRole');
+    setUserRole(storedUserRole || '');
+  }, []);
 
   useEffect(() => {
 
@@ -316,6 +322,8 @@ function Home() {
                     type="primary"
                     onClick={handleSubmitRating}
                     className="submit-rating-btn"
+                    disabled={userRole !== 'member' && userRole !== 'MEMBER' }
+                    title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
                   >
                     Gửi đánh giá
                   </Button>
@@ -367,6 +375,8 @@ function Home() {
                         className="booking-button"
                         block
                         htmlType="submit"
+                        disabled={ userRole !== 'member' && userRole !== 'MEMBER'}
+                        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
                       >
                         ĐẶT LỊCH NGAY
                       </Button>

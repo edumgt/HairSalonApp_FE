@@ -58,6 +58,7 @@ const AllSalon = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('Tất cả');
   const [showOpenOnly, setShowOpenOnly] = useState(true);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,6 +88,11 @@ const AllSalon = () => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+  }, []);
+
   const districts = useMemo(() => {
     const districtSet = new Set(salons.map(salon => salon.district));
     return ['Tất cả', ...Array.from(districtSet)];
@@ -99,12 +105,18 @@ const AllSalon = () => {
 
   const handleBookingClick = () => {
     const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/booking');
-    } else {
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
       navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+    
+    if (userRole !== 'member') {
+      message.info('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   const filteredSalons = salons.filter(salon => {
@@ -148,6 +160,7 @@ const AllSalon = () => {
             className={selectedDistrict === district ? 'active' : ''}
           >
             {district === 'Tất cả' ? district : `${district}`}
+            {district === 'Tất cả' ? district : `${district}`}
           </button>
         ))}
       </div>
@@ -155,11 +168,17 @@ const AllSalon = () => {
         {filteredSalons.map((salon) => (
           <SalonCard
             key={salon.id}
+            key={salon.id}
             salon={salon}
           />
         ))}
       </div>
-      <button className="all-salons__book-button" onClick={handleBookingClick}>
+      <button 
+        className={`all-salons__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
+        onClick={handleBookingClick}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
         ĐẶT LỊCH NGAY
       </button>
     </div>

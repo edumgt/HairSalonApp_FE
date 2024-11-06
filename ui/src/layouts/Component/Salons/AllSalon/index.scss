@@ -1,187 +1,195 @@
 .all-salons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    width: 80%;
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #f8f9fa;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 2.5rem;
-      color: #15397f;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      position: relative;
-      
-      &::after {
-        content: '';
-        display: block;
-        width: 50px;
-        height: 3px;
-        background-color: #15397f;
-        margin: 15px auto 0;
-      }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    color: #15397f;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    
+    &::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 3px;
+      background-color: #15397f;
+      margin: 15px auto 0;
     }
-  
-    .salons-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      justify-content: center;
-  
-      @media (min-width: 1024px) {
-        grid-template-columns: repeat(3, 1fr);
-      }
+  }
+
+  .salons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    justify-content: center;
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(3, 1fr);
     }
-  
-    .salon-card {
-      background-color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      
+  }
+
+  .salon-card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .salon-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
       &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
       }
-  
-      .salon-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-  
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
-  
-      .salon-title {
-        margin-bottom: 12px;
-        font-size: 1.25rem;
+    }
+
+    .salon-title {
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+      color: #15397f;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .salon-address {
+      color: #666;
+      margin-bottom: 15px;
+      font-weight: 500;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+
+      i {
         color: #15397f;
-        font-weight: 600;
-        margin-bottom: 10px;
+        margin-right: 5px;
       }
-  
-      .salon-address {
-        color: #666;
-        margin-bottom: 15px;
-        font-weight: 500;
-        font-size: 1.1rem;
-        margin-bottom: 10px;
-  
-        i {
-          color: #15397f;
-          margin-right: 5px;
-        }
-      }
-  
-      .salon-status {
-        margin-bottom: 15px;
-  
-        .status-badge {
-          display: inline-block;
-          padding: 5px 15px;
-          border-radius: 20px;
-          font-size: 0.9rem;
-          font-weight: 500;
-  
-          &.open {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-          }
-  
-          &.closed {
-            background-color: #ffebee;
-            color: #c62828;
-          }
-        }
-      }
-  
-      .salon-link {
+    }
+
+    .salon-status {
+      margin-bottom: 15px;
+
+      .status-badge {
         display: inline-block;
-        text-decoration: none;
-        color: #ffffff;
-        font-weight: bold;
-        background-color: #15397f;
-        padding: 10px 20px;
-        border-radius: 25px;
-        transition: all 0.3s ease;
-        margin-bottom: 10px;
-        &:hover {
-          background-color: #0056b3;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+
+        &.open {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+        }
+
+        &.closed {
+          background-color: #ffebee;
+          color: #c62828;
         }
       }
     }
-  
-    .search-bar {
-      width: 50%;
+
+    .salon-link {
+      display: inline-block;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+      background-color: #15397f;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+      &:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+      }
+    }
+  }
+
+  .search-bar {
+    width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    margin: auto 0 0;
+    border-radius: 5px;
+    
+    input {
+      width: 100%;
       padding: 10px;
       font-size: 16px;
-      margin: auto 0 0;
+      border: 1px solid #ddd;
       border-radius: 5px;
-      
-      input {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-      }
     }
+  }
+
+  .district-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
   
-    .district-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-      justify-content: center;
+  .district-buttons button {
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .district-buttons button.active {
+    background-color: #15397f;
+    color: white;
+  }
+
+  &__book-button {
+    display: block;
+    width: 200px;
+    margin: 4rem auto 0;
+    padding: 1rem;
+    background-color: #15397f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0f2b5e;
     }
-    
-    .district-buttons button {
-      padding: 10px 15px;
-      background-color: #f0f0f0;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    
-    .district-buttons button.active {
+
+    &.disabled {
       background-color: #15397f;
-      color: white;
-    }
-  
-    &__book-button {
-      display: block;
-      width: 200px;
-      margin: 4rem auto 0;
-      padding: 1rem;
-      background-color: #15397f;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-  
+      cursor: not-allowed;
+
       &:hover {
-        background-color: #0f2b5e;
+        background-color: #cccccc;
       }
     }
   }
