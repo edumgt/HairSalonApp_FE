@@ -168,7 +168,6 @@ const AllSalon = () => {
         {filteredSalons.map((salon) => (
           <SalonCard
             key={salon.id}
-            key={salon.id}
             salon={salon}
           />
         ))}
