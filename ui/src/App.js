@@ -51,6 +51,7 @@ import ComboDetail from './layouts/Component/Combo/ComboDetail';
 import Payment from './pages/Payment';
 import UpdateBooking from './pages/admin/booking/updateBooking';
 import Manager from './pages/admin/manager/manager';
+import Dashboard from './pages/admin/dashboard/dashboard';
 
 
 
@@ -111,6 +112,7 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <Dashboard /> },
       { path: "adminprofile", element: <AdminProfile /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },
       { path: "adminprofile/changePassword", element: <AdminChangePassword /> },

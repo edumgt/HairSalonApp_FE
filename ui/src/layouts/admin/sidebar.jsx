@@ -44,10 +44,11 @@ const Sidebar = () => {
             </div>
             <div className={styles.navs}>
                 {forAdminAndManager && (
-                    <div className={styles.item}>
+                    <div className={`${styles.item} ${activeItem === 'dashboard' ? styles.active : ''}`} 
+                    onClick={() => handleItem('/admin/dashboard', 'dashboard')}>
                         <div className={styles.itemGroup}>
                             <img className={styles.navIcon} alt="" src={dashboardIcon}  />
-                            <div className={styles.itemContent}>Trang chủ</div>
+                            <div className={styles.itemContent}>Thống kê</div>
                         </div>
                     </div>
                 )}
