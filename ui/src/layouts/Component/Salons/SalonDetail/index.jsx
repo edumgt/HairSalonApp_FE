@@ -15,18 +15,19 @@ const getImgurDirectUrl = (url) => {
     return `https://i.imgur.com/${match[1]}.jpg`;
   }
   return url;
-// Hàm helper để xử lý URL imgur
-const getImgurDirectUrl = (url) => {
-  if (!url) return null;
+}
+// // Hàm helper để xử lý URL imgur
+// const getImgurDirectUrl = (url) => {
+//   if (!url) return null;
   
-  const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
-  const match = url.match(imgurRegex);
+//   const imgurRegex = /https?:\/\/(?:i\.)?imgur\.com\/(\w+)(?:\.\w+)?/;
+//   const match = url.match(imgurRegex);
   
-  if (match && match[1]) {
-    return `https://i.imgur.com/${match[1]}.jpg`;
-  }
-  return url;
-};
+//   if (match && match[1]) {
+//     return `https://i.imgur.com/${match[1]}.jpg`;
+//   }
+//   return url;
+// };
 
 const SalonDetail = () => {
   useEffect(() => {
@@ -158,5 +159,4 @@ const SalonDetail = () => {
     </div>
   );
 };
-
-export default SalonDetail;
+export default SalonDetail

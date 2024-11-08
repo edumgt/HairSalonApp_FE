@@ -752,7 +752,7 @@ function ShineHistory() {
             key="payment" 
             type="primary" 
             onClick={handlePayment}
-            disabled={selectedBooking?.status === "COMPLETED"}
+            disabled={selectedBooking?.status === "COMPLETED" || selectedBooking?.status === "CANCELED"}
           >
             {selectedBooking?.status === "COMPLETED" ? "Đã thanh toán" : "Thanh toán"}
           </Button>,
