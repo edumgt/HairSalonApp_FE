@@ -2,9 +2,32 @@ import { Card, Col, Row, Statistic, Space, Tabs } from "antd"
 import { useEffect, useState } from "react"
 import { getAll } from "../services/bookingService";
 import { getAll as getAllSalons } from "../services/salonService";
-import { Bar, BarChart, CartesianGrid, Cell, Label, LabelList, Legend, Pie, PieChart, Rectangle, Tooltip, XAxis, YAxis } from "recharts";
+import { 
+    Bar, BarChart, CartesianGrid, Cell, Label, Legend, 
+    Pie, PieChart, Rectangle, Tooltip, XAxis, YAxis, LabelList,
+    ResponsiveContainer 
+} from "recharts";
 import NavLink from "../../../layouts/admin/components/link/navLink";
-import { getDashboard } from "../services/dashboardService";
+import { getDashboard } from "../services/dashboard";
+import { 
+    DollarCircleOutlined, 
+    CalendarOutlined, 
+    ShopOutlined, 
+    TeamOutlined 
+} from '@ant-design/icons';
+import { Avatar, Table } from 'antd';
+import { StarFilled } from '@ant-design/icons';
+
+// Thêm hàm xử lý link ảnh
+const getImgurImage = (url) => {
+    if (!url) return "https://via.placeholder.com/150"; // Ảnh mặc định nếu không có url
+    // Kiểm tra nếu url đã có đuôi
+    if (url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg')) {
+        return url;
+    }
+    // Thêm đuôi .jpg vào link imgur
+    return `${url}.jpg`;
+};
 
 function Dashboard() {
     const [totalRevenue, setTotalRevenue] = useState(0);
@@ -19,22 +42,11 @@ function Dashboard() {
     const [totalStaffCount, setTotalStaffCount] = useState(0)
     const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
 
-    // const fetchSalons = async () => {
-    //     try {
-    //         const response = await getAllSalons();
-    //         if (response.data.code === 0) {
-    //             setSalons(response.data.result); // Set the list of salons
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
+    // Thêm state để kiểm tra dữ liệu đã load xong chưa
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-    // const tabs = salons.map((salon, index) => ({
-    //     key: String(index + 1),
-    //     label: `${salon.address} (${salon.district})`, // Assuming each salon has a 'name' property
-    //     children: <StatisticContent salonId={salon.id} />, // Pass salon ID to the content component
-    // }));
+    // Thêm state cho top 5 staff
+    const [topStaffs, setTopStaffs] = useState([]);
 
     const fetchRevenueOfAllTime = async () => {
         try {
@@ -142,129 +154,411 @@ function Dashboard() {
     
 
     useEffect(() => {
-        fetchRevenueOfAllTime();
-        fetchBookingCount();
-        fetchServiceCounts();
-        // fetchRevenueByDate();
-        // fetchSalons();
-        fetchTotalSalon();
-        fetchTotalStaff();
-        fetchRevenueByMonth(); // Gọi hàm fetchRevenueByMonth
+        const fetchData = async () => {
+            try {
+                await Promise.all([
+                    fetchRevenueOfAllTime(),
+                    fetchBookingCount(),
+                    fetchServiceCounts(),
+                    fetchTotalSalon(),
+                    fetchTotalStaff(),
+                    fetchRevenueByMonth(),
+                    fetchTopStaffs()
+                ]);
+                setIsDataLoaded(true);
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        };
+        
+        fetchData();
     }, []);
 
+    // Sửa lại hàm fetchTopStaffs
+    const fetchTopStaffs = async () => {
+        try {
+            const response = await getDashboard();
+            console.log('Top staffs response:', response.data); // Để debug
+            if (response.data.code === 200 && response.data.result.topFiveStaffByRating) {
+                setTopStaffs(response.data.result.topFiveStaffByRating);
+            }
+        } catch (error) {
+            console.log('Error fetching top staffs:', error);
+        }
+    };
 
+    // Thêm vào phần return, sau các Row hiện tại
     return (
         <>
             <NavLink currentPage="Thống kê" />
-            {/* <Tabs defaultActiveKey="1" items={tabs} /> */}
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                <Row gutter={16}>
-                    {/* <Col span={5}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={`Tổng doanh thu hôm nay (${today})`}
-                                value={dailyRevenue}
-                                valueStyle={{
-                                    color: '#3f8600',
+            <div style={{ padding: '24px', background: '#f5f5f5', minHeight: '100vh' }}>
+                {/* Stats Cards */}
+                <Row gutter={[16, 16]}>
+                    <Col span={24} style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        {/* Card Tổng doanh thu */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                            <Card
+                                bordered={false}
+                                style={{
+                                    background: 'linear-gradient(135deg, #52c41a 0%, #389e0d 100%)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                 }}
-                                suffix="VND"
-                            />
-                        </Card>
-                    </Col> */}
-                    <Col span={4}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={`Tổng doanh thu (${today})`}
-                                value={totalRevenue}
-                                valueStyle={{
-                                    color: '#3f8600',
+                                bodyStyle={{ padding: '20px' }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <div style={{ 
+                                        fontSize: '14px', 
+                                        opacity: 0.85,
+                                        marginBottom: '12px'
+                                    }}>
+                                        Tổng doanh thu ({today})
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px', 
+                                        fontWeight: '600',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        <DollarCircleOutlined style={{ fontSize: '24px' }}/>
+                                        <span>{totalRevenue.toLocaleString()} VND</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Card Lịch đặt hôm nay */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                            <Card
+                                bordered={false}
+                                style={{
+                                    background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                 }}
-                                suffix="VND"
-                            />
+                                bodyStyle={{ padding: '20px' }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <div style={{ 
+                                        fontSize: '14px', 
+                                        opacity: 0.85,
+                                        marginBottom: '12px'
+                                    }}>
+                                        Lịch đặt hôm nay ({today})
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px', 
+                                        fontWeight: '600',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        <CalendarOutlined style={{ fontSize: '24px' }}/>
+                                        <span>{todayBookingCount}</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Card Lịch đặt ngày mai */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                            <Card
+                                bordered={false}
+                                style={{
+                                    background: 'linear-gradient(135deg, #13c2c2 0%, #08979c 100%)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                }}
+                                bodyStyle={{ padding: '20px' }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <div style={{ 
+                                        fontSize: '14px', 
+                                        opacity: 0.85,
+                                        marginBottom: '12px'
+                                    }}>
+                                        Lịch đặt ngày mai ({tomorrow})
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px', 
+                                        fontWeight: '600',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        <CalendarOutlined style={{ fontSize: '24px' }}/>
+                                        <span>{tomorrowBookingCount}</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Card Số lượng salon */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                            <Card
+                                bordered={false}
+                                style={{
+                                    background: 'linear-gradient(135deg, #722ed1 0%, #531dab 100%)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                }}
+                                bodyStyle={{ padding: '20px' }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <div style={{ 
+                                        fontSize: '14px', 
+                                        opacity: 0.85,
+                                        marginBottom: '12px'
+                                    }}>
+                                        Số lượng salon
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px', 
+                                        fontWeight: '600',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        <ShopOutlined style={{ fontSize: '24px' }}/>
+                                        <span>{totalSalonCount}</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Card Tổng số nhân viên */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                            <Card
+                                bordered={false}
+                                style={{
+                                    background: 'linear-gradient(135deg, #f5222d 0%, #cf1322 100%)',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                }}
+                                bodyStyle={{ padding: '20px' }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <div style={{ 
+                                        fontSize: '14px', 
+                                        opacity: 0.85,
+                                        marginBottom: '12px'
+                                    }}>
+                                        Tổng số nhân viên
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '24px', 
+                                        fontWeight: '600',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}>
+                                        <TeamOutlined style={{ fontSize: '24px' }}/>
+                                        <span>{totalStaffCount}</span>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </Col>
+                </Row>
+
+                {/* Charts Row */}
+                <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+                    <Col xs={24} lg={8}>
+                        <Card
+                            bordered={false}
+                            style={{
+                                borderRadius: '15px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                            title={
+                                <div style={{ 
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#1677ff',
+                                    textAlign: 'center',
+                                    margin: '12px 0'
+                                }}>
+                                    Thống kê dịch vụ được đặt
+                                </div>
+                            }
+                        >
+                            <div style={{ height: 300, display: 'flex', justifyContent: 'center' }}>
+                                <PieChart width={300} height={300}>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                </PieChart>
+                            </div>
                         </Card>
                     </Col>
-                    <Col span={5}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={`Tổng lịch đặt hôm nay (${today})`}
-                                value={todayBookingCount}
-                                valueStyle={{
-                                    color: '#3f8600',
-                                }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={5}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={`Tổng lịch đặt ngày mai (${tomorrow})`}
-                                value={tomorrowBookingCount}
-                                valueStyle={{
-                                    color: '#3f8600',
-                                }}
-                            />
+
+                    <Col xs={24} lg={16}>
+                        <Card
+                            bordered={false}
+                            style={{
+                                borderRadius: '15px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                            title={
+                                <div style={{ 
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#1677ff',
+                                    textAlign: 'center',
+                                    margin: '12px 0'
+                                }}>
+                                    Thống kê doanh thu theo tháng
+                                </div>
+                            }
+                        >
+                            <div style={{ height: 300, width: '100%' }}>
+                                <ResponsiveContainer>
+                                    <BarChart 
+                                        data={barData}
+                                        margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+                                    >
+                                        <CartesianGrid 
+                                            strokeDasharray="3 3" 
+                                            stroke="#f0f0f0"
+                                        />
+                                        <XAxis 
+                                            dataKey="date"
+                                            tick={{ fill: '#666', fontSize: 12 }}
+                                            tickFormatter={(value) => {
+                                                const [year, month] = value.split('-');
+                                                return `Tháng ${month}/${year}`;
+                                            }}
+                                            axisLine={{ stroke: '#d9d9d9' }}
+                                        />
+                                        <YAxis
+                                            tick={{ fill: '#666', fontSize: 12 }}
+                                            tickFormatter={(value) => `${value.toLocaleString()} VND`}
+                                            axisLine={{ stroke: '#d9d9d9' }}
+                                        />
+                                        <Tooltip
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                                            contentStyle={{
+                                                background: '#fff',
+                                                border: '1px solid #d9d9d9',
+                                                borderRadius: '6px',
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                            }}
+                                            formatter={(value) => [`${value.toLocaleString()} VND`, 'Doanh thu']}
+                                            labelFormatter={(label) => {
+                                                const [year, month] = label.split('-');
+                                                return `Tháng ${month}/${year}`;
+                                            }}
+                                        />
+                                        <Bar 
+                                            dataKey="revenue" 
+                                            radius={[4, 4, 0, 0]}
+                                            maxBarSize={60}
+                                        >
+                                            {barData.map((entry, index) => {
+                                                const currentDate = new Date();
+                                                const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                                                const isCurrentMonth = entry.date === currentMonth;
+
+                                                return (
+                                                    <Cell 
+                                                        key={`cell-${index}`}
+                                                        fill={isCurrentMonth ? "url(#currentMonthGradient)" : "url(#normalMonthGradient)"}
+                                                        style={{
+                                                            filter: isCurrentMonth 
+                                                                ? 'drop-shadow(0 4px 8px rgba(24, 144, 255, 0.3))'
+                                                                : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                                                        }}
+                                                    />
+                                                );
+                                            })}
+                                            {/* Định nghĩa gradients */}
+                                            <defs>
+                                                <linearGradient id="currentMonthGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#1890ff" stopOpacity={1}/>
+                                                    <stop offset="100%" stopColor="#69c0ff" stopOpacity={1}/>
+                                                </linearGradient>
+                                                <linearGradient id="normalMonthGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#bfbfbf" stopOpacity={0.8}/>
+                                                    <stop offset="100%" stopColor="#d9d9d9" stopOpacity={0.8}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <LabelList
+                                                dataKey="revenue"
+                                                position="top"
+                                                content={({ x, y, width, height, value }) => {
+                                                    const currentDate = new Date();
+                                                    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                                                    // Lấy index của data point hiện tại
+                                                    const index = barData.findIndex(item => item.revenue === value);
+                                                    const isCurrentMonth = barData[index]?.date === currentMonth;
+
+                                                    return (
+                                                        <text
+                                                            x={x + width / 2}
+                                                            y={y - 10}
+                                                            fill={isCurrentMonth ? '#1890ff' : '#666'}
+                                                            textAnchor="middle"
+                                                            fontSize={isCurrentMonth ? '14px' : '12px'}
+                                                            fontWeight={isCurrentMonth ? 'bold' : 'normal'}
+                                                        >
+                                                            {value.toLocaleString()}
+                                                        </text>
+                                                    );
+                                                }}
+                                            />
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
                         </Card>
                     </Col>
                 </Row>
 
-                <Row gutter={24} >
-                    <Col span={7}>
-                        <Card bordered={false}>
-                            <PieChart width={400} height={300}>
-                                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#15397F" label>
-                                    {pieData.map((item, index) => (
-                                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip/>
-                                <Legend/>
-                            </PieChart>
-                        </Card>
-                    </Col>
-                    
-                    <Col span={17}>
-                        <Card bordered={false}>
-                            <BarChart width={1000} height={300} data={barData}
-                            margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
-                            padding={{}}  >
-                                <CartesianGrid strokeDasharray="4 1 2" />
-                                <XAxis dataKey="date" >
-                                    <Label value="Tháng" offset={-3} position="insideBottom" />    
-                                </XAxis>
-                                <YAxis label={{ value: 'Doanh thu', angle: -90, position: 'left' }} />
-                                <Tooltip />
-                                <Bar dataKey="revenue" fill="#1677FF" activeBar={<Rectangle fill="#FFD728" stroke="red" />} />
-                            </BarChart>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row gutter={16}>
-                    <Col span={4}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={'Số lượng salon đang mở cửa'}
-                                value={totalSalonCount}
-                                valueStyle={{
-                                    color: '#1677FF',
-                                }}
+                {/* Top Staffs Table */}
+                <Row style={{ marginTop: '24px' }}>
+                    <Col span={24}>
+                        <Card
+                            bordered={false}
+                            style={{
+                                borderRadius: '15px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                            title={
+                                <div style={{ 
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#1677ff',
+                                    textAlign: 'center',
+                                    margin: '12px 0'
+                                }}>
+                                    Top 5 Nhân viên được đánh giá cao nhất
+                                </div>
+                            }
+                        >
+                            <Table 
+                                columns={columns} 
+                                dataSource={topStaffs}
+                                rowKey="code"
+                                pagination={false}
+                                loading={!isDataLoaded}
                             />
                         </Card>
                     </Col>
-                    <Col span={5}>
-                        <Card bordered={false}>
-                            <Statistic
-                                title={'Tổng số các nhân viên đang làm việc'}
-                                value={totalStaffCount}
-                                valueStyle={{
-                                    color: '#1677FF',
-                                }}
-                            />
-                        </Card>
-                    </Col>
-                
                 </Row>
-            </Space>
+            </div>
         </>
     );
 }
@@ -278,5 +572,57 @@ function Dashboard() {
 //         </div>
 //     );
 // };
+
+// Định nghĩa columns cho table
+const columns = [
+    {
+        title: 'Nhân viên',
+        key: 'staff',
+        render: (text, record) => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Avatar 
+                    src={getImgurImage(record.image)} 
+                    size={40}
+                    style={{ 
+                        border: '2px solid #f0f0f0',
+                        objectFit: 'cover'
+                    }}
+                />
+                <div>
+                    <div style={{ 
+                        fontWeight: 'bold',
+                        fontSize: '14px' 
+                    }}>
+                        {`${record.firstName} ${record.lastName}`}
+                    </div>
+                    <div style={{ 
+                        fontSize: '12px', 
+                        color: '#666' 
+                    }}>
+                        {record.code}
+                    </div>
+                </div>
+            </div>
+        ),
+    },
+    {
+        title: 'Đánh giá',
+        key: 'rating',
+        render: (text, record) => (
+            <div style={{ color: '#faad14' }}>
+                <StarFilled /> {record.ovrRating.toFixed(1)}
+            </div>
+        ),
+    },
+    {
+        title: 'Chi nhánh',
+        key: 'salon',
+        render: (text, record) => (
+            <div>
+                {record.salons ? record.salons.address : 'Chưa phân công'}
+            </div>
+        ),
+    }
+];
 
 export default Dashboard;
