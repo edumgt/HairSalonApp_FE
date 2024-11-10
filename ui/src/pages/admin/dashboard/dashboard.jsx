@@ -464,6 +464,7 @@ function Dashboard() {
                                         />
                                         <Bar 
                                             dataKey="revenue" 
+                                            fill="#1890ff"
                                             radius={[4, 4, 0, 0]}
                                             maxBarSize={60}
                                         >
@@ -475,48 +476,17 @@ function Dashboard() {
                                                 return (
                                                     <Cell 
                                                         key={`cell-${index}`}
-                                                        fill={isCurrentMonth ? "url(#currentMonthGradient)" : "url(#normalMonthGradient)"}
-                                                        style={{
-                                                            filter: isCurrentMonth 
-                                                                ? 'drop-shadow(0 4px 8px rgba(24, 144, 255, 0.3))'
-                                                                : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                                                        }}
+                                                        fill={isCurrentMonth ? '#1890ff' : '#bae7ff'}
                                                     />
                                                 );
                                             })}
-                                            {/* Định nghĩa gradients */}
-                                            <defs>
-                                                <linearGradient id="currentMonthGradient" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor="#1890ff" stopOpacity={1}/>
-                                                    <stop offset="100%" stopColor="#69c0ff" stopOpacity={1}/>
-                                                </linearGradient>
-                                                <linearGradient id="normalMonthGradient" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor="#bfbfbf" stopOpacity={0.8}/>
-                                                    <stop offset="100%" stopColor="#d9d9d9" stopOpacity={0.8}/>
-                                                </linearGradient>
-                                            </defs>
                                             <LabelList
                                                 dataKey="revenue"
                                                 position="top"
-                                                content={({ x, y, width, height, value }) => {
-                                                    const currentDate = new Date();
-                                                    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-                                                    // Lấy index của data point hiện tại
-                                                    const index = barData.findIndex(item => item.revenue === value);
-                                                    const isCurrentMonth = barData[index]?.date === currentMonth;
-
-                                                    return (
-                                                        <text
-                                                            x={x + width / 2}
-                                                            y={y - 10}
-                                                            fill={isCurrentMonth ? '#1890ff' : '#666'}
-                                                            textAnchor="middle"
-                                                            fontSize={isCurrentMonth ? '14px' : '12px'}
-                                                            fontWeight={isCurrentMonth ? 'bold' : 'normal'}
-                                                        >
-                                                            {value.toLocaleString()}
-                                                        </text>
-                                                    );
+                                                formatter={(value) => `${value.toLocaleString()}`}
+                                                style={{
+                                                    fill: '#666',
+                                                    fontSize: 12
                                                 }}
                                             />
                                         </Bar>
@@ -544,7 +514,7 @@ function Dashboard() {
                                     textAlign: 'center',
                                     margin: '12px 0'
                                 }}>
-                                    Top 5 Nhân viên được đánh giá cao nhất
+                                    Top 5 Nhân viên được đánh giá cao nhất.
                                 </div>
                             }
                         >
