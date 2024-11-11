@@ -4,6 +4,10 @@ export const getAll = async () => {
     const response = await BASE_URL.get('booking')
     return response
 }
+export const getAllByManager = async () => {
+    const response = await BASE_URL.get('booking/manager')
+    return response
+}
 export const update = async (values) => {
     const response = await BASE_URL.put('booking', {
         bookingId: values.bookingId,

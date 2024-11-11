@@ -1,6 +1,6 @@
 import { Card, Col, Row, Statistic, Space, Tabs } from "antd"
 import { useEffect, useState } from "react"
-import { getAll } from "../services/bookingService";
+import { getAll, getAllByManager } from "../services/bookingService";
 import { getAll as getAllSalons } from "../services/salonService";
 import { 
     Bar, BarChart, CartesianGrid, Cell, Label, Legend, 
@@ -8,7 +8,7 @@ import {
     ResponsiveContainer 
 } from "recharts";
 import NavLink from "../../../layouts/admin/components/link/navLink";
-import { getDashboard } from "../services/dashboard";
+import { getDashboardByAdmin, getDashboardByManager } from "../services/dashboard";
 import { 
     DollarCircleOutlined, 
     CalendarOutlined, 
@@ -47,33 +47,73 @@ function Dashboard() {
 
     // Thêm state cho top 5 staff
     const [topStaffs, setTopStaffs] = useState([]);
+    const [userRole, setUserRole] = useState('');
+
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        console.log('Current role from localStorage:', role);
+        
+        if (role) {
+            setUserRole(role);
+            console.log('Set user role:', role);
+        } else {
+            console.warn('No role found in localStorage');
+        }
+    }, []);
+
+    // useEffect để gọi các hàm fetch sau khi userRole được thiết lập
+    useEffect(() => {
+        const fetchData = async () => {
+            if (userRole) {
+                try {
+                    await Promise.all([
+                        fetchRevenueOfAllTime(),
+                        fetchBookingCount(),
+                        fetchServiceCounts(),
+                        fetchTotalSalon(),
+                        fetchTotalStaff(),
+                        fetchRevenueByMonth(),
+                        fetchTopStaffs()
+                    ]);
+                    setIsDataLoaded(true); // Đánh dấu dữ liệu đã được tải
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    setIsDataLoaded(false); // Đánh dấu dữ liệu chưa được tải nếu có lỗi
+                }
+            }
+        };
+
+        fetchData(); // Gọi hàm fetchData
+    }, [userRole]); // Theo dõi sự thay đổi của userRole
+
+    const isAdmin = userRole === 'admin' || userRole === 'ADMIN';
 
     const fetchRevenueOfAllTime = async () => {
         try {
-            const response = await getDashboard();
-            console.log('fetchRevenueOfAllTime:', response.data.result.totalSales);
+            const response = await (isAdmin ? getDashboardByAdmin() : getDashboardByManager());
+            console.log('fetchRevenueOfAllTime:', response.data.result.totalSales, isAdmin);
             if (response.data.code === 200) {
-                const totalRevenue = response.data.result.totalSales
+                const totalRevenue = response.data.result.totalSales;
                 setTotalRevenue(totalRevenue); // Set the total revenue
             }
         } catch (error) {
-            console.log(error);
+            console.warn(error);
         }
     }
 
     const fetchBookingCount = async () => {
         try {
-            const response = await getAll();
+            const response = await (isAdmin ? getAll() : getAllByManager());
             if (response.data.code === 0) {
                 const countToday = response.data.result
-                    .filter(booking => booking.status === "RECEIVED" && booking.date === today) // Filter for today's successful bookings
-                    .length; // Count the number of successful bookings
-                setTodayBookingCount(countToday); // Set the booking count for today
+                    .filter(booking => booking.status === "RECEIVED" && booking.date === today)
+                    .length;
+                setTodayBookingCount(countToday);
 
                 const countTomorrow = response.data.result
-                    .filter(booking => booking.date === tomorrow) // Filter for tomorrow's bookings
-                    .length; // Count the number of bookings for tomorrow
-                setTomorrowBookingCount(countTomorrow); // Set the booking count for tomorrow
+                    .filter(booking => booking.date === tomorrow)
+                    .length;
+                setTomorrowBookingCount(countTomorrow);
             }
         } catch (error) {
             console.log(error);
@@ -82,23 +122,17 @@ function Dashboard() {
 
     const fetchServiceCounts = async () => {
         try {
-            const response = await getAll();
+            const response = await (isAdmin ? getAll() : getAllByManager());
             if (response.data.code === 0) {
                 const serviceCounts = {};
-                
-                // Duyệt qua từng booking
                 response.data.result.forEach(booking => {
-                    // Duyệt qua từng dịch vụ trong mỗi booking
                     booking.services.forEach(service => {
                         const serviceName = service.serviceName;
-                        // Tăng số lượng đặt cho từng dịch vụ
                         serviceCounts[serviceName] = (serviceCounts[serviceName] || 0) + 1;
                     });
                 });
-                
-                // Chuyển đổi thành mảng cho PieChart
                 const pieData = Object.entries(serviceCounts).map(([name, value]) => ({ name, value }));
-                setPieData(pieData); // Cập nhật dữ liệu cho PieChart
+                setPieData(pieData);
             }
         } catch (error) {
             console.log(error);
@@ -107,18 +141,14 @@ function Dashboard() {
 
     const fetchRevenueByMonth = async () => {
         try {
-            const response = await getDashboard();
+            const response = await (isAdmin ? getDashboardByAdmin() : getDashboardByManager());
             if (response.data.code === 200) {
-                // Lấy dữ liệu doanh thu theo tháng từ response
                 const revenueSalesResponses = response.data.result.revenueSalesResponses;
-
-                // Chuyển đổi thành mảng chứa các object với month, year và sales
                 const barDataArray = revenueSalesResponses.map(item => ({
-                    date: `${item.year}-${item.month < 10 ? '0' + item.month : item.month}`, // Định dạng ngày theo YYYY-MM
-                    revenue: item.sales // Doanh thu
+                    date: `${item.year}-${item.month < 10 ? '0' + item.month : item.month}`,
+                    revenue: item.sales
                 }));
-
-                setBarData(barDataArray); // Cập nhật dữ liệu cho BarChart
+                setBarData(barDataArray);
             }
         } catch (error) {
             console.log(error);
@@ -127,10 +157,9 @@ function Dashboard() {
 
     const fetchTotalSalon = async () => {
         try {
-            const response = await getDashboard();
-            console.log('total Salons:', response.data.result.totalSalons);
+            const response = await getDashboardByAdmin();
             if (response.data.code === 200) {
-                const totalSalons = response.data.result.totalSalons
+                const totalSalons = response.data.result.totalSalons;
                 setTotalSalonCount(totalSalons);
             }
         } catch (error) {
@@ -140,45 +169,19 @@ function Dashboard() {
 
     const fetchTotalStaff = async () => {
         try {
-            const response = await getDashboard();
-            console.log('total Staffs:', response.data.result.totalStaffs);
+            const response = await (isAdmin ? getDashboardByAdmin() : getDashboardByManager());
             if (response.data.code === 200) {
-                const totalStaffs = response.data.result.totalStaffs
+                const totalStaffs = response.data.result.totalStaffs;
                 setTotalStaffCount(totalStaffs);
             }
         } catch (error) {
             console.log(error);
         }
     }
-    
-    
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await Promise.all([
-                    fetchRevenueOfAllTime(),
-                    fetchBookingCount(),
-                    fetchServiceCounts(),
-                    fetchTotalSalon(),
-                    fetchTotalStaff(),
-                    fetchRevenueByMonth(),
-                    fetchTopStaffs()
-                ]);
-                setIsDataLoaded(true);
-            } catch (error) {
-                console.error('Error loading data:', error);
-            }
-        };
-        
-        fetchData();
-    }, []);
-
-    // Sửa lại hàm fetchTopStaffs
     const fetchTopStaffs = async () => {
         try {
-            const response = await getDashboard();
-            console.log('Top staffs response:', response.data); // Để debug
+            const response = await (isAdmin ? getDashboardByAdmin() : getDashboardByManager());
             if (response.data.code === 200 && response.data.result.topFiveStaffByRating) {
                 setTopStaffs(response.data.result.topFiveStaffByRating);
             }
@@ -212,7 +215,7 @@ function Dashboard() {
                                         opacity: 0.85,
                                         marginBottom: '12px'
                                     }}>
-                                        Tổng doanh thu ({today})
+                                        Tổng doanh thu
                                     </div>
                                     <div style={{ 
                                         fontSize: '24px', 
@@ -294,38 +297,39 @@ function Dashboard() {
                             </Card>
                         </div>
 
-                        {/* Card Số lượng salon */}
-                        <div style={{ flex: 1, minWidth: '200px' }}>
-                            <Card
-                                bordered={false}
-                                style={{
-                                    background: 'linear-gradient(135deg, #722ed1 0%, #531dab 100%)',
-                                    borderRadius: '10px',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                }}
-                                bodyStyle={{ padding: '20px' }}
-                            >
-                                <div style={{ color: 'white' }}>
-                                    <div style={{ 
-                                        fontSize: '14px', 
-                                        opacity: 0.85,
-                                        marginBottom: '12px'
-                                    }}>
-                                        Số lượng salon
+                        {isAdmin && (
+                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                <Card
+                                    bordered={false}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #722ed1 0%, #531dab 100%)',
+                                        borderRadius: '10px',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    }}
+                                    bodyStyle={{ padding: '20px' }}
+                                >
+                                    <div style={{ color: 'white' }}>
+                                        <div style={{ 
+                                            fontSize: '14px', 
+                                            opacity: 0.85,
+                                            marginBottom: '12px'
+                                        }}>
+                                            Số lượng salon
+                                        </div>
+                                        <div style={{ 
+                                            fontSize: '24px', 
+                                            fontWeight: '600',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px'
+                                        }}>
+                                            <ShopOutlined style={{ fontSize: '24px' }}/>
+                                            <span>{totalSalonCount}</span>
+                                        </div>
                                     </div>
-                                    <div style={{ 
-                                        fontSize: '24px', 
-                                        fontWeight: '600',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px'
-                                    }}>
-                                        <ShopOutlined style={{ fontSize: '24px' }}/>
-                                        <span>{totalSalonCount}</span>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
+                                </Card>
+                            </div>
+                        )}
 
                         {/* Card Tổng số nhân viên */}
                         <div style={{ flex: 1, minWidth: '200px' }}>
@@ -439,7 +443,7 @@ function Dashboard() {
                                             tick={{ fill: '#666', fontSize: 12 }}
                                             tickFormatter={(value) => {
                                                 const [year, month] = value.split('-');
-                                                return `Tháng ${month}/${year}`;
+                                                return `${month} - ${year}`;
                                             }}
                                             axisLine={{ stroke: '#d9d9d9' }}
                                         />
