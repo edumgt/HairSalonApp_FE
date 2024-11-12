@@ -100,11 +100,11 @@ const SalonDetail = () => {
 
   return (
     <div className="salon-detail">
-      <h2>30Shine {salon.district}</h2>
+      <h2>{salon.name}</h2>
       {salon.image && (
         <img 
           src={getImgurDirectUrl(salon.image)} 
-          alt={`30Shine ${salon.district}`}
+          alt={` ${salon.name}`}
           className="salon-detail__image"
         />
       )}
@@ -126,7 +126,6 @@ const SalonDetail = () => {
 
         <div className="info-item">
           <i className="fas fa-phone"></i>
-          <p>Hotline: {salon.hotline}</p>
           <p>Hotline: {salon.hotline}</p>
         </div>
 
