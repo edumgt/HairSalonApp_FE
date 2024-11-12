@@ -30,6 +30,7 @@ const Staff = () => {
   const [salons, setSalons] = useState([]);
   const [currentUserPhone, setCurrentUserPhone] = useState('');
   const [hasManager, setHasManager] = useState(false);
+  const [currentManagerSalon, setCurrentManagerSalon] = useState(null);
 
   const { Option } = Select;
 
@@ -145,7 +146,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [userRole]);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -184,8 +185,8 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
         setEditingStaff(staffData);
         form.setFieldsValue({
           ...staffData,
-          salonId: salons?.id,
           joinIn: staffData.joinIn ? dayjs(staffData.joinIn) : null,
+          salonId: userRole === 'MANAGER' ? currentManagerSalon?.id : staffData.salonId
         });
         setIsEditModalVisible(true);
       }
@@ -209,7 +210,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
             image: values.image,
             joinIn: values.joinIn.format('YYYY-MM-DD'),
             role: values.role,
-            salonId: values.salonId
+            salonId: userRole === 'MANAGER' ? currentManagerSalon?.id : values.salonId
         };
 
         const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, 
@@ -459,15 +460,27 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                 label="Chi nhánh"
                 rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
                 className={styles.formItem}
-                disabled={forManager}
               >
-                <Select placeholder="Chọn chi nhánh">
-                  {salons.map(salon => (
-                    <Option key={salon.id} value={salon.id}>
-                      {`${salon.address} (Quận ${salon.district})`}
-                    </Option>
-                  ))}
-                </Select>
+                {userRole === 'MANAGER' ? 
+                    <Select 
+                        placeholder="Chi nhánh" 
+                        defaultValue={currentManagerSalon?.id}
+                    >
+                        <Option value={currentManagerSalon?.id}>
+                            {`${currentManagerSalon?.id} - ${currentManagerSalon?.address} (Quận ${currentManagerSalon?.district})`}
+                        </Option>
+                    </Select> 
+                :
+                    <Select 
+                        placeholder="Chọn chi nhánh" 
+                    >
+                        {salons.map(salon => (
+                            <Option key={salon.id} value={salon.id}>
+                                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                            </Option>
+                        ))}
+                    </Select>
+                }
               </Form.Item>
               <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
