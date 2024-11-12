@@ -771,11 +771,10 @@ function ShineHistory() {
         onCancel={() => setIsRescheduleModalVisible(false)}
       >
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Input
-            style={{ width: '100%' }}
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            placeholder="Nhập ngày mới (YYYY-MM-DD)"
+          <DatePicker 
+            style={{ width: '100%' }} 
+            onChange={(date, dateString) => setNewDate(dateString)} 
+            placeholder="Chọn ngày mới"
           />
           <Select
             style={{ width: '100%' }}
