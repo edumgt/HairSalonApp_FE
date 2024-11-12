@@ -1,19 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal, Form, Input, Select, DatePicker, Button, InputNumber } from 'antd';
+import { Modal, Form, Input, Select, DatePicker, Button, InputNumber, Space } from 'antd';
 import dayjs from 'dayjs';
 import styles from './staff.module.css';
 import NavLink from '../../../layouts/admin/components/link/navLink'
 import HeaderColumn from '../../../layouts/admin/components/table/headerColumn'
 import HeaderButton from '../../../layouts/admin/components/table/button/headerButton';
-import EditButton from '../../../layouts/admin/components/table/button/editButton';
+import editIcon from '../../../assets/admin/pencil-fiiled.svg'
+
 import { Outlet } from 'react-router-dom';
-import { log } from 'util';
 
-const { Option } = Select;
 
-const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, onEdit, onDelete, canManageStaff }) => {
+
+const Staff = () => {
+  const [staffList, setStaffList] = useState([]);
+  const [filteredStaff, setFilteredStaff] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingStaff, setEditingStaff] = useState(null);
+  const [refreshData, setRefreshData] = useState(false);
+  const [form] = Form.useForm();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isRootPath = location.pathname === '/admin/staff';
+  const [userRole, setUserRole] = useState('');
+  const [salons, setSalons] = useState([]);
+  const [currentUserPhone, setCurrentUserPhone] = useState('');
+  const [hasManager, setHasManager] = useState(false);
+  const [currentManagerSalon, setCurrentManagerSalon] = useState(null);
+
+  const { Option } = Select;
+
+const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn, role, image, salons, status, onEdit, onDelete, onPromote, canManageStaff, currentUserPhone, staffList }) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -33,8 +54,21 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
 
   const imageUrl = getImgurDirectUrl(image);
 
+  // Thêm logic kiểm tra manager
+  const isCurrentManager = role === 'MANAGER' && phone === currentUserPhone;
+
+  // Kiểm tra xem salon của staff này đã có manager chưa
+  const hasManager = staffList.some(staff => 
+    staff.role === 'MANAGER' && 
+    staff.salons?.id === salons?.id && 
+    staff.status === true
+  );
+
   return (
-    <tr className={styles.row}>
+    <tr 
+      className={`${styles.row} ${canManageStaff && !isCurrentManager ? styles.clickable : ''}`}
+      onClick={() => canManageStaff && !isCurrentManager && onEdit(code)}
+    >
       <td className={styles.info}>{code}</td>
       <td className={styles.info}>{`${firstName} ${lastName}`}</td>
       <td className={styles.info}>{gender}</td>
@@ -43,6 +77,8 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
       <td className={styles.info}>{email}</td>
       <td className={styles.info}>{joinIn}</td>
       <td className={styles.info}>{role}</td>
+      <td className={styles.info}>{salons?.address ? `${salons.address} (Quận ${salons.district})` : 'Chưa phân công'}</td>
+      <td className={styles.info}>{status ? 'Đang làm việc' : 'Đã nghỉ việc'}</td>
       <td className={`${styles.info} ${styles.imageCell}`}>
         {!imageError ? (
           <img 
@@ -55,41 +91,27 @@ const ListItem = ({ id, code, firstName, lastName, gender, yob, phone, email, jo
           <div className={styles.imagePlaceholder}>No Image</div>
         )}
       </td>
-      {canManageStaff && (
-        <td className={styles.actionCell}>
-          <EditButton onEdit={() => onEdit(code)} onDelete={() => onDelete(code)}/>
-        </td>
-      )}
     </tr>
   );
 };
-
-const Staff = () => {
-  const [staffList, setStaffList] = useState([]);
-  const [filteredStaff, setFilteredStaff] = useState([]);
-  const [searchText, setSearchText] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [editingStaff, setEditingStaff] = useState(null);
-  const [refreshData, setRefreshData] = useState(false);
-  const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isRootPath = location.pathname === '/admin/staff';
-  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
     setUserRole(role);
   }, []);
-
+  
   const canManageStaff = userRole === 'ADMIN' || userRole === 'MANAGER';
-
+  const forAdmin = userRole === 'ADMIN' || userRole === 'admin';
+  const forManager = userRole === 'MANAGER' || userRole === 'manager';
+  
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/v1/staff');
+      const response = await axios.get('http://localhost:8080/api/v1/staff', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data && Array.isArray(response.data.result)) {
         setStaffList(response.data.result);
         setFilteredStaff(response.data.result);
@@ -104,9 +126,37 @@ const Staff = () => {
     }
   }, []);
 
+  const fetchManagerStaff = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/staff/manager', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && Array.isArray(response.data.result)) {
+        setStaffList(response.data.result);
+        setFilteredStaff(response.data.result);
+      } else {
+        throw new Error('Định dạng dữ liệu server nhận được không hợp lệ');
+      }
+    } catch (error) {
+      console.error('Lỗi hiển thị:', error);
+      setError('Lấy dữ liệu thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userRole]);
+
   useEffect(() => {
-    fetchStaff();
-  }, [fetchStaff, refreshData]);
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+    if (role === 'MANAGER') {
+      fetchManagerStaff(); // Gọi hàm fetch cho manager
+    } else {
+      fetchStaff(); // Gọi hàm fetch cho admin
+    }
+  }, [fetchStaff, fetchManagerStaff]);
 
   useEffect(() => {
     const filtered = staffList.filter(staff => 
@@ -125,12 +175,18 @@ const Staff = () => {
 
   const handleEditStaff = async (code) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/${code}`);
+      const response = await axios.get(`http://localhost:8080/api/v1/staff/${code}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data && response.data.code === 200) {
-        setEditingStaff(response.data.result);
+        const staffData = response.data.result;
+        setEditingStaff(staffData);
         form.setFieldsValue({
-          ...response.data.result,
-          joinIn: response.data.result.joinIn ? dayjs(response.data.result.joinIn) : null
+          ...staffData,
+          joinIn: staffData.joinIn ? dayjs(staffData.joinIn) : null,
+          salonId: userRole === 'MANAGER' ? currentManagerSalon?.id : staffData.salonId
         });
         setIsEditModalVisible(true);
       }
@@ -144,49 +200,124 @@ const Staff = () => {
 
   const handleUpdateStaff = async (values) => {
     try {
-      const updatedStaff = {
-        ...values,
-        yob: parseInt(values.yob),
-        joinIn: values.joinIn.format('YYYY-MM-DD')
-      };
-      console.log(updatedStaff)
-      const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, updatedStaff);
-      if (response.data && response.data.code === 200) {
-        Modal.success({
-          content: 'Cập nhật nhân viên thành công',
-        });
-        setIsEditModalVisible(false);
-        fetchStaff();
-      } else {
-        throw new Error('Cập nhật nhân viên thất bại');
-      }
+        const updatedStaff = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            gender: values.gender,
+            yob: parseInt(values.yob),
+            phone: values.phone,
+            email: values.email,
+            image: values.image,
+            joinIn: values.joinIn.format('YYYY-MM-DD'),
+            role: values.role,
+            salonId: userRole === 'MANAGER' ? currentManagerSalon?.id : values.salonId
+        };
+
+        const response = await axios.put(`http://localhost:8080/api/v1/staff/${editingStaff.code}`, 
+            updatedStaff,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        );
+
+        if (response.data && response.data.code === 200) {
+            Modal.success({
+                content: 'Cập nhật nhân viên thành công',
+            });
+            setIsEditModalVisible(false);
+            fetchStaff();
+        } else {
+            throw new Error('Cập nhật nhân viên thất bại');
+        }
     } catch (error) {
-      console.error('Lỗi cập nhật nhân viên:', error);
-      Modal.error({
-        content: 'Cập nhật nhân viên thất bại: ' + (error.response?.data?.message || error.message),
-      });
+        console.error('Lỗi cập nhật nhân viên:', error);
+        Modal.error({
+            content: 'Cập nhật nhân viên thất bại: ' + (error.response?.data?.message || error.message),
+        });
     }
-  };
+};
 
   const handleDeleteStaff = (code) => {
+    const staff = staffList.find(s => s.code === code);
+    const isWorking = staff?.status;
+    
     Modal.confirm({
-      title: 'Bạn có muốn xóa nhân  viên này ?',
-      content: 'Bạn sẽ không thể khôi phục lại sau khi xóa.',
+      title: isWorking ? 'Bạn có muốn cho nhân viên này thôi việc ?' : 'Bạn có muốn cho nhân viên này bắt đầu làm lại ?',
+      content: isWorking ? 'Bạn sẽ không thể khôi phục lại sau khi xóa.' : 'Nhân viên sẽ được đưa trở lại danh sách làm việc.',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8080/api/v1/staff/${code}`);
-          Modal.success({
-            content: 'Xóa nhân viên thành công',
+          await axios.delete(`http://localhost:8080/api/v1/staff/${code}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
           });
-          fetchStaff(); // Refresh the staff list after deletion
+          Modal.success({
+            content: isWorking ? 'Thôi việc nhân viên thành công' : 'Nhân viên đã bắt đầu làm lại',
+          });
+          fetchStaff();
         } catch (error) {
-          console.error('Lỗi xóa nhân viên:', error);
+          console.error('Lỗi:', error);
           Modal.error({
             title: 'Lỗi',
-            content: 'Xóa nhân viên thất bại. Vui lòng thử lại',
+            content: isWorking ? 'Thôi việc nhân viên thất bại. Vui lòng thử lại' : 'Không thể cho nhân viên bắt đầu làm lại. Vui lòng thử lại',
           });
         }
       },
+    });
+  };
+
+  const handlePromote = (code, salonId) => {
+    // Kiểm tra xem salon đã có manager chưa
+    const hasManager = staffList.some(staff => 
+      staff.role === 'MANAGER' && staff.salons?.id === salonId
+    );
+
+    if (hasManager) {
+      Modal.error({
+        title: 'Không thể thăng chức',
+        content: 'Chi nhánh này đã có quản lý. Không thể thăng chức thêm.',
+      });
+      return;
+    }
+
+    Modal.confirm({
+      title: 'Xác nhận thăng chức',
+      content: 'Bạn có chắc chắn muốn thăng chức cho nhân viên này?',
+      onOk: async () => {
+        try {
+          const response = await axios.put(`http://localhost:8080/api/v1/staff/promote/${code}`, 
+            { salonId: salonId },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            }
+          );
+
+          if (response.data && response.data.code === 200) {
+            Modal.success({
+              content: 'Thăng chức thành công',
+            });
+            fetchStaff(); // Refresh danh sách nhân viên
+          } else {
+            throw new Error('Thăng chức thất bại');
+          }
+        } catch (error) {
+          console.error('Lỗi thăng chức:', error);
+          Modal.error({
+            title: 'Lỗi',
+            content: error.response?.data?.message || 'Thăng chức thất bại. Vui lòng thử lại',
+          });
+        }
+      },
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <>
+          <CancelBtn />
+          <OkBtn />
+        </>
+      ),
     });
   };
 
@@ -197,6 +328,48 @@ const Staff = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, fetchStaff, navigate]);
+
+  useEffect(() => {
+    const fetchSalons = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/salon', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (response.data && response.data.code === 0) {
+          setSalons(response.data.result);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách salon:', error);
+        Modal.error({
+          content: 'Không thể lấy danh sách salon'
+        });
+      }
+    };
+
+    fetchSalons();
+  }, []);
+
+  // Thêm useEffect để fetch thông tin user hiện tại
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/profile/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (response.data && response.data.code === 200) {
+          setCurrentUserPhone(response.data.result.phone);
+        }
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -234,6 +407,8 @@ const Staff = () => {
                     <HeaderColumn title="Email"  />
                     <HeaderColumn title="Ngày bắt đầu làm"  />
                     <HeaderColumn title="Vai trò"  />
+                    <HeaderColumn title="Chi nhánh" />
+                    <HeaderColumn title="Trạng thái" />
                     <HeaderColumn title="Hình ảnh" />
                     {canManageStaff && <HeaderColumn title="" />}
                   </tr>
@@ -245,7 +420,10 @@ const Staff = () => {
                       {...item} 
                       onEdit={canManageStaff ? handleEditStaff : undefined}
                       onDelete={canManageStaff ? handleDeleteStaff : undefined}
+                      onPromote={canManageStaff ? handlePromote : undefined}
                       canManageStaff={canManageStaff}
+                      currentUserPhone={currentUserPhone}
+                      staffList={staffList}
                     />
                   ))}
                 </tbody>
@@ -259,7 +437,7 @@ const Staff = () => {
       {/* Modal for editing staff */}
       <Modal
         title="Cập nhật nhân viên"
-        visible={isEditModalVisible}
+        open={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
         width={700}
@@ -276,6 +454,33 @@ const Staff = () => {
             <div className={styles.formGrid}>
               <Form.Item name="code" label="Mã nhân viên" rules={[{ required: true }]} className={styles.formItem}>
                 <Input disabled />
+              </Form.Item>
+              <Form.Item
+                name="salonId"
+                label="Chi nhánh"
+                rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+                className={styles.formItem}
+              >
+                {userRole === 'MANAGER' ? 
+                    <Select 
+                        placeholder="Chi nhánh" 
+                        defaultValue={currentManagerSalon?.id}
+                    >
+                        <Option value={currentManagerSalon?.id}>
+                            {`${currentManagerSalon?.id} - ${currentManagerSalon?.address} (Quận ${currentManagerSalon?.district})`}
+                        </Option>
+                    </Select> 
+                :
+                    <Select 
+                        placeholder="Chọn chi nhánh" 
+                    >
+                        {salons.map(salon => (
+                            <Option key={salon.id} value={salon.id}>
+                                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                            </Option>
+                        ))}
+                    </Select>
+                }
               </Form.Item>
               <Form.Item name="firstName" label="Họ" rules={[{ required: true }]} className={styles.formItem}>
                 <Input />
@@ -302,20 +507,77 @@ const Staff = () => {
               <Form.Item name="joinIn" label="Ngày bắt đầu làm" rules={[{ required: true }]} className={styles.formItem}>
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
-              <Form.Item name="image" label="Liên kết hình ảnh (URL)" rules={[{ required: true }]} className={styles.formItem}>
-                <Input />
+              <Form.Item 
+                name="image" 
+                label="Liên kết hình ảnh (URL)" 
+                rules={[{ required: true, message: 'Vui lòng nhập URL hình ảnh!' }]} 
+                className={styles.formItem}
+              >
+                <Input placeholder="Nhập URL hình ảnh (Imgur)" />
               </Form.Item>
-              <Form.Item name="role" label="Chức vụ" rules={[{ required: true }]} className={styles.formItem}>
-                <Select>
+              <Form.Item 
+                name="role" 
+                label="Chức vụ" 
+                rules={[{ required: true }]} 
+                className={styles.formItem}
+              >
+                <Select
+                  disabled={editingStaff?.role === 'MANAGER'}
+                >
                   <Option value="STAFF">Nhân viên</Option>
                   <Option value="STYLIST">Thợ cắt tóc</Option>
+                  {editingStaff?.role === 'MANAGER' && (
+                    <Option value="MANAGER">Quản lý</Option>
+                  )}
                 </Select>
               </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                  Cập nhật nhân viên
-                </Button>
-              </Form.Item>
+              <div className={styles.modalActions}>
+                {editingStaff && (
+                  <>
+                    <Button 
+                      color="primary" 
+                      variant="outlined"
+                      htmlType="submit"
+                      className={styles.actionButton}
+                    >
+                      Cập nhật nhân viên
+                    </Button>
+                    
+                    <Button 
+                      color={editingStaff.status ? "danger" : "primary"}
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEditModalVisible(false);
+                        handleDeleteStaff(editingStaff.code);
+                      }}
+                      className={styles.actionButton}
+                    >
+                      {editingStaff.status ? 'Thôi việc' : 'Bắt đầu lại'}
+                    </Button>
+
+                    {editingStaff.role !== 'MANAGER' && editingStaff.salons?.id && editingStaff.status && (
+                      <Button 
+                        type="primary"
+                        onClick={() => {
+                          setIsEditModalVisible(false);
+                          handlePromote(editingStaff.code, editingStaff.salons.id);
+                        }}
+                        disabled={editingStaff.role === 'MANAGER' || 
+                          staffList.some(staff => 
+                            staff.role === 'MANAGER' && 
+                            staff.salons?.id === editingStaff.salons?.id &&
+                            staff.status === true
+                          )
+                        }
+                        title={hasManager ? 'Chi nhánh này đã có quản lý' : ''}
+                        className={styles.actionButton}
+                      >
+                        Thăng chức
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </Form>
         </div>

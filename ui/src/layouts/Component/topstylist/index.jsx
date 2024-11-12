@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./index.scss";
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosConfig';
 import moment from 'moment';
 
 const TopStylists = () => {
@@ -13,7 +13,7 @@ const TopStylists = () => {
   useEffect(() => {
     const fetchStylists = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/staff');
+        const response = await axiosInstance.get('/staff');
         const allStaff = response.data.result;
         const filteredStylists = allStaff.filter(staff => staff.role === "STYLIST");
         setStylists(filteredStylists);
@@ -101,11 +101,18 @@ const TopStylists = () => {
                 className="top-stylists__image"
                 draggable="false"
               />
-              <h3 className="top-stylists__name">{`${stylist.firstName} ${stylist.lastName}`}</h3>
-              <p className="top-stylists__location">{stylist.address}</p>
-              <p className="top-stylists__join-date">
-                Tham gia: {moment(stylist.joinIn).format('DD/MM/YYYY')}
-              </p>
+              <div className="top-stylists__info">
+                <h3 className="top-stylists__name">{`${stylist.firstName} ${stylist.lastName}`}</h3>
+                <div className="top-stylists__rating">
+                  <span className="top-stylists__ovr">OVR: {stylist.ovrRating.toFixed(1)}</span>
+                </div>
+                <p className="top-stylists__branch">
+                  <i className="fas fa-map-marker-alt"></i> {stylist.salons?.address || 'Chưa có thông tin'}
+                </p>
+                <p className="top-stylists__join-date">
+                  Tham gia: {moment(stylist.joinIn).format('DD/MM/YYYY')}
+                </p>
+              </div>
             </div>
           ))}
         </div>

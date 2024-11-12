@@ -20,7 +20,11 @@ const AddService = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/category')
+                const response = await axios.get('http://localhost:8080/api/v1/category', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
                 if (response.data && response.data.code === 0) {
                     setCategories(response.data.result)
                 }
@@ -43,7 +47,14 @@ const AddService = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/service', formData)
+            const response = await axios.post('http://localhost:8080/api/v1/service', 
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            )
             if (response.data && response.data.code === 0) {
                 setSuccess('Thêm dịch vụ thành công')
                 setTimeout(() => navigate('/admin/service'), 2000)

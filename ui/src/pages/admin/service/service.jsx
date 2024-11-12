@@ -10,7 +10,7 @@ import { Modal, Form, Input, InputNumber, Select, Button } from 'antd'
 
 const { Option } = Select;
 
-const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, onEdit, onDelete }) => {
+const ListItem = ({ serviceId, serviceName, description, duration, price, categories, image, status, onEdit }) => {
     const [imageError, setImageError] = useState(false);
 
     const handleImageError = () => {
@@ -31,13 +31,23 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
     const imageUrl = getImgurDirectUrl(image);
 
     return (
-        <tr className={styles.row}>
+        <tr 
+            className={`${styles.row} ${styles.clickable}`}
+            onClick={() => onEdit(serviceId)}
+        >
             <td className={styles.info}>{serviceId}</td>
             <td className={styles.info}>{categories.categoryId}</td>
             <td className={styles.info}>{serviceName}</td>
             <td className={styles.info}>{description}</td>
             <td className={styles.info}>{duration} phút</td>
             <td className={styles.info}>{price.toLocaleString()} VND</td>
+            <td className={styles.info}>
+                <div className={styles.statusWrapper}>
+                    <span className={status ? styles.openStatus : styles.closeStatus}>
+                        {status ? 'Kích hoạt' : 'Đóng'}
+                    </span>
+                </div>
+            </td>
             <td className={`${styles.info} ${styles.imageCell}`}>
                 {!imageError ? (
                     <img 
@@ -50,12 +60,9 @@ const ListItem = ({ serviceId, serviceName, description, duration, price, catego
                     <div className={styles.imagePlaceholder}>No Image</div>
                 )}
             </td>
-            <td className={styles.actionCell}>
-                <EditButton onEdit={() => onEdit(serviceId)} onDelete={() => onDelete(serviceId)}/>
-            </td>
         </tr>
-    )
-}
+    );
+};
 
 const Service = () => {
     const navigate = useNavigate()
@@ -76,7 +83,11 @@ const Service = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/service')
+            const response = await axios.get('http://localhost:8080/api/v1/service', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
             if (response.data && response.data.code === 0) {
                 setServices(response.data.result)
                 setFilteredServices(response.data.result)
@@ -115,13 +126,17 @@ const Service = () => {
 
     const handleEditService = async (serviceId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/service/${serviceId}`)
+            const response = await axios.get(`http://localhost:8080/api/v1/service/${serviceId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             if (response.data && response.data.code === 0) {
                 const serviceData = response.data.result;
                 setEditingService(serviceData)
                 form.setFieldsValue({
                     ...serviceData,
-                    categoryId: serviceData.categories.categoryId // Đặt giá trị categoryId
+                    categoryId: serviceData.categories.categoryId
                 })
                 setIsEditModalVisible(true)
             }
@@ -134,50 +149,67 @@ const Service = () => {
     }
 
     const handleUpdateService = async (values) => {
-        try {
-            const updatedService = {
-                serviceId: editingService.serviceId,
-                categoryId: values.categories.categoryId,
-                serviceName: values.serviceName,
-                description: values.description,
-                duration: values.duration,
-                price: values.price,
-                image: values.image
-            };
-
-            const response = await axios.put('http://localhost:8080/api/v1/service', updatedService);
-            if (response.data && response.data.code === 0) {
-                Modal.success({
-                    content: 'Cập nhật dịch vụ thành công',
-                });
-                setIsEditModalVisible(false);
-                fetchServices();
-            } else {
-                throw new Error('Cập nhật dịch vụ thất bại');
+        Modal.confirm({
+            title: 'Xác nhận',
+            content: 'Bạn có muốn cập nhật dịch vụ này ?',
+            onOk: async () => {
+                try {
+                    const updatedService = {
+                        serviceId: editingService.serviceId,
+                        categoryId: values.categories.categoryId,
+                        serviceName: values.serviceName,
+                        description: values.description,
+                        duration: values.duration,
+                        price: values.price,
+                        image: values.image
+                    };
+        
+                    const response = await axios.put('http://localhost:8080/api/v1/service', 
+                        updatedService,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }
+                    );
+                    if (response.data && response.data.code === 0) {
+                        Modal.success({
+                            content: 'Cập nhật dịch vụ thành công',
+                        });
+                        setIsEditModalVisible(false);
+                        fetchServices();
+                    } else {
+                        throw new Error('Cập nhật dịch vụ thất bại');
+                    }
+                } catch (error) {
+                    console.error('Error updating service:', error);
+                    Modal.error({
+                        content: 'Cập nhật dịch vụ thất bại: ' + (error.response?.data?.message || error.message),
+                    });
+                }
             }
-        } catch (error) {
-            console.error('Error updating service:', error);
-            Modal.error({
-                content: 'Cập nhật dịch vụ thất bại: ' + (error.response?.data?.message || error.message),
-            });
-        }
+        })
     };
 
     const handleDeleteService = (serviceId) => {
         Modal.confirm({
-            title: 'Xác nhận xóa dịch vụ',
-            content: 'Bạn có muốn xóa dịch vụ này ?',
+            title: 'Xác nhận chuyển trạng thái',
+            content: 'Bạn có muốn thay đổi trạng thái của dịch vụ này?',
             onOk: async () => {
                 try {
-                    await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`);
-                    Modal.success({
-                        content: 'Xóa dịch vụ thành công',
+                    await axios.delete(`http://localhost:8080/api/v1/service/${serviceId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
                     });
-                    fetchServices(); // Update the list after deletion
+                    Modal.success({
+                        content: 'Chuyển trạng thái dịch vụ thành công',
+                    });
+                    fetchServices();
                 } catch (error) {
-                    console.error('Error deleting service:', error);
+                    console.error('Error changing service status:', error);
                     Modal.error({
-                        content: 'Có lỗi xảy ra khi xóa dịch vụ',
+                        content: 'Có lỗi xảy ra khi chuyển trạng thái dịch vụ',
                     });
                 }
             },
@@ -212,6 +244,7 @@ const Service = () => {
                                 <HeaderColumn title="Mô tả" />
                                 <HeaderColumn title="Thời gian (Phút)" />
                                 <HeaderColumn title="Giá (VND)" sortable />
+                                <HeaderColumn title="Trạng thái" />
                                 <HeaderColumn title="Hình ảnh" className={styles.imageHeader} />
                                 <HeaderColumn title="" />
                             </tr>
@@ -221,8 +254,7 @@ const Service = () => {
                                 <ListItem 
                                     key={service.serviceId} 
                                     {...service} 
-                                    onEdit={handleEditService} 
-                                    onDelete={handleDeleteService}
+                                    onEdit={handleEditService}
                                 />
                             ))}
                         </tbody>
@@ -234,46 +266,69 @@ const Service = () => {
                 visible={isEditModalVisible}
                 onCancel={() => setIsEditModalVisible(false)}
                 footer={null}
+                width={700}
+                centered
+                destroyOnClose={true}
             >
-                <Form
-                    form={form}
-                    onFinish={handleUpdateService}
-                    layout="vertical"
-                    initialValues={editingService}
-                >
-                    <Form.Item name={["categories", "categoryId"]} label="Danh mục">
-                        <Select>
-                            {categories.map(category => (
-                                <Option key={category.categoryId} value={category.categoryId}>
-                                    {category.categoryName}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="serviceId" label="ID dịch vụ">
-                        <Input disabled />
-                    </Form.Item>
-                    <Form.Item name="serviceName" label="Tên dịch vụ" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
-                        <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item name="duration" label="Thời gian" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
-                        <InputNumber min={0} />
-                    </Form.Item>
-                    <Form.Item name="image" label="Đường dẫn hình ảnh (URL)" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Cập nhật dịch vụ
-                        </Button>
-                    </Form.Item>
-                </Form>
+                <div className={styles.modalContent}>
+                    <Form
+                        form={form}
+                        onFinish={handleUpdateService}
+                        layout="vertical"
+                        initialValues={editingService}
+                    >
+                        <Form.Item name={["categories", "categoryId"]} label="Danh mục" rules={[{ required: true }]}>
+                            <Select>
+                                {categories.map(category => (
+                                    <Option key={category.categoryId} value={category.categoryId}>
+                                        {category.categoryName}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item name="serviceId" label="ID dịch vụ">
+                            <Input disabled />
+                        </Form.Item>
+                        <Form.Item name="serviceName" label="Tên dịch vụ" rules={[{ required: true }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
+                            <Input.TextArea />
+                        </Form.Item>
+                        <Form.Item name="duration" label="Thời gian" rules={[{ required: true }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
+                            <InputNumber min={0} />
+                        </Form.Item>
+                        <Form.Item name="image" label="Đường dẫn hình ảnh (URL)" rules={[{ required: true }]}>
+                            <Input />
+                        </Form.Item>
+
+                        <div className={styles.modalActions}>
+                            <Button 
+                                color="primary"
+                                variant="outlined"
+                                htmlType="submit"
+                                className={styles.actionButton}
+                            >
+                                Cập nhật dịch vụ
+                            </Button>
+
+                            <Button 
+                                color={editingService?.status ? "danger" : "primary"}
+                                variant="outlined"
+                                onClick={() => {
+                                    setIsEditModalVisible(false);
+                                    handleDeleteService(editingService.serviceId);
+                                }}
+                                className={styles.actionButton}
+                            >
+                                {editingService?.status ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                            </Button>
+                        </div>
+                    </Form>
+                </div>
             </Modal>
         </div>
     )

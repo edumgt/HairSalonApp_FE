@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './index.scss';
 import { FaSearch, FaTimes, FaChevronLeft, FaUser, FaChevronRight, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { message, Radio, Typography, Select, Modal, Button } from 'antd';
+import { message, Radio, Typography, Select, Modal, Button, Card, Tabs, List, Spin } from 'antd';
 import SelectedServicesModal from '../selectservicemodal';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, EnvironmentOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { fetchServices } from '../../../../data/hairservice';
 import { fetchCombos } from '../../../../data/comboservice';
 import moment from 'moment';
+import TabPane from 'antd/es/tabs/TabPane';
 
 
 
@@ -38,6 +39,80 @@ const BookingComponent = () => {
   const [isServiceModalVisible, setIsServiceModalVisible] = useState(false);
 
   const [unavailableSlots, setUnavailableSlots] = useState([]);
+
+  // Thêm state mới cho salon
+  const [modalVisible, setModalVisible] = useState(false);
+  const [salons, setSalons] = useState([]);
+  const [salonLoading, setSalonLoading] = useState(false);
+  const [salonError, setSalonError] = useState(null);
+  const [districts, setDistricts] = useState([]);
+
+  // Thêm useEffect để fetch danh sách salon
+  useEffect(() => {
+    if (modalVisible) {
+      fetchSalons();
+    }
+  }, [modalVisible]);
+
+  // Thêm hàm fetchSalons
+  const fetchSalons = async () => {
+    setSalonLoading(true);
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/salon', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && response.data.code === 0) {
+        const openSalons = response.data.result
+          .filter(salon => salon.open === true)
+          .map(salon => ({
+            ...salon,
+            id: salon.salonId || salon.id,
+            salonId: salon.salonId || salon.id
+          }));
+
+        setSalons(openSalons);
+        
+        const uniqueDistricts = [...new Set(openSalons.map(salon => salon.district))];
+        setDistricts(uniqueDistricts);
+
+        if (openSalons.length === 0) {
+          message.info('Hiện tại không có salon nào đang mở cửa');
+        }
+      } else {
+        message.error('Không thể lấy thông tin salon');
+      }
+    } catch (error) {
+      console.error('Error fetching salons:', error);
+      message.error('Không thể tải danh sách salon');
+    } finally {
+      setSalonLoading(false);
+    }
+  };
+
+  // Thêm hàm handleSalonSelect
+  const handleSalonSelect = (salon) => {
+    if (!salon.salonId && !salon.id) {
+      message.error('Thông tin salon không hợp lệ');
+      return;
+    }
+    
+    const formattedSalon = {
+      ...salon,
+      salonId: salon.salonId || salon.id,
+      id: salon.salonId || salon.id
+    };
+    
+    // Reset tất cả các thông tin đã chọn
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setSelectedStylist(null);
+    
+    // Cập nhật salon mới
+    setSelectedSalon(formattedSalon);
+    setModalVisible(false);
+  };
 
   // Remove service
   const handleRemoveService = (serviceToRemove, newTotal, isAdding = false) => {
@@ -71,18 +146,6 @@ const BookingComponent = () => {
     setSelectedCombos(newCombos);
     setTotalPrice(prevTotal => prevTotal - parseInt(removedCombo.price.replace(/\D/g, '')));
   };
-
-  // Set fixed salon address
-  const fixedSalon = {
-    id: 1,
-    address: "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000",
-    description: "Chi nhánh duy nhất của chúng tôi",
-    image: "path/to/salon/image.jpg" // Add an appropriate image path
-  };
-
-  useEffect(() => {
-    setSelectedSalon(fixedSalon);
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -133,21 +196,25 @@ const BookingComponent = () => {
 
       const bookingData = {
         date: moment(selectedDate.date).format('YYYY-MM-DD'),
-        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist, // Thay đổi ở đây
+        stylistId: selectedStylist === 'None' ? 'None' : selectedStylist,
         slotId: parseInt(selectedTime),
         price: parseInt(totalPrice),
         serviceId: serviceIds,
-        period: recurringBooking ? parseInt(recurringBooking) : null
+        salonId: selectedSalon.salonId,
+        period: recurringBooking ? parseInt(recurringBooking) : 0
       };
 
       console.log('Sending booking data:', bookingData);
 
-      const response = await axios.post('http://localhost:8080/api/v1/booking', bookingData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await axios.post('http://localhost:8080/api/v1/booking', 
+        bookingData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       console.log('Received response:', response.data);
 
@@ -201,10 +268,92 @@ const BookingComponent = () => {
           <div className="booking-steps">
             <div className="step">
               <h3>1. Địa chỉ salon</h3>
-              <div className="option">
-                <span className="icon">🏠</span>
-                <span>{fixedSalon.address}</span>
+              <div className="salon-address" onClick={() => setModalVisible(true)}>
+                <Card className="address-card">
+                  <div className="address-content">
+                    <div className="selected-address">
+                      <EnvironmentOutlined />
+                      {selectedSalon ? (
+                        <span>{selectedSalon.address}, Quận {selectedSalon.district}</span>
+                      ) : (
+                        <span className="select-prompt">Chọn chi nhánh</span>
+                      )}
+                    </div>
+                  </div>
+                </Card>
               </div>
+
+              <Modal
+                title="Chọn Salon"
+                open={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                width={800}
+                footer={null}
+                className="salon-modal"
+              >
+                {salonLoading ? (
+                  <div className="loading-container">
+                    <Spin size="large" />
+                  </div>
+                ) : (
+                  <Tabs defaultActiveKey="all" className="salon-tabs">
+                    <TabPane tab="Tất cả" key="all">
+                      <List
+                        dataSource={salons}
+                        renderItem={salon => (
+                          <List.Item 
+                            className={`salon-item ${selectedSalon?.id === salon.id ? 'selected' : ''}`}
+                            onClick={() => handleSalonSelect(salon)}
+                          >
+                            <div className="salon-info">
+                              <h4>30Shine {salon.district}</h4>
+                              <p>
+                                <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
+                              </p>
+                              <span className="status-open">
+                                <CheckCircleOutlined /> Đang mở cửa
+                              </span>
+                            </div>
+                            <Button 
+                              type={selectedSalon?.id === salon.id ? "primary" : "default"}
+                            >
+                              {selectedSalon?.id === salon.id ? "Đã chọn" : "Chọn"}
+                            </Button>
+                          </List.Item>
+                        )}
+                      />
+                    </TabPane>
+                    {districts.map(district => (
+                      <TabPane tab={`Quận ${district}`} key={district}>
+                        <List
+                          dataSource={salons.filter(salon => salon.district === district)}
+                          renderItem={salon => (
+                            <List.Item 
+                              className={`salon-item ${selectedSalon?.id === salon.id ? 'selected' : ''}`}
+                              onClick={() => handleSalonSelect(salon)}
+                            >
+                              <div className="salon-info">
+                                <h4>30Shine {salon.district}</h4>
+                                <p>
+                                  <EnvironmentOutlined /> {salon.address}, Quận {salon.district}
+                                </p>
+                                <span className="status-open">
+                                  <CheckCircleOutlined /> Đang mở cửa
+                                </span>
+                              </div>
+                              <Button 
+                                type={selectedSalon?.id === salon.id ? "primary" : "default"}
+                              >
+                                {selectedSalon?.id === salon.id ? "Đã chọn" : "Chọn"}
+                              </Button>
+                            </List.Item>
+                          )}
+                        />
+                      </TabPane>
+                    ))}
+                  </Tabs>
+                )}
+              </Modal>
             </div>
             <div className="step">
               <h3>2. Chọn dịch vụ</h3>
@@ -242,6 +391,7 @@ const BookingComponent = () => {
                 setRecurringBooking={setRecurringBooking}
                 selectedServices={selectedServices}
                 selectedCombos={selectedCombosDetails}
+                selectedSalon={selectedSalon}
               />
             </div>
           </div>
@@ -278,7 +428,7 @@ const BookingComponent = () => {
   const fetchUnavailableSlots = useCallback(async (date) => {
     if (!date) return;
     try {
-      const formattedDate = date.format('YYYY-MM-DD');
+      const formattedDate = date.format('yyyy-MM-dd');
       const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -433,12 +583,15 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [servicesResponse, combosResponse] = await Promise.all([
-          fetchServices(),
-          fetchCombos()
-        ]);
+        const token = localStorage.getItem('token');
+        const servicesResponse = await axios.get('http://localhost:8080/api/v1/booking/service', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const combosResponse = await fetchCombos();
 
-        let servicesData = servicesResponse.result || servicesResponse;
+        let servicesData = servicesResponse.data.result;
         let combosData = combosResponse.result || combosResponse;
 
         if (Array.isArray(servicesData) && Array.isArray(combosData)) {
@@ -451,12 +604,12 @@ const ServiceSelectionStep = ({ onServiceSelection, initialServices, initialComb
           setCategories(['Tất cả dịch vụ', ...Array.from(categorySet)]);
         } else {
           console.error('Services or combos data is not an array:', { servicesData, combosData });
-          setError("Dữ liệu dịch vụ khng hợp lệ.");
+          setError("Dữ liệu dịch vụ không hợp lệ.");
         }
         setLoading(false);
       } catch (err) {
         console.error('Error loading data:', err);
-        setError("Không thể tải dữ liu. Vui lòng thử lại sau.");
+        setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
         setLoading(false);
       }
     };
@@ -964,7 +1117,8 @@ const DateTimeSelectionStep = ({
   recurringBooking,
   setRecurringBooking,
   selectedServices,
-  selectedCombos
+  selectedCombos,
+  selectedSalon
 }) => {
   const [isDateListOpen, setIsDateListOpen] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -1178,18 +1332,21 @@ const DateTimeSelectionStep = ({
   };
 
   const fetchAvailableStylists = async (date, slotId) => {
-    if (!date || !slotId) return;
+    if (!date || !slotId || !selectedSalon) return;
 
     setIsStylistLoading(true);
     setStylistError(null);
 
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
-      const response = await axios.get(`http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/staff/stylist?slotId=${slotId}&date=${formattedDate}&salonId=${selectedSalon.salonId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
+      );
 
       if (response.data.code === 200) {
         setAvailableStylists(response.data.result);
@@ -1285,6 +1442,9 @@ const DateTimeSelectionStep = ({
                   <img src={getImgurDirectUrl(stylist.image)} alt={`${stylist.firstName} ${stylist.lastName}`} />
                   <div className="stylist-info">
                     <p className="stylist-name">{`${stylist.firstName} ${stylist.lastName}`}</p>
+                    <div className="stylist-rating">
+                      <span className="rating-badge">OVR: {stylist.ovrRating.toFixed(1)}</span>
+                    </div>
                   </div>
                   {selectedStylist === stylist.code && (
                     <div className="check-icon">✓</div>
@@ -1322,4 +1482,3 @@ const DateTimeSelectionStep = ({
 };
 
 export default BookingComponent;
-

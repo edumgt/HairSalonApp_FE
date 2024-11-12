@@ -1255,13 +1255,28 @@
         height: 100%;
         text-align: center;
       }
-    }
 
-    .stylist-name {
-      margin: 0;
-      font-size: 16px;
-      font-weight: bold;
-      color: #333;
+      .stylist-name {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .stylist-rating {
+        margin: 5px 0;
+        text-align: center;
+
+        .rating-badge {
+          background-color: #15397f;
+          color: white;
+          padding: 3px 10px;
+          border-radius: 12px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          display: inline-block;
+        }
+      }
     }
 
     .check-icon {
@@ -1297,6 +1312,40 @@
 @media (max-width: 480px) {
   .stylist-selection .stylist-item {
     width: 100%; // 1 item per row
+  }
+}
+
+.stylist-info {
+  // ... styles hiện tại
+
+  .stylist-rating {
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  .rating-badge {
+    background-color: #15397f;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+}
+
+.stylist-item {
+  // ... styles hiện tại
+
+  &:hover {
+    .rating-badge {
+      background-color: darken(#15397f, 10%);
+    }
+  }
+
+  &.selected {
+    .rating-badge {
+      background-color: #0f2b5f;
+    }
   }
 }
 

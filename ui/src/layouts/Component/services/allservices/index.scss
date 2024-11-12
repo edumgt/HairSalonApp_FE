@@ -195,3 +195,14 @@
       }
     }
   }
+
+  .all-services__book-button {
+    &:disabled {
+      background-color: #15397f;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: #cccccc;
+      }
+    }
+  }

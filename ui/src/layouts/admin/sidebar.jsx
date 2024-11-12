@@ -12,6 +12,7 @@ import logoutIcon from '../../assets//admin/Fill.svg'
 import serviceIcon from '../../assets/admin/serviceIcon.svg'
 import categoryIcon from '../../assets/admin/category.svg'
 import slotIcon from '../../assets/admin/slot.svg'
+import salonIcon from '../../assets/admin/store.svg'
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -33,8 +34,8 @@ const Sidebar = () => {
         setIsVisible(!isVisible);
     };
 
-    const canAccessAllTabs = userRole === 'ADMIN' || userRole === 'MANAGER' || userRole === 'admin' || userRole === 'manager';
-
+    const forAdminAndManager = userRole === 'ADMIN' || userRole === 'MANAGER' || userRole === 'admin' || userRole === 'manager';
+    const forManager = userRole === 'MANAGER' || userRole === 'manager';
     return (
         <div className={`${styles.nav} ${isVisible ? '' : styles.toggle}`}>
             <div className={styles.brand}>
@@ -42,11 +43,12 @@ const Sidebar = () => {
                 <i className={styles.brandsName}>30Shine</i>
             </div>
             <div className={styles.navs}>
-                {canAccessAllTabs && (
-                    <div className={styles.item}>
+                {forAdminAndManager && (
+                    <div className={`${styles.item} ${activeItem === 'dashboard' ? styles.active : ''}`} 
+                    onClick={() => handleItem('/admin/dashboard', 'dashboard')}>
                         <div className={styles.itemGroup}>
                             <img className={styles.navIcon} alt="" src={dashboardIcon}  />
-                            <div className={styles.itemContent}>Trang chủ</div>
+                            <div className={styles.itemContent}>Thống kê</div>
                         </div>
                     </div>
                 )}
@@ -57,13 +59,15 @@ const Sidebar = () => {
                         <div className={styles.itemContent}>Thông tin cá nhân</div>
                     </div>
                 </div>
+                {forAdminAndManager && (
                 <div className={`${styles.item} ${activeItem === 'staff' ? styles.active : ''}`} 
                     onClick={() => handleItem('/admin/staff', 'staff')}>
                     <div className={styles.itemGroup}>
                         <img className={styles.navIcon} alt="" src={staffIcon} />
                         <div className={styles.itemContent}>Nhân viên</div>
                     </div>
-                </div>
+                    </div>
+                )}
                 <div className={`${styles.item} ${activeItem === 'booking' ? styles.active : ''}`} 
                     onClick={() => handleItem('/admin/historybooking', 'booking')}>
                     <div className={styles.itemGroup}>
@@ -71,36 +75,54 @@ const Sidebar = () => {
                         <div className={styles.itemContent}>Đặt lịch</div>
                     </div>
                 </div>
-                {canAccessAllTabs && (
+                {forAdminAndManager && (
                     <>
-                        <div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/combo', 'combo')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={comboIcon} />
-                                <div className={styles.itemContent}>Combo</div>
+                        {!forManager && (
+                            <>
+                            <div className={`${styles.item} ${activeItem === 'manager' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/manager', 'manager')}>
+                                <div className={styles.itemGroup}>
+                                <img className={styles.navIcon} alt="" src={staffIcon} />
+                                <div className={styles.itemContent}>Quản lý</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'slot' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/slot', 'slot')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={slotIcon} />
-                                <div className={styles.itemContent}>Khung giờ</div>
+                            <div className={`${styles.item} ${activeItem === 'combo' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/combo', 'combo')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={comboIcon} />
+                                    <div className={styles.itemContent}>Combo</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/service', 'service')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={serviceIcon} />
-                                <div className={styles.itemContent}>Dịch vụ</div>
+                            <div className={`${styles.item} ${activeItem === 'slot' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/slot', 'slot')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={slotIcon} />
+                                    <div className={styles.itemContent}>Khung giờ</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
-                            onClick={() => handleItem('/admin/category', 'category')}>
-                            <div className={styles.itemGroup}>
-                                <img className={styles.navIcon} alt="" src={categoryIcon} />
-                                <div className={styles.itemContent}>Danh mục</div>
+                            <div className={`${styles.item} ${activeItem === 'service' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/service', 'service')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={serviceIcon} />
+                                    <div className={styles.itemContent}>Dịch vụ</div>
+                                </div>
                             </div>
-                        </div>
+                            <div className={`${styles.item} ${activeItem === 'category' ? styles.active : ''}`} 
+                                onClick={() => handleItem('/admin/category', 'category')}>
+                                <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={categoryIcon} />
+                                    <div className={styles.itemContent}>Danh mục</div>
+                                </div>
+                            </div>
+                                <div className={`${styles.item} ${activeItem === 'salon' ? styles.active : ''}`} 
+                                    onClick={() => handleItem('/admin/salon', 'salon')}>
+                                    <div className={styles.itemGroup}>
+                                    <img className={styles.navIcon} alt="" src={salonIcon} />
+                                    <div className={styles.itemContent}>Chi nhánh</div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </>
                 )}
             </div>

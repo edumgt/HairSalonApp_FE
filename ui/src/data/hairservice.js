@@ -13,12 +13,19 @@ export const fetchCategories = async () => {
 };
 
 export const fetchServices = async () => {
+  const token = localStorage.getItem('token');
   try {
-    const response = await axios.get(`${API_BASE_URL}/service`);
-    console.log('API response:', response.data);
+    const response = await axios.get('http://localhost:8080/api/v1/service', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
-    console.error('Error fetching services:', error);
+    if (error.response?.status === 401) {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
     throw error;
   }
 };

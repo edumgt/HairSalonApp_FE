@@ -20,6 +20,8 @@ import ShineHistory from './pages/ShineHistory';
 import ChangePassword from './pages/ChangePassword';
 import AllServices from './layouts/Component/services/allservices';
 import ServiceDetail from './layouts/Component/services/ServiceDetails';
+import AllSalon from './layouts/Component/Salons/AllSalon';
+import SalonDetail from './layouts/Component/Salons/SalonDetail';
 
 
 // Admin pages
@@ -39,6 +41,7 @@ import Combo from './pages/admin/combo/combo';
 import AddCombo from './pages/admin/combo/addCombo';
 import UpdateCombo from './pages/admin/combo/updateCombo';
 import AllCombos from './layouts/Component/Combo/allcombos';
+import Salon from './pages/admin/salon/salon';
 
 import Slot from './pages/admin/slot/slot';
 import AddSlot from './pages/admin/slot/addSlot';
@@ -47,6 +50,10 @@ import UpdateSlot from './pages/admin/slot/updateSlot';
 import ComboDetail from './layouts/Component/Combo/ComboDetail';
 import Payment from './pages/Payment';
 import UpdateBooking from './pages/admin/booking/updateBooking';
+import Manager from './pages/admin/manager/manager';
+import Dashboard from './pages/admin/dashboard/dashboard';
+
+
 
 
 
@@ -97,6 +104,8 @@ const router = createBrowserRouter([
       { path: "dich-vu/:serviceId", element: <ServiceDetail /> },
       { path: "combo/:comboId", element: <ComboDetail /> },
       { path: "payment/:bookingId", element: <Payment /> },
+      { path: "tat-ca-salon", element: <AllSalon /> },
+      { path: "salon/:id", element: <SalonDetail /> },
     ],
   },
   {
@@ -104,12 +113,13 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <Dashboard /> },
       { path: "adminprofile", element: <AdminProfile /> },
       { path: "adminprofile/editProfile", element: <EditProfile /> },
       { path: "adminprofile/changePassword", element: <AdminChangePassword /> },
       { path: "staff", element: <Staff /> },
       { path: "staff/addStaff", element: <AddStaff /> },
-    
+      { path: "manager", element: <Manager /> },
       { path: "historybooking", element: <HistoryBooking /> },
       { path: "historybooking/updateBooking", element: <UpdateBooking /> },
       { path: "changePassword", element: <AdminChangePassword /> },
@@ -126,6 +136,7 @@ const router = createBrowserRouter([
       { path: "slot", element: <Slot /> },
       { path: "slot/addSlot", element: <AddSlot /> },
       { path: "slot/updateSlot/", element: <UpdateSlot /> },
+      { path: "salon", element: <Salon /> },
     ],
   },
   {

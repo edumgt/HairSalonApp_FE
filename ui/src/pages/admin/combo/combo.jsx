@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Modal, notification } from 'antd';
 import EditButton from '../../../layouts/admin/components/table/buttonv2/editButton';
 import HeaderButton from '../../../layouts/admin/components/table/buttonv2/headerButton';
+import UpdateComboForm from './updateCombo';
 
 const Combo = () => {
     // const navigate = useNavigate()
@@ -14,6 +15,8 @@ const Combo = () => {
   const isRootPath = location.pathname === '/admin/combo';
   const [combo, setCombo] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState(null);
 
   // Load data
   const loadData = async () => {
@@ -69,11 +72,28 @@ const filteredCombos = combo.filter((item) =>
     });
   };
 
-  
+  const handleEditCombo = (combo) => {
+    setSelectedCombo(combo);
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleUpdateModalCancel = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedCombo(null);
+  };
+
+  const handleUpdateSuccess = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedCombo(null);
+    loadData();
+  };
 
   const ListItem = ({ id, name, services, price, description }) => {
     return (
-      <tr className={styles.row}>
+      <tr 
+        className={`${styles.row} ${styles.clickable}`}
+        onClick={() => handleEditCombo({ id, name, services, description })}
+      >
         <td className={styles.info}>{id}</td>
         <td className={styles.info}>{name}</td>
         <td className={styles.info}>
@@ -83,9 +103,6 @@ const filteredCombos = combo.filter((item) =>
         </td>
         <td className={styles.info}>{price.toLocaleString()} VND</td>
         <td className={styles.info}>{description}</td>
-        <td>
-          <EditButton id={id} forPage='updateCombo' handleDelete={handleDelete} item={{ id, name, services, description }} />
-        </td>
       </tr>
     );
   };
@@ -112,7 +129,6 @@ const filteredCombos = combo.filter((item) =>
                     <HeaderColumn title="Các dịch vụ" />
                     <HeaderColumn title="Giá" />
                     <HeaderColumn title="Mô tả" />
-                    <HeaderColumn title="" />
                   </tr>
                 </thead>
                 <tbody>
@@ -127,6 +143,14 @@ const filteredCombos = combo.filter((item) =>
               </table>
             </div>
           </div>
+
+          <UpdateComboForm 
+            visible={isUpdateModalVisible}
+            onCancel={handleUpdateModalCancel}
+            onSuccess={handleUpdateSuccess}
+            initialValues={selectedCombo}
+            onDelete={handleDelete}
+          />
         </>
       ) : (
         <Outlet />

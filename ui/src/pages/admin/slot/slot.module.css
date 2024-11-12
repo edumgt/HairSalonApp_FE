@@ -50,3 +50,6 @@
   .serviceName{
     padding-bottom: 5px;
   }
+  .clickable{
+    cursor: pointer;
+  }

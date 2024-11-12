@@ -27,7 +27,14 @@ const UpdateService = () => {
         setError('')
         setSuccess('')
         try {
-            const response = await axios.put('http://localhost:8080/api/v1/service', formData)
+            const response = await axios.put('http://localhost:8080/api/v1/service', 
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            )
             if (response.data && response.data.code === 0) {
                 setSuccess('Service updated successfully')
                 setTimeout(() => navigate('/service'), 2000)

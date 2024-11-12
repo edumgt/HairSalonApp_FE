@@ -13,18 +13,27 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+  }, []);
 
   const handleBookingClick = () => {
-    // Kiểm tra xem người dùng đã đăng nhập chưa
     const token = localStorage.getItem('token');
-    if (token) {
-      // Nếu đã đăng nhập, chuyển hướng đến trang đặt lịch
-      navigate('/booking');
-    } else {
-      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+    if (!token) {
       message.info('Vui lòng đăng nhập để đặt lịch');
-      navigate('/login', { state: { from: '/booking' } }); // Lưu trang đích sau khi đăng nhập
+      navigate('/login', { state: { from: '/booking' } });
+      return;
     }
+
+    if (userRole !== 'member') {
+      message.info('Chỉ thành viên mới có thể đặt lịch');
+      return;
+    }
+
+    navigate('/booking');
   };
 
   useEffect(() => {
@@ -32,20 +41,16 @@ const ServiceDetail = () => {
       try {
         setLoading(true);
         const services = await fetchServices();
-        console.log('Fetched services:', services); // Để debug
 
-        let servicesData = services;
-        if (services && services.result) {
-          servicesData = services.result;
-        }
+        let servicesData = services.result || services;
+        servicesData = servicesData.filter(service => service.status === true);
 
         const selectedService = servicesData.find(s => s.serviceId === serviceId);
-        console.log('Selected service:', selectedService); // Để debug
 
         if (selectedService) {
           setService(selectedService);
         } else {
-          setError('Không tìm thấy thông tin dịch vụ.');
+          setError('Không tìm thấy thông tin dịch vụ hoặc dịch vụ không khả dụng.');
         }
       } catch (err) {
         console.error('Error loading service detail:', err);
@@ -93,7 +98,14 @@ const ServiceDetail = () => {
           </ol>
         </>
       )}
-      <button className="service-detail__book-button" onClick={handleBookingClick}>ĐẶT LỊCH NGAY</button>
+      <button 
+        className={`service-detail__book-button ${userRole !== 'member' ? 'disabled' : ''}`}
+        onClick={handleBookingClick}
+        disabled={userRole !== 'member' && userRole !== 'MEMBER'}
+        title={userRole !== 'member' && userRole !== 'MEMBER' ? 'Chỉ thành viên mới có thể đặt lịch' : ''}
+      >
+        ĐẶT LỊCH NGAY
+      </button>
     </div>
     
   );
