@@ -19,10 +19,15 @@ const ListItem = ({ booking, onClick, onRescheduleClick, onDeleteClick }) => {
       <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
       <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
       <td className={styles.info} onClick={() => onClick(booking)}>
-        {booking.stylistId?.salons ? 
+        {booking.stylistId?.salons?.address ? 
           `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận${booking.stylistId.salons.district})` : ''}`
           : 'Chưa có thông tin'
         }
+      </td>
+      <td className={styles.info} onClick={() => onClick(booking)}>
+        <span className={styles.salonName}>
+          {booking.stylistId?.salons?.name || 'Chưa có thông tin'}
+        </span>
       </td>
       <td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
       <td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
@@ -296,11 +301,21 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
         <p><span className={styles.label}>Ngày đặt lịch:</span> <span className={styles.value}>{booking.date}</span></p>
         <p><span className={styles.label}>Giờ đặt lịch:</span> <span className={styles.value}>{booking.slot.timeStart}</span></p>
         <p>
+          <span className={styles.label}> Tên Chi nhánh:</span> 
+          <span className={styles.value}>
+            {booking.stylistId?.salons?.name || 'Chưa có thông tin'}
+          </span>
+        </p>
+        <p>
           <span className={styles.label}>Địa chỉ salon:</span> 
           <span className={styles.value}>
-            {`${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` ( Quận${booking.stylistId.salons.district})` : ''}`}
+            {booking.stylistId?.salons ? 
+              `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận${booking.stylistId.salons.district})` : ''}`
+              : 'Chưa có thông tin'
+            }
           </span>
-        </p>        <p><span className={styles.label}>Stylist:</span> <span className={styles.value}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</span></p>
+        </p>
+        <p><span className={styles.label}>Stylist:</span> <span className={styles.value}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</span></p>
         <p><span className={styles.label}>Khách hàng:</span> <span className={styles.value}>{`${booking.account.firstName} ${booking.account.lastName}`}</span></p>
         <p><span className={styles.label}>Dịch vụ:</span> <span className={styles.value}>{booking.services.map(service => service.serviceName).join(', ')}</span></p>
         <p><span className={styles.label}>Giá:</span> <span className={styles.value}>{booking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>
@@ -700,6 +715,7 @@ const HistoryBooking = () => {
                 <HeaderColumn title="Tên khách hàng" sortable />
                 <HeaderColumn title="Tên stylist" sortable />
                 <HeaderColumn title="Địa chỉ salon" sortable />
+                <HeaderColumn title="Tên chi nhánh" sortable />
                 <HeaderColumn title="Tên dịch vụ" sortable />
                 <HeaderColumn title="Ngày đặt lịch" sortable />
                 <HeaderColumn title="Giờ đặt lịch" sortable />

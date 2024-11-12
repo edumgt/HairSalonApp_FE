@@ -24,13 +24,13 @@ const SalonCard = ({ salon }) => {
         {salon.image && (
           <img
             src={getImgurDirectUrl(salon.image)}
-            alt={`30Shine ${salon.district}`}
+            alt={`30Shine ${salon.name}`}
             className="salon-image"
           />
         )}
       </Link>
       <div className="salon-content">
-        <h3 className="salon-title">30Shine {salon.district}</h3>
+        <h3 className="salon-title">{salon.name}</h3>
         <p className="salon-address">
           <i className="fas fa-map-marker-alt"></i> {salon.address}
         </p>
@@ -159,8 +159,7 @@ const AllSalon = () => {
             onClick={() => setSelectedDistrict(district)}
             className={selectedDistrict === district ? 'active' : ''}
           >
-            {district === 'Tất cả' ? district : `${district}`}
-            {district === 'Tất cả' ? district : `${district}`}
+            {district === 'Tất cả' ? district :  `Quận ${district}`}
           </button>
         ))}
       </div>

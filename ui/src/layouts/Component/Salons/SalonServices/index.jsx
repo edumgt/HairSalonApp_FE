@@ -32,7 +32,7 @@ const SalonCard = ({ salon }) => {
         )}
       </Link>
       <div className="salon-services__content">
-        <h3 className="salon-services__card-title">30Shine {salon.district}</h3>
+        <h3 className="salon-services__card-title"> {salon.name}</h3>
         <p className="salon-services__address">{salon.address}</p>
         <div className="salon-services__status">
           <span className={`status-badge ${salon.open ? 'open' : 'closed'}`}>
