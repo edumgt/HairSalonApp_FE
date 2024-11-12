@@ -12,6 +12,7 @@ const UpdateSalonForm = ({ visible, onCancel, onSuccess, initialValues, handleSw
             form.setFieldsValue({
                 open: initialValues.open,
                 id: initialValues.id,
+                name: initialValues.name,
                 address: initialValues.address,
                 district: initialValues.district,
                 hotline: initialValues.hotline,
@@ -88,6 +89,13 @@ const UpdateSalonForm = ({ visible, onCancel, onSuccess, initialValues, handleSw
               name="id"
           >
               <Input disabled />
+          </Form.Item>
+          
+          <Form.Item
+              label="Tên salon"
+              name="name"
+          >
+              <Input />
           </Form.Item>
 
           <Form.Item

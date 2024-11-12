@@ -70,7 +70,7 @@ function Salon() {
         ),
       });
     };
-  const ListItem = ({ id, address, district, hotline, image, open }) => {
+  const ListItem = ({ id, name, address, district, hotline, image, open }) => {
     const [imageError, setImageError] = useState(false);
 
     const handleImageError = () => {
@@ -90,9 +90,10 @@ function Salon() {
     const imageUrl = getImgurDirectUrl(image);
     return (
       <tr className={`${styles.row} ${styles.clickable}`}
-          onClick={() => showUpdateModal({ open, id, address, district, hotline, image })}
+          onClick={() => showUpdateModal({ open, id, name, address, district, hotline, image })}
       >
         <td className={styles.info}>{id}</td>
+        <td className={styles.info}>{name}</td>
         <td className={styles.info}>{address}</td>
         <td className={styles.info}>{district}</td>
         <td className={styles.info}>{hotline}</td>
@@ -154,13 +155,14 @@ function Salon() {
               isModal={true}
               showAddModal={showAddModal}
               handleSearch={handleSearch}
-              searchTarget='địa chỉ'
+              searchTarget='tên'
             />
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
                   <tr className={styles.columnHeaderParent}>
                     <HeaderColumn title="ID" />
+                    <HeaderColumn title="Tên" />
                     <HeaderColumn title="Địa chỉ" />
                     <HeaderColumn title="Quận" />
                     <HeaderColumn title="Hotline" />

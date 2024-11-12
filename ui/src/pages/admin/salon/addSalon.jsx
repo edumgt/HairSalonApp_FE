@@ -79,6 +79,14 @@ const AddSalonForm = ({ visible, onCancel, onSuccess }) => {
             >
 
                 <Form.Item
+                    label="Tên salon"
+                    name="name"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên salon!' }]}
+                >
+                    <Input />
+                </Form.Item>
+                
+                <Form.Item
                     label="Địa chỉ"
                     name="address"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
