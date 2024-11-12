@@ -6,6 +6,10 @@ export const getAll = async () => {
 }
 export const getAllByManager = async () => {
     const response = await BASE_URL.get('booking/manager')
+    return response.data
+}
+export const getAllByStylist = async () => {
+    const response = await BASE_URL.get('booking/stylist')
     return response
 }
 export const update = async (values) => {

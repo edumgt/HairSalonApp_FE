@@ -7,8 +7,8 @@ import { useState, useEffect } from 'react';
 import { Modal, message, Button, DatePicker, Select, Popconfirm } from 'antd';
 import moment from 'moment';
 import { CloseCircleOutlined, UserOutlined } from '@ant-design/icons';
-import { getManagerBooking } from '../services/dashboard';
 import BASE_URL from "../../../api"
+import { getAllByManager, getAllByStylist } from '../services/bookingService';
 
 const { Option } = Select;
 
@@ -572,8 +572,8 @@ const HistoryBooking = () => {
       let data;
       
       // Sử dụng API manager cho các role MANAGER, STYLIST, STAFF
-      if (['MANAGER', 'STYLIST', 'STAFF'].includes(userRole)) {
-        const response = await getManagerBooking();
+      if (['MANAGER', 'STAFF'].includes(userRole)) {
+        const response = await getAllByManager();
         console.log('Manager API response:', response); // Debug log
         
         // Kiểm tra và đảm bảo data.result là một mảng
@@ -583,7 +583,17 @@ const HistoryBooking = () => {
           console.error('Invalid data format:', response);
           setBookings([]); // Set empty array if invalid data
         }
-      } else {
+      } else if (userRole === 'STYLIST') {
+        const response = await getAllByStylist();
+        console.log('Stylist API response:', response.data); // Debug log
+        
+        if (response.data && response.data.result && Array.isArray(response.data.result)) {
+          setBookings(response.data.result);
+        } else {
+          console.error('Invalid data format:', response.data);
+          setBookings([]); // Set empty array if invalid data
+        }
+      }else {
         // API gốc cho ADMIN
         const response = await BASE_URL.get('/booking');
         console.log('Admin API response:', response.data); // Debug log
