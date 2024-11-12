@@ -98,10 +98,11 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
     const role = localStorage.getItem('userRole');
     setUserRole(role);
   }, []);
-
+  
   const canManageStaff = userRole === 'ADMIN' || userRole === 'MANAGER';
   const forAdmin = userRole === 'ADMIN' || userRole === 'admin';
-
+  const forManager = userRole === 'MANAGER' || userRole === 'manager';
+  
   const fetchStaff = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -124,9 +125,37 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
     }
   }, []);
 
+  const fetchManagerStaff = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/staff/manager', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data && Array.isArray(response.data.result)) {
+        setStaffList(response.data.result);
+        setFilteredStaff(response.data.result);
+      } else {
+        throw new Error('Định dạng dữ liệu server nhận được không hợp lệ');
+      }
+    } catch (error) {
+      console.error('Lỗi hiển thị:', error);
+      setError('Lấy dữ liệu thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    fetchStaff();
-  }, [fetchStaff, refreshData]);
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+    if (role === 'MANAGER') {
+      fetchManagerStaff(); // Gọi hàm fetch cho manager
+    } else {
+      fetchStaff(); // Gọi hàm fetch cho admin
+    }
+  }, [fetchStaff, fetchManagerStaff]);
 
   useEffect(() => {
     const filtered = staffList.filter(staff => 
@@ -155,6 +184,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
         setEditingStaff(staffData);
         form.setFieldsValue({
           ...staffData,
+          salonId: salons?.id,
           joinIn: staffData.joinIn ? dayjs(staffData.joinIn) : null,
         });
         setIsEditModalVisible(true);
@@ -406,7 +436,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
       {/* Modal for editing staff */}
       <Modal
         title="Cập nhật nhân viên"
-        visible={isEditModalVisible}
+        open={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
         width={700}
@@ -429,6 +459,7 @@ const ListItem = ({ code, firstName, lastName, gender, yob, phone, email, joinIn
                 label="Chi nhánh"
                 rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
                 className={styles.formItem}
+                disabled={forManager}
               >
                 <Select placeholder="Chọn chi nhánh">
                   {salons.map(salon => (

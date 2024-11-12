@@ -11,6 +11,8 @@ function AddStaff() {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [salons, setSalons] = useState([]);
+    const [userRole, setUserRole] = useState('');
+    const [currentManagerSalon, setCurrentManagerSalon] = useState(null);
 
     useEffect(() => {
         const fetchSalons = async () => {
@@ -32,6 +34,39 @@ function AddStaff() {
         fetchSalons();
     }, []);
 
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
+    }, []); // Chỉ chạy một lần khi component được mount để lấy role từ localStorage
+    
+    useEffect(() => {
+        if (userRole === 'MANAGER') {
+            const fetchStaff = async () => {
+                try {
+                    const response = await axios.get('http://localhost:8080/api/v1/staff/manager', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    if (response.data && Array.isArray(response.data.result)) {
+                        const manager = response.data.result.find(staff => 
+                            staff.role === 'MANAGER'
+                        );
+                        if (manager && manager.salons) {
+                            setCurrentManagerSalon(manager.salons); // Lưu salon của manager
+                        }
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy danh sách nhân viên:', error);
+                    message.error('Không thể lấy danh sách nhân viên');
+                }
+            };
+            
+            fetchStaff();
+        }
+    }, [userRole]); // Chạy lại khi userRole thay đổi
+    
+    
     const handleSubmit = async (values) => {
         try {
             const formattedValues = {
@@ -44,7 +79,7 @@ function AddStaff() {
                 joinIn: values.joinIn.format('YYYY-MM-DD'),
                 role: values.role,
                 image: values.image,
-                salonId: values.salonId
+                salonId: userRole === 'MANAGER' ? currentManagerSalon.id : values.salonId // Sử dụng salon của manager nếu là manager
             };
 
             const response = await axios.post('http://localhost:8080/api/v1/staff', formattedValues, {
@@ -79,13 +114,26 @@ function AddStaff() {
                     label="Chi nhánh"
                     rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
                 >
-                    <Select placeholder="Chọn chi nhánh">
-                        {salons.map(salon => (
-                            <Option key={salon.id} value={salon.id}>
-                                {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                    {userRole === 'MANAGER' ? 
+                        <Select 
+                            placeholder="Chi nhánh" 
+                            defaultValue={currentManagerSalon?.id}
+                        >
+                            <Option value={currentManagerSalon?.id}>
+                                {`${currentManagerSalon?.id} - ${currentManagerSalon?.address} (Quận ${currentManagerSalon?.district})`}
                             </Option>
-                        ))}
-                    </Select>
+                        </Select> 
+                    :
+                        <Select 
+                            placeholder="Chọn chi nhánh" 
+                        >
+                            {salons.map(salon => (
+                                <Option key={salon.id} value={salon.id}>
+                                    {`${salon.id} - ${salon.address} (Quận ${salon.district})`}
+                                </Option>
+                            ))}
+                        </Select>
+                    }
                 </Form.Item>
 
                 <Form.Item
