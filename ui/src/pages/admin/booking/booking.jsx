@@ -16,43 +16,32 @@ const ListItem = ({ booking, onClick, onRescheduleClick, onDeleteClick }) => {
   return (
     <tr className={styles.row}>
       <td className={styles.info} onClick={() => onClick(booking)}>{booking.id}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>
+      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>
         {booking.stylistId?.salons ? 
           `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận${booking.stylistId.salons.district})` : ''}`
           : 'Chưa có thông tin'
         }
       </td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
-      <td onClick={() => onClick(booking)}>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>
         <div className={styles.statusWrapper}>
-          <div className={`${booking.paymentStatus === 'Paid' ? styles.greenStatus : styles.redStatus}`}>{booking.paymentStatus || 'Not implemented'}</div>
+          <div className={`
+            ${booking.status === 'CANCELED' ? styles.redStatus : ''}
+            ${['CHECKED_IN', 'SUCCESS', 'RECEIVED'].includes(booking.status) ? styles.greenStatus : ''}
+          `}>
+            {booking.status}
+          </div>
         </div>
       </td>
-      <td className={styles.info} onClick={() => onClick(booking)}>
-  <div className={styles.statusWrapper}>
-    <div className={`
-      ${booking.status === 'CANCELED' ? styles.redStatus : ''}
-      ${['CHECKED_IN', 'SUCCESS', 'RECEIVED'].includes(booking.status) ? styles.greenStatus : ''}
-    `}>
-      {booking.status}
-    </div>
-  </div>
-</td>
       <td onClick={(e) => e.stopPropagation()}>
         <EditButton 
-          onEdit={() => {
-            console.log('Edit clicked for booking:', booking);
-            onRescheduleClick(booking);
-          }}
-          onDelete={() => {
-            console.log('Delete clicked for booking:', booking);
-            onDeleteClick(booking);
-          }}
+          onEdit={() => onRescheduleClick(booking)}
+          onDelete={() => onDeleteClick(booking)}
         />
       </td>
     </tr>
@@ -715,7 +704,6 @@ const HistoryBooking = () => {
                 <HeaderColumn title="Ngày đặt lịch" sortable />
                 <HeaderColumn title="Giờ đặt lịch" sortable />
                 <HeaderColumn title="Giá" sortable />
-                <HeaderColumn title="Trạng thái thanh toán" sortable />
                 <HeaderColumn title="Trạng thái đặt lịch" sortable />
                 <HeaderColumn title="" />
               </tr>
