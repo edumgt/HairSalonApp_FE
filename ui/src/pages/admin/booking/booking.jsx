@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import { Modal, message, Button, DatePicker, Select, Popconfirm } from 'antd';
 import moment from 'moment';
 import { CloseCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { getManagerBooking } from '../services/dashboard';
+import BASE_URL from "../../../api"
 
 const { Option } = Select;
 
@@ -14,33 +16,28 @@ const ListItem = ({ booking, onClick, onRescheduleClick, onDeleteClick }) => {
   return (
     <tr className={styles.row}>
       <td className={styles.info} onClick={() => onClick(booking)}>{booking.id}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>
+      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.account.firstName} ${booking.account.lastName}`}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>
         {booking.stylistId?.salons ? 
           `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận${booking.stylistId.salons.district})` : ''}`
           : 'Chưa có thông tin'
         }
       </td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
-<td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
-      <td onClick={() => onClick(booking)}>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.services.map(service => service.serviceName).join(', ')}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.date}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.slot.timeStart}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>{booking.price}</td>
+      <td className={styles.info} onClick={() => onClick(booking)}>
         <div className={styles.statusWrapper}>
-          <div className={`${booking.paymentStatus === 'Paid' ? styles.greenStatus : styles.redStatus}`}>{booking.paymentStatus || 'Not implemented'}</div>
+          <div className={`
+            ${booking.status === 'CANCELED' ? styles.redStatus : ''}
+            ${['CHECKED_IN', 'SUCCESS', 'RECEIVED'].includes(booking.status) ? styles.greenStatus : ''}
+          `}>
+            {booking.status}
+          </div>
         </div>
       </td>
-      <td className={styles.info} onClick={() => onClick(booking)}>
-  <div className={styles.statusWrapper}>
-    <div className={`
-      ${booking.status === 'CANCELED' ? styles.redStatus : ''}
-      ${['CHECKED_IN', 'SUCCESS', 'RECEIVED'].includes(booking.status) ? styles.greenStatus : ''}
-    `}>
-      {booking.status}
-    </div>
-  </div>
-</td>
       <td onClick={(e) => e.stopPropagation()}>
         <EditButton 
           onEdit={() => {
@@ -84,7 +81,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
     console.log('Debug permissions:', {
       userRole,
       bookingStatus: booking.status,
-      canCheckIn: ['STAFF', 'MANAGER'].includes(userRole), // Sử dụng chữ hoa
+      canCheckIn: ['STAFF', 'MANAGER'].includes(userRole), // Sử d��ng chữ hoa
       canSuccess: userRole === 'STYLIST',
       canCancel: userRole === 'STAFF'
     });
@@ -159,7 +156,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
   // Sửa lại điều kiện kiểm tra quyền để match với format chữ hoa
   const canCheckIn = ['STAFF', 'MANAGER'].includes(userRole) && booking.status === 'RECEIVED';
   const canSuccess = userRole === 'STYLIST' && booking.status === 'CHECKED_IN';
-  const canCancel = userRole === 'STAFF' && !['SUCCESS', 'CANCELED'].includes(booking.status);
+  const canCancel = ['STAFF', 'MANAGER'].includes(userRole) && !['SUCCESS', 'CANCELED'].includes(booking.status);
 
   console.log('Debug permissions:', {
     userRole,
@@ -196,7 +193,7 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
               }}
             >
               <Option value="customer_request">Khách hàng yêu cầu hủy</Option>
-              <Option value="stylist_unavailable">Stylist không kh��� dụng</Option>
+              <Option value="stylist_unavailable">Stylist không kh dụng</Option>
               <Option value="salon_emergency">Salon có việc khẩn cấp</Option>
               <Option value="other">Lý do khác</Option>
             </Select>
@@ -336,12 +333,48 @@ const BookingDetails = ({ booking, onClose, onStatusUpdate }) => {
         <p>
           <span className={styles.label}>Địa chỉ salon:</span> 
           <span className={styles.value}>
-            {`${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` ( Quận${booking.stylistId.salons.district})` : ''}`}
+            {booking.stylistId?.salons ? 
+              `${booking.stylistId.salons.address}${booking.stylistId.salons.district ? ` (Quận ${booking.stylistId.salons.district})` : ''}`
+              : 'Chưa có thông tin'
+            }
           </span>
-        </p>        <p><span className={styles.label}>Stylist:</span> <span className={styles.value}>{`${booking.stylistId.firstName} ${booking.stylistId.lastName}`}</span></p>
-        <p><span className={styles.label}>Khách hàng:</span> <span className={styles.value}>{`${booking.account.firstName} ${booking.account.lastName}`}</span></p>
-        <p><span className={styles.label}>Dịch vụ:</span> <span className={styles.value}>{booking.services.map(service => service.serviceName).join(', ')}</span></p>
-        <p><span className={styles.label}>Giá:</span> <span className={styles.value}>{booking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>
+        </p>
+        <p>
+          <span className={styles.label}>Stylist:</span> 
+          <span className={styles.value}>
+            {booking.stylistId ? 
+              `${booking.stylistId.firstName} ${booking.stylistId.lastName}`
+              : 'Chưa có thông tin'
+            }
+          </span>
+        </p>
+        <p>
+          <span className={styles.label}>Khách hàng:</span> 
+          <span className={styles.value}>
+            {booking.account ? 
+              `${booking.account.firstName} ${booking.account.lastName}`
+              : 'Chưa có thông tin'
+            }
+          </span>
+        </p>
+        <p>
+          <span className={styles.label}>Dịch vụ:</span> 
+          <span className={styles.value}>
+            {booking.services ? 
+              booking.services.map(service => service.serviceName).join(', ')
+              : 'Chưa có thông tin'
+            }
+          </span>
+        </p>
+        <p>
+          <span className={styles.label}>Giá:</span> 
+          <span className={styles.value}>
+            {booking.price ? 
+              booking.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+              : 'Chưa có thông tin'
+            }
+          </span>
+        </p>
         <p><span className={styles.label}>Trạng thái:</span> <span className={styles.value}>{booking.status}</span></p>
       </div>
 
@@ -594,26 +627,38 @@ const HistoryBooking = () => {
 
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/v1/booking', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const userRole = localStorage.getItem('userRole');
+      
+      let data;
+      
+      // Sử dụng API manager cho các role MANAGER, STYLIST, STAFF
+      if (['MANAGER', 'STYLIST', 'STAFF'].includes(userRole)) {
+        const response = await getManagerBooking();
+        console.log('Manager API response:', response); // Debug log
+        
+        // Kiểm tra và đảm bảo data.result là một mảng
+        if (response && response.result && Array.isArray(response.result)) {
+          setBookings(response.result);
+        } else {
+          console.error('Invalid data format:', response);
+          setBookings([]); // Set empty array if invalid data
         }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.code === 0) {
-        setBookings(data.result);
       } else {
-        console.error('API returned an error:', data);
+        // API gốc cho ADMIN
+        const response = await BASE_URL.get('/booking');
+        console.log('Admin API response:', response.data); // Debug log
+        
+        if (response.data && response.data.result && Array.isArray(response.data.result)) {
+          setBookings(response.data.result);
+        } else {
+          console.error('Invalid data format:', response.data);
+          setBookings([]); // Set empty array if invalid data
+        }
       }
     } catch (error) {
       console.error('Error fetching bookings:', error);
+      message.error('Không thể tải dữ liệu đặt lịch');
+      setBookings([]); // Set empty array on error
     }
   };
 
@@ -758,7 +803,6 @@ const HistoryBooking = () => {
                 <HeaderColumn title="Ngày đặt lịch" sortable />
                 <HeaderColumn title="Giờ đặt lịch" sortable />
                 <HeaderColumn title="Giá" sortable />
-                <HeaderColumn title="Trạng thái thanh toán" sortable />
                 <HeaderColumn title="Trạng thái đặt lịch" sortable />
                 <HeaderColumn title="" />
               </tr>
