@@ -697,7 +697,7 @@ function ShineHistory() {
       }
     } catch (error) {
       console.error('Lỗi khi dời lịch:', error);
-      message.error(error.message || 'Không thể dời lịch. Vui lòng thử lại sau.');
+      message.error('Không thể dời lịch vào khung giờ này. Vui lòng chọn khung giờ khác.');
     }
   };
 

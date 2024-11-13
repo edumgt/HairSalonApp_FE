@@ -12,10 +12,7 @@ const HeaderButton = ({text, add, onClick, onSearch, searchText}) => {
   };
 
   return (
-    <div className="headerButton">
-      <div className="filter">
-        <img className="filterIcon" alt="" src={filterIcon} />            
-      </div>          
+    <div className="headerButton">         
       <div className="search">
         <img className="filterIcon" alt="" src={searchIcon} />
         <input 

@@ -574,11 +574,11 @@ const HistoryBooking = () => {
       // Sử dụng API manager cho các role MANAGER, STYLIST, STAFF
       if (['MANAGER', 'STAFF'].includes(userRole)) {
         const response = await getAllByManager();
-        console.log('Manager API response:', response); // Debug log
+        console.log('Manager API response:', response.data); // Debug log
         
         // Kiểm tra và đảm bảo data.result là một mảng
-        if (response && response.result && Array.isArray(response.result)) {
-          setBookings(response.result);
+        if (response && response.data.result && Array.isArray(response.data.result)) {
+          setBookings(response.data.result);
         } else {
           console.error('Invalid data format:', response);
           setBookings([]); // Set empty array if invalid data
@@ -716,7 +716,7 @@ const HistoryBooking = () => {
     <div className={styles.main}>
       <NavLink currentPage="Đặt lịch" />
       <div className={styles.tableGroup}>
-        <HeaderButton add={false} />
+        <HeaderButton add={false} searchText='tên khách hàng'/>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>

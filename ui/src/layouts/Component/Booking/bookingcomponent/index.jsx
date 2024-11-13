@@ -429,7 +429,7 @@ const BookingComponent = () => {
     if (!date) return;
     try {
       const formattedDate = date.format('yyyy-MM-dd');
-      const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}`, {
+      const response = await axios.get(`http://localhost:8080/api/v1/slot/${formattedDate}/${selectedSalon?.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

@@ -31,13 +31,9 @@ const getImgurImage = (url) => {
 
 function Dashboard() {
     const [totalRevenue, setTotalRevenue] = useState(0);
-    const [todayBookingCount, setTodayBookingCount] = useState(0); // State to hold today's booking count
-    const [tomorrowBookingCount, setTomorrowBookingCount] = useState(0); // State to hold tomorrow's booking count
+    const [bookingCount, setBookingCount] = useState(0); // State to hold today's booking count
     const [pieData, setPieData] = useState([]);
     const [barData, setBarData] = useState([]); // State cho dữ liệu BarChart
-    const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0]; // Get tomorrow's date
-    // const [salons, setSalons] = useState([]);
     const [totalSalonCount, setTotalSalonCount] = useState(0)
     const [totalStaffCount, setTotalStaffCount] = useState(0)
     const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
@@ -103,17 +99,10 @@ function Dashboard() {
 
     const fetchBookingCount = async () => {
         try {
-            const response = await (isAdmin ? getAll() : getAllByManager());
-            if (response.data.code === 0) {
-                const countToday = response.data.result
-                    .filter(booking => booking.status === "RECEIVED" && booking.date === today)
-                    .length;
-                setTodayBookingCount(countToday);
-
-                const countTomorrow = response.data.result
-                    .filter(booking => booking.date === tomorrow)
-                    .length;
-                setTomorrowBookingCount(countTomorrow);
+            const response = await (isAdmin ? getDashboardByAdmin() : getDashboardByManager());
+            if (response.data.code === 200) {
+                const count = response.data.result.totalBookings
+                setBookingCount(count);
             }
         } catch (error) {
             console.log(error);
@@ -133,6 +122,7 @@ function Dashboard() {
                 });
                 const pieData = Object.entries(serviceCounts).map(([name, value]) => ({ name, value }));
                 setPieData(pieData);
+                console.log(pieData)
             }
         } catch (error) {
             console.log(error);
@@ -231,7 +221,7 @@ function Dashboard() {
                             </Card>
                         </div>
 
-                        {/* Card Lịch đặt hôm nay */}
+                        {/* Card tổng Lịch đặt */}
                         <div style={{ flex: 1, minWidth: '200px' }}>
                             <Card
                                 bordered={false}
@@ -248,7 +238,7 @@ function Dashboard() {
                                         opacity: 0.85,
                                         marginBottom: '12px'
                                     }}>
-                                        Lịch đặt hôm nay ({today})
+                                        Tổng số lịch đặt
                                     </div>
                                     <div style={{ 
                                         fontSize: '24px', 
@@ -258,40 +248,7 @@ function Dashboard() {
                                         gap: '8px'
                                     }}>
                                         <CalendarOutlined style={{ fontSize: '24px' }}/>
-                                        <span>{todayBookingCount}</span>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-
-                        {/* Card Lịch đặt ngày mai */}
-                        <div style={{ flex: 1, minWidth: '200px' }}>
-                            <Card
-                                bordered={false}
-                                style={{
-                                    background: 'linear-gradient(135deg, #13c2c2 0%, #08979c 100%)',
-                                    borderRadius: '10px',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                }}
-                                bodyStyle={{ padding: '20px' }}
-                            >
-                                <div style={{ color: 'white' }}>
-                                    <div style={{ 
-                                        fontSize: '14px', 
-                                        opacity: 0.85,
-                                        marginBottom: '12px'
-                                    }}>
-                                        Lịch đặt ngày mai ({tomorrow})
-                                    </div>
-                                    <div style={{ 
-                                        fontSize: '24px', 
-                                        fontWeight: '600',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px'
-                                    }}>
-                                        <CalendarOutlined style={{ fontSize: '24px' }}/>
-                                        <span>{tomorrowBookingCount}</span>
+                                        <span>{bookingCount}</span>
                                     </div>
                                 </div>
                             </Card>
