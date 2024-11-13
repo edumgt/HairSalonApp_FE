@@ -36,7 +36,7 @@ function Dashboard() {
     const [barData, setBarData] = useState([]); // State cho dữ liệu BarChart
     const [totalSalonCount, setTotalSalonCount] = useState(0)
     const [totalStaffCount, setTotalStaffCount] = useState(0)
-    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
+    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF5733", "#C70039", "#900C3F", "#581845"];
 
     // Thêm state để kiểm tra dữ liệu đã load xong chưa
     const [isDataLoaded, setIsDataLoaded] = useState(false);
